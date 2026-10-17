@@ -1,0 +1,18 @@
+[
+  {
+    "repo": "Lbryany/dsh-herdr",
+    "title": {
+      "zh": "Herdr 状态同步",
+      "en": "Herdr status"
+    },
+    "description": {
+      "zh": "把 DeepSeek Harness 会话的生命周期状态同步给 Herdr；没有 HERDR_ENV 时静默。",
+      "en": "Herdr lifecycle status integration for DeepSeek Harness; silent without HERDR_ENV."
+    },
+    "category": "workflow",
+    "labels": [
+      "headless"
+    ],
+    "author": "Lbryany"
+  }
+]
