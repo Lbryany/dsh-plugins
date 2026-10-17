@@ -18,6 +18,9 @@ import {
   PATHS,
   prepareCodeBuddyPayload,
   resolveCodeBuddyProductEnvironment,
+  conversationHeaders,
+  conversationIdFor,
+  withPromptCacheKey,
 } from "../src/codebuddy.ts";
 
 interface RequestCall {
@@ -1099,4 +1102,25 @@ test("prepareCodeBuddyPayload never adds reasoning_effort to a non-reasoning mod
     reasoningModel,
   ) as Record<string, unknown>;
   assert.equal(withEffort.reasoning_effort, "high");
+});
+
+test("conversationIdFor is a stable UUID-shaped id per dsh session", () => {
+  const id = conversationIdFor("ses_123");
+  assert.equal(id, conversationIdFor("ses_123"));
+  assert.notEqual(id, conversationIdFor("ses_124"));
+  assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+});
+
+test("conversationHeaders follows the CLI header switch and needs a session", () => {
+  assert.deepEqual(conversationHeaders(undefined, true), {});
+  assert.deepEqual(conversationHeaders("ses_1", false), {});
+  assert.deepEqual(conversationHeaders("ses_1", true), { "x-conversation-id": conversationIdFor("ses_1") });
+});
+
+test("withPromptCacheKey only injects when enabled and keeps the 64-char cap", () => {
+  assert.deepEqual(withPromptCacheKey({ model: "m" }, "ses_1", false), { model: "m" });
+  assert.deepEqual(withPromptCacheKey({ model: "m" }, undefined, true), { model: "m" });
+  assert.deepEqual(withPromptCacheKey({ model: "m" }, "ses_1", true), { model: "m", prompt_cache_key: "ses_1" });
+  const long = "s".repeat(80);
+  assert.equal((withPromptCacheKey({}, long, true) as { prompt_cache_key: string }).prompt_cache_key.length, 64);
 });

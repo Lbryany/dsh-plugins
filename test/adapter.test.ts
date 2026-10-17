@@ -121,3 +121,26 @@ test('adapter rejects pi deferred-tool completions that DSH cannot consume', asy
     }
   }, /deferred tool response/)
 })
+
+test('adapter layers session-stable request headers and payload hooks over each call', async () => {
+  const seen: { headers?: Record<string, string>; payload?: unknown; sessionId?: string }[] = []
+  const models = fakeModels()
+  const base = models.streamSimple
+  models.streamSimple = ((m: Model<'openai-completions'>, c: Context, options?: SimpleStreamOptions) => {
+    seen.push({ headers: options?.headers as Record<string, string>, sessionId: options?.sessionId })
+    seen.at(-1)!.payload = options?.onPayload?.({ model: 'reasoner' }, m)
+    return base(m, c, options)
+  }) as Models['streamSimple']
+  const adapter = new CodeBuddyAdapter(models, undefined, undefined, {
+    requestHeaders: (sessionId): Record<string, string> => sessionId ? { 'x-conversation-id': `conv-${sessionId}` } : {},
+    onPayload: (payload, sessionId) => ({ ...(payload as object), prompt_cache_key: sessionId }),
+  })
+  for (const sessionId of ['ses_1', 'ses_1']) {
+    for await (const _chunk of adapter.stream({ provider: 'codebuddy', model: 'reasoner', messages: [], reasoningEffort: ReasoningEffortId('medium'), sessionId: sessionId as never })) { /* drain */ }
+  }
+  assert.equal(seen.length, 2)
+  assert.equal(seen[0]!.headers?.['x-conversation-id'], 'conv-ses_1')
+  assert.equal(seen[1]!.headers?.['x-conversation-id'], 'conv-ses_1')
+  assert.match(seen[0]!.headers?.['User-Agent'] ?? '', /^CLI\/2\.125\.0 CodeBuddy\/2\.125\.0 /)
+  assert.deepEqual(seen[0]!.payload, { model: 'reasoner', prompt_cache_key: 'ses_1' })
+})

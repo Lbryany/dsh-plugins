@@ -310,6 +310,47 @@ export const ENVELOPE: EnvelopeConfig = {
  * （x-domain + x-agent-intent + x-user-id/企业头 + x-stainless 系列）。
  */
 export const SEND_CLI_HEADERS = envFlag("PI_CODEBUDDY_CLI_HEADERS", true);
+/**
+ * Inject OpenAI `prompt_cache_key` (the dsh session id) into chat requests so
+ * an OpenAI-compatible upstream can route every turn of one session to the
+ * same prompt cache. Off by default: strict upstreams reject unknown fields.
+ * Opt in with PI_CODEBUDDY_PROMPT_CACHE_KEY=1.
+ */
+export const SEND_PROMPT_CACHE_KEY = envFlag("PI_CODEBUDDY_PROMPT_CACHE_KEY", false);
+
+/**
+ * 会话级 x-conversation-id：同一个 dsh 会话的每一轮请求都带同一个 UUID 形状的 id（由会话 id 哈希得到），
+ * 只有 x-request-id / x-conversation-message-id / x-conversation-request-id 逐请求变化。
+ * pi-ai 每次请求都重新调用 toAuth，那里拿不到会话，只能生成随机 id；随机的 conversation id 会让
+ * 服务端每轮都换缓存键（与 cc-switch 对 session / conversation id 的处理一致：跨轮稳定的才能当会话身份）。
+ */
+export function conversationIdFor(sessionId: string): string {
+  const hex = createHash("sha256").update(sessionId).digest("hex");
+  const variant = ((parseInt(hex[16]!, 16) & 0x3) | 0x8).toString(16);
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+}
+
+/** Per-request headers the adapter layers over toAuth's: a stable conversation id when a session is known. */
+export function conversationHeaders(
+  sessionId: string | undefined,
+  sendCliHeaders: boolean = SEND_CLI_HEADERS,
+): Record<string, string> {
+  if (!sendCliHeaders || !sessionId) return {};
+  return { "x-conversation-id": conversationIdFor(sessionId) };
+}
+
+/** OpenAI prompt_cache_key is capped at 64 characters. */
+const PROMPT_CACHE_KEY_MAX = 64;
+
+/** Add `prompt_cache_key` to an outgoing chat payload when enabled and a session is known. */
+export function withPromptCacheKey<T>(
+  payload: T,
+  sessionId: string | undefined,
+  enabled: boolean = SEND_PROMPT_CACHE_KEY,
+): T {
+  if (!enabled || !sessionId || typeof payload !== "object" || payload === null) return payload;
+  return { ...payload, prompt_cache_key: sessionId.slice(0, PROMPT_CACHE_KEY_MAX) };
+}
 
 const ZERO_COST = {
   input: 0,

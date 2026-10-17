@@ -112,17 +112,27 @@ function finishReason(reason: 'stop' | 'length' | 'toolUse'): StreamChunk & { ty
   return { type: 'finish', reason: { kind: 'stop' } }
 }
 
+/** Per-request hooks keyed by the dsh session: stable conversation headers and payload tweaks. */
+export interface CodeBuddyRequestHooks {
+  /** Extra headers for one request; merged over toAuth's headers so a session-level id wins. */
+  requestHeaders?: (sessionId: string | undefined) => Record<string, string>
+  /** Last-minute payload edit (for example `prompt_cache_key`); return the payload to send. */
+  onPayload?: (payload: unknown, sessionId: string | undefined) => unknown
+}
+
 export class CodeBuddyAdapter extends LlmAdapter {
   private readonly models: Models
   private readonly accountSignal: () => AbortSignal
   private readonly refresh: Models['refresh']
+  private readonly hooks: CodeBuddyRequestHooks
 
   constructor(models: Models, accountSignal: () => AbortSignal = () => new AbortController().signal,
-    refresh: Models['refresh'] = options => models.refresh(options)) {
+    refresh: Models['refresh'] = options => models.refresh(options), hooks: CodeBuddyRequestHooks = {}) {
     super()
     this.models = models
     this.accountSignal = accountSignal
     this.refresh = refresh
+    this.hooks = hooks
   }
 
   override async prepareCall(provider: string, id: string, signal?: AbortSignal): Promise<PreparedAdapterCall> {
@@ -177,17 +187,22 @@ export class CodeBuddyAdapter extends LlmAdapter {
     if (model === undefined) throw new LlmError(`CodeBuddy model "${options.model}" is not available`, 'MODEL_NOT_FOUND')
 
     const open = new Map<number, { kind: 'text' | 'reasoning' | 'tool-call'; text: string; id?: string; name?: string }>()
+    const sessionId = options.sessionId === undefined ? undefined : String(options.sessionId)
+    const onPayload = this.hooks.onPayload
     const stream = this.models.streamSimple(model, toPiContext(options), {
       temperature: options.temperature,
       maxTokens: options.maxTokens,
       reasoning: options.reasoningEffort as ThinkingLevel | undefined,
       signal,
-      sessionId: options.sessionId === undefined ? undefined : String(options.sessionId),
+      sessionId,
       headers: {
         // Preserve CodeBuddy's required CLI identity while satisfying dsh's
         // mandatory public product attribution on the same wire request.
         'User-Agent': `CLI/2.125.0 CodeBuddy/2.125.0 ${attributionHeaders()['user-agent']}`,
+        // Session-stable conversation id overrides the per-request one toAuth generated.
+        ...this.hooks.requestHeaders?.(sessionId),
       },
+      ...(onPayload ? { onPayload: (payload: unknown) => onPayload(payload, sessionId) } : {}),
     })
     for await (const event of stream) {
       signal.throwIfAborted()

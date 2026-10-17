@@ -9,7 +9,7 @@ import { createRpcHandler, registerManagement } from './rpc.ts'
 import type { CommandInvocation } from '@deepseek-ai/dsh-commands'
 import { credentialRef } from '@deepseek-ai/dsh-credentials'
 import { createModels } from '@earendil-works/pi-ai'
-import { createCodeBuddyProvider } from './codebuddy.ts'
+import { conversationHeaders, createCodeBuddyProvider, withPromptCacheKey } from './codebuddy.ts'
 import { CodeBuddyAdapter } from './adapter.ts'
 import { DshCredentialStore } from './credential-store.ts'
 import { authorizationUrlText } from './login.ts'
@@ -46,7 +46,10 @@ export function apply(ctx: Context, config?: { defaultSite: Volatile<string> }):
   const service = new CodeBuddyService({ models, store, logger: ctx.logger,
     registration: { replace: providers => registration.replace(providers) }, resetProvider: installProvider })
   installProvider()
-  const registration = ctx.llm.registerAdapter([PROVIDER], new CodeBuddyAdapter(models, service.accountSignal, service.refreshModels))
+  const registration = ctx.llm.registerAdapter([PROVIDER], new CodeBuddyAdapter(models, service.accountSignal, service.refreshModels, {
+    requestHeaders: sessionId => conversationHeaders(sessionId),
+    onPayload: (payload, sessionId) => withPromptCacheKey(payload, sessionId),
+  }))
   ctx.effect(() => () => service.dispose())
   let defaultHost: AgentDefaultModelConfig | undefined
   const defaultModel = createDefaultModel({ host: () => defaultHost, account: service })
