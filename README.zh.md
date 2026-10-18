@@ -14,11 +14,10 @@ Lbryany 的 [DeepSeek Harness（dsh）](https://www.npmjs.com/package/@deepseek-
 
 也可以手动装到某个 profile：
 
-1. 在 `~/.dsh/profiles/<p>/package.json` 的 `dependencies` 里加一项，从 git 安装并指定子目录，例如：
+1. 在 `~/.dsh/profiles/<p>/package.json` 的 `dependencies` 里加一项，用 pnpm 的 git 子目录写法：
    ```
-   "@lbryany/dsh-peer": "github:Lbryany/dsh-plugins#dsh-peer-v0.1.0&path:packages/dsh-peer"
+   "@lbryany/dsh-peer": "github:Lbryany/dsh-plugins#dsh-peer-v0.1.0&path:/packages/dsh-peer"
    ```
-   用 pnpm 时写法见 pnpm 文档里 git 子目录依赖的部分。
 2. 在 `dsh.profile.bundles` 末尾加上包名。
 3. 运行 `pnpm install`，然后重启这个 profile 的 dsh。
 

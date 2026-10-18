@@ -36,12 +36,24 @@
     "@deepseek-ai/dsh-tools": ">=0.2.1-rc.2 <0.3.0-0"
   },
   "peerDependenciesMeta": {
-    "@deepseek-ai/cordis": { "optional": true },
-    "@deepseek-ai/dsh-agent": { "optional": true },
-    "@deepseek-ai/dsh-commands": { "optional": true },
-    "@deepseek-ai/dsh-llm": { "optional": true },
-    "@deepseek-ai/dsh-session-title": { "optional": true },
-    "@deepseek-ai/dsh-tools": { "optional": true }
+    "@deepseek-ai/cordis": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-agent": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-commands": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-llm": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-session-title": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-tools": {
+      "optional": true
+    }
   },
   "dsh": {
     "bundle": {
@@ -56,10 +68,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lbryany/dsh-peer.git"
+    "url": "https://github.com/Lbryany/dsh-plugins.git",
+    "directory": "packages/dsh-peer"
   },
   "bugs": {
-    "url": "https://github.com/Lbryany/dsh-peer/issues"
+    "url": "https://github.com/Lbryany/dsh-plugins/issues"
   },
-  "homepage": "https://github.com/Lbryany/dsh-peer#readme"
+  "homepage": "https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-peer#readme"
 }
