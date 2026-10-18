@@ -1765,6 +1765,22 @@ function extractEnterpriseModels(payload: unknown): unknown[] {
   return models;
 }
 
+/**
+ * The cloud catalog can give different ids the same display name (for example
+ * `hy3` and `hy3-x` are both "Hy3"); append the id so the picker can tell them apart.
+ */
+function disambiguateNames(
+  models: Model<"openai-completions">[],
+): Model<"openai-completions">[] {
+  const counts = new Map<string, number>();
+  for (const { name } of models) counts.set(name, (counts.get(name) ?? 0) + 1);
+  return models.map((model) =>
+    (counts.get(model.name) ?? 0) > 1
+      ? { ...model, name: `${model.name} (${model.id})` }
+      : model,
+  );
+}
+
 function modelsForSite(
   siteRoot: string,
   productEnvironment: CodeBuddyProductEnvironment,
@@ -1888,11 +1904,13 @@ function modelsForSite(
     }
   }
 
-  const models = visibleEntries
-    .map((entry) => toPiModel(entry, siteRoot))
-    .filter(
-      (model): model is Model<"openai-completions"> => model !== undefined,
-    );
+  const models = disambiguateNames(
+    visibleEntries
+      .map((entry) => toPiModel(entry, siteRoot))
+      .filter(
+        (model): model is Model<"openai-completions"> => model !== undefined,
+      ),
+  );
   if (models.length === 0) {
     throw new Error("CodeBuddy 合并后的 cli 模型清单为空");
   }

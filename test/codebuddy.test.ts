@@ -978,6 +978,32 @@ test("cloud config reproduces cli + craft + chat visibility and accepts only exp
   );
 });
 
+test("fetchCodeBuddyModels disambiguates catalog models that share a display name", async () => {
+  const models = await fetchCodeBuddyModels(refreshContext(), {
+    fetch: async (input) => {
+      if (new URL(String(input)).pathname === "/v3/config") {
+        return jsonResponse({
+          code: 0,
+          data: {
+            models: [
+              { id: "hy3", name: "Hy3" },
+              { id: "hy3-x", name: "Hy3" },
+              { id: "glm-5.1", name: "GLM-5.1" },
+            ],
+            agents: [{ name: "cli", models: ["hy3", "hy3-x", "glm-5.1"] }],
+          },
+        });
+      }
+      return jsonResponse({ code: 0, data: [] });
+    },
+  });
+
+  const names = Object.fromEntries(models.map(({ id, name }) => [id, name]));
+  assert.equal(names["hy3"], "Hy3 (hy3)");
+  assert.equal(names["hy3-x"], "Hy3 (hy3-x)");
+  assert.equal(names["glm-5.1"], "GLM-5.1");
+});
+
 test("fetchCodeBuddyModels uses the official static fallback for an empty enterprise catalog", async () => {
   const diagnostics: Array<{
     event: string;
