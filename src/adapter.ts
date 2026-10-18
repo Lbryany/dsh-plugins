@@ -3,7 +3,8 @@ import {
   LlmError,
   ReasoningEffortId,
   ToolCallId,
-  attributionHeaders,
+  offloadedImageText,
+  projectOffloadedImages,
   type ContentBlock,
   type GenerateOptions,
   type LlmModelInfo,
@@ -24,7 +25,10 @@ import type {
   Tool,
 } from '@earendil-works/pi-ai'
 
+import { PLUGIN_VERSION } from './codebuddy.ts'
 import { REASONING_LEVELS as LEVELS } from './contract.ts'
+import { mergeHeaders, requestContextHeaders, type RequestContextSource } from './request-context.ts'
+import { toBase64, type ImageReader } from './images.ts'
 type Level = (typeof LEVELS)[number]
 
 const EFFORTS = LEVELS.map(level => ({
@@ -32,15 +36,17 @@ const EFFORTS = LEVELS.map(level => ({
   name: level === 'off' ? 'Off' : level[0]!.toUpperCase() + level.slice(1),
 }))
 
-function modelInfo(provider: string, model: Model<Api>): LlmModelInfo {
+/** 目录里标 supportsImages 且附件服务可用的模型才声明图片输入；否则 dsh 在发送前就会拒绝带图消息。 */
+function supportsImages(model: Model<Api>, images: ImageReader | undefined): boolean {
+  return images !== undefined && images.available() && model.input.includes('image')
+}
+
+function modelInfo(provider: string, model: Model<Api>, images: ImageReader | undefined): LlmModelInfo {
   return {
     provider,
     id: model.id,
     name: model.name,
-    // dsh image blocks are durable attachment references. Until this adapter
-    // resolves them through ctx.attachment, advertise the capability it can
-    // faithfully serialize instead of silently dropping images.
-    inputModalities: ['text'],
+    inputModalities: supportsImages(model, images) ? ['text', 'image'] : ['text'],
   }
 }
 
@@ -51,31 +57,63 @@ function textFrom(blocks: readonly ContentBlock[]): string {
   }).join('\n')
 }
 
-function toPiContext(options: GenerateOptions): PiContext {
+type PiPart = { type: 'text'; text: string } | { type: 'image'; data: string; mimeType: string }
+
+/**
+ * 把 dsh 的用户 / 工具内容块转成 pi-ai 的内容：文本合并，图片经附件服务取字节后作 base64 内联
+ * （pi-ai 的 openai-completions 会编成 image_url data URL）。没有图片读取器时图片只留占位文本。
+ */
+async function partsFrom(blocks: readonly ContentBlock[], images: ImageReader | undefined, signal: AbortSignal | undefined): Promise<PiPart[]> {
+  const parts: PiPart[] = []
+  const pushText = (text: string) => {
+    if (text.length === 0) return
+    const last = parts[parts.length - 1]
+    if (last?.type === 'text') last.text = `${last.text}\n${text}`
+    else parts.push({ type: 'text', text })
+  }
+  for (const block of blocks) {
+    if (block.type === 'text' || block.type === 'reasoning') pushText(block.text)
+    else if (block.type === 'image') {
+      if (!images?.available()) { pushText(offloadedImageText(block.attachment)); continue }
+      const image = await images.read(block.attachment, signal)
+      parts.push({ type: 'image', data: toBase64(image.data), mimeType: image.mediaType })
+    }
+  }
+  return parts
+}
+
+async function toPiContext(options: GenerateOptions, images: ImageReader | undefined, signal: AbortSignal | undefined): Promise<PiContext> {
   const messages: PiContext['messages'] = []
   const toolNames = new Map<string, string>()
-  const leadingSystem = options.system === undefined && options.messages[0]?.role === 'system'
-  const systemPrompt = leadingSystem ? textFrom(options.messages[0]!.content) || undefined : options.system
-  for (const message of leadingSystem ? options.messages.slice(1) : options.messages) {
+  // 已卸载的图片（超出预算时 dsh 记录的决定）只发占位文本
+  const history = projectOffloadedImages(options.messages, ref => offloadedImageText(ref))
+  const leadingSystem = options.system === undefined && history[0]?.role === 'system'
+  const systemPrompt = leadingSystem ? textFrom(history[0]!.content) || undefined : options.system
+  for (const message of leadingSystem ? history.slice(1) : history) {
     if (message.role === 'developer') throw new LlmError('CodeBuddy does not support developer messages', 'UNSUPPORTED_CONTENT')
     if (message.role === 'system') {
-      messages.push({ role: 'user', content: textFrom(message.content), timestamp: Date.now() })
+      // 声明了 in-history，dsh 会把系统提示的变化追加成历史中的 system 消息。网关是否接受对话中途的
+      // system 角色未验证（pi-ai 在不支持时会把它折进首条系统提示，破坏缓存前缀），所以照官方 CLI
+      // 注入上下文的做法，作为 <system-reminder> 包裹的 user 文本放在原位；空文本跳过（同 dsh-llm-pi-ai）。
+      const text = textFrom(message.content)
+      if (text.length > 0) messages.push({ role: 'user', content: `<system-reminder>\n${text}\n</system-reminder>`, timestamp: Date.now() })
       continue
     }
     if (message.role === 'tool') {
+      const parts = await partsFrom(message.content, images, signal)
       messages.push({
         role: 'toolResult', toolCallId: String(message.toolCallId),
         toolName: toolNames.get(String(message.toolCallId)) ?? '',
-        content: [{ type: 'text', text: textFrom(message.content) }],
+        content: parts.length > 0 ? parts : [{ type: 'text', text: '' }],
         isError: message.isError ?? false, timestamp: Date.now(),
       })
       continue
     }
     if (message.role === 'user') {
-      const text = message.content
-        .flatMap(block => block.type === 'text' || block.type === 'reasoning' ? [block.text] : [])
-        .join('\n')
-      if (text.length > 0) messages.push({ role: 'user', content: text, timestamp: Date.now() })
+      const parts = await partsFrom(message.content, images, signal)
+      if (parts.length === 0) continue
+      const content = parts.length === 1 && parts[0]!.type === 'text' ? parts[0]!.text : parts
+      messages.push({ role: 'user', content, timestamp: Date.now() })
       continue
     }
     if (message.role === 'assistant') {
@@ -112,12 +150,20 @@ function finishReason(reason: 'stop' | 'length' | 'toolUse'): StreamChunk & { ty
   return { type: 'finish', reason: { kind: 'stop' } }
 }
 
-/** Per-request hooks keyed by the dsh session: stable conversation headers and payload tweaks. */
+/** Per-request hooks keyed by the dsh session: request context headers and payload tweaks. */
 export interface CodeBuddyRequestHooks {
-  /** Extra headers for one request; merged over toAuth's headers so a session-level id wins. */
-  requestHeaders?: (sessionId: string | undefined) => Record<string, string>
+  /** 每次调用的会话 / turn / trace 上下文；缺省或返回 undefined 时不发上下文头。 */
+  requestContext?: RequestContextSource
   /** Last-minute payload edit (for example `prompt_cache_key`); return the payload to send. */
   onPayload?: (payload: unknown, sessionId: string | undefined) => unknown
+  /** Response status and headers for diagnostics; never the body. */
+  onResponse?: (status: number, headers: Record<string, string>, sessionId: string | undefined) => void
+  /** Token usage of one finished call for diagnostics, with the request id it answers. */
+  onUsage?: (usage: { input: number; output: number; cacheRead: number; cacheWrite: number }, sessionId: string | undefined, requestId: string | undefined) => void
+  /** Resolves dsh image attachments to bytes; absent means text-only models. */
+  images?: ImageReader
+  /** Diagnostic fetch wrapper for one request; undefined keeps the default. */
+  fetch?: (sessionId: string | undefined) => typeof fetch | undefined
 }
 
 export class CodeBuddyAdapter extends LlmAdapter {
@@ -157,7 +203,7 @@ export class CodeBuddyAdapter extends LlmAdapter {
     signal.throwIfAborted()
     await this.refresh({ allowNetwork: true, signal })
     signal.throwIfAborted()
-    return this.models.getModels('codebuddy').map(model => modelInfo(provider, model))
+    return this.models.getModels('codebuddy').map(model => modelInfo(provider, model, this.hooks.images))
   }
 
   override async resolveModel(provider: string, id: string, signal?: AbortSignal): Promise<LlmResolvedModelInfo> {
@@ -167,9 +213,12 @@ export class CodeBuddyAdapter extends LlmAdapter {
     await this.refresh({ allowNetwork: true, signal: combined })
     combined.throwIfAborted()
     const model = this.models.getModel('codebuddy', id)
-    if (model === undefined) return { provider, id, name: id, inputModalities: ['text'] }
+    // 系统提示变化追加到历史而不是改写首条，保住整段会话的缓存前缀（同官方 dsh-llm-deepseek）。
+    // 工具更新不声明：每次请求都带完整工具列表。
+    if (model === undefined) return { provider, id, name: id, inputModalities: ['text'], systemPromptUpdate: 'in-history' }
     return {
-      ...modelInfo(provider, model),
+      ...modelInfo(provider, model, this.hooks.images),
+      systemPromptUpdate: 'in-history',
       context: { contextWindow: model.contextWindow },
       defaultMaxTokens: model.maxTokens,
       ...(model.reasoning ? { reasoning: { efforts: EFFORTS, defaultEffort: ReasoningEffortId('high') } } : {}),
@@ -181,28 +230,43 @@ export class CodeBuddyAdapter extends LlmAdapter {
     const signal = options.signal ? AbortSignal.any([options.signal, account]) : account
     signal.throwIfAborted()
     if (options.stop?.length) throw new LlmError('CodeBuddy adapter does not support stop sequences', 'UNSUPPORTED')
-    await this.refresh({ allowNetwork: true, signal })
-    signal.throwIfAborted()
-    const model = this.models.getModel('codebuddy', options.model)
-    if (model === undefined) throw new LlmError(`CodeBuddy model "${options.model}" is not available`, 'MODEL_NOT_FOUND')
+    const sessionId = options.sessionId === undefined ? undefined : String(options.sessionId)
+    // 同 CLI 在接纳输入时就分配 turn：快照在任何 await 之前同步拍定，读附件期间并发的标题调用也能拿到本 turn 的 root。
+    // pi-ai 不重试，一次 streamSimple 只发一个请求。
+    const call = this.hooks.requestContext?.begin({ sessionId, purpose: options.purpose, messages: options.messages })
+    let model: Model<Api> | undefined
+    let context: PiContext
+    try {
+      await this.refresh({ allowNetwork: true, signal })
+      signal.throwIfAborted()
+      model = this.models.getModel('codebuddy', options.model)
+      if (model === undefined) throw new LlmError(`CodeBuddy model "${options.model}" is not available`, 'MODEL_NOT_FOUND')
+      context = await toPiContext(options, supportsImages(model, this.hooks.images) ? this.hooks.images : undefined, signal)
+      signal.throwIfAborted()
+    } catch (error) {
+      // 请求没发出去：把本次消耗的一次性状态（X-Context-Compacted）还回去
+      if (call) this.hooks.requestContext?.release?.(call)
+      throw error
+    }
 
     const open = new Map<number, { kind: 'text' | 'reasoning' | 'tool-call'; text: string; id?: string; name?: string }>()
-    const sessionId = options.sessionId === undefined ? undefined : String(options.sessionId)
     const onPayload = this.hooks.onPayload
-    const stream = this.models.streamSimple(model, toPiContext(options), {
+    const onResponse = this.hooks.onResponse
+    const stream = this.models.streamSimple(model, context, {
       temperature: options.temperature,
       maxTokens: options.maxTokens,
       reasoning: options.reasoningEffort as ThinkingLevel | undefined,
       signal,
       sessionId,
-      headers: {
-        // Preserve CodeBuddy's required CLI identity while satisfying dsh's
-        // mandatory public product attribution on the same wire request.
-        'User-Agent': `CLI/2.125.0 CodeBuddy/2.125.0 ${attributionHeaders()['user-agent']}`,
-        // Session-stable conversation id overrides the per-request one toAuth generated.
-        ...this.hooks.requestHeaders?.(sessionId),
-      },
+      headers: mergeHeaders(
+        // 按 CodeBuddy 技术团队要求恰好为官方 CLI 的 UA（不带 dsh 署名），
+        // 有意偏离 dsh 的 attributionHeaders() 适配器约定。
+        { 'User-Agent': `CLI/${PLUGIN_VERSION} CodeBuddy/${PLUGIN_VERSION}` },
+        call ? requestContextHeaders(call) : undefined,
+      ),
       ...(onPayload ? { onPayload: (payload: unknown) => onPayload(payload, sessionId) } : {}),
+      ...(onResponse ? { onResponse: (response: { status: number; headers: Record<string, string> }) => onResponse(response.status, response.headers, sessionId) } : {}),
+      ...(() => { const f = this.hooks.fetch?.(sessionId); return f ? { fetch: f } : {} })(),
     })
     for await (const event of stream) {
       signal.throwIfAborted()
@@ -240,6 +304,8 @@ export class CodeBuddyAdapter extends LlmAdapter {
         if (event.reason === 'deferred') {
           throw new LlmError('CodeBuddy returned a deferred tool response, which DSH cannot consume', 'UNSUPPORTED')
         }
+        if (call) this.hooks.requestContext?.complete?.(call)
+        this.hooks.onUsage?.(event.message.usage, sessionId, call?.messageId)
         yield { type: 'usage', usage: {
           inputTokens: event.message.usage.input,
           outputTokens: event.message.usage.output,

@@ -43,7 +43,15 @@ export function createRpcHandler({ service, preferences, defaultModel }: RpcDepe
         case 'logout': fields(payload); await service.logout(); value = await service.status(); break
         case 'models/refresh': fields(payload); value = await service.refresh(signal); break
         case 'preferences/status': fields(payload); value = preferences.status(); break
-        case 'preferences/update': value = await preferences.update({ defaultSite: fields(payload, ['defaultSite']).defaultSite! }); break
+        case 'preferences/update': {
+          // 可只改其中一项，但至少要有一项，且不接受空值
+          const input = fields(payload, [], ['defaultSite', 'cacheRetention'])
+          if (Object.keys(input).length === 0 || Object.values(input).some(value => !value)) {
+            throw new PublicError('bad-request', '管理请求缺少必要字段。')
+          }
+          value = await preferences.update(input)
+          break
+        }
         case 'default-model/status': fields(payload); value = defaultModel?.status() ?? { available: false }; break
         case 'default-model/select': {
           const input = fields(payload, ['model'], ['reasoningEffort'])

@@ -9,9 +9,11 @@ import {
   type Models,
   type SimpleStreamOptions,
 } from '@earendil-works/pi-ai'
-import { ReasoningEffortId } from '@deepseek-ai/dsh-llm'
+import { createMessage, ReasoningEffortId, ToolCallId, type GenerateOptions } from '@deepseek-ai/dsh-llm'
 
 import { CodeBuddyAdapter } from '../src/adapter.ts'
+import { conversationIdFor } from '../src/codebuddy.ts'
+import { RequestContextTracker } from '../src/request-context.ts'
 
 const model: Model<'openai-completions'> = {
   id: 'reasoner',
@@ -86,6 +88,10 @@ test('adapter exposes CodeBuddy grouping, dynamic models, and reasoning levels',
   assert.deepEqual(resolved.reasoning?.efforts.map(({ id }) => id),
     ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'])
   assert.equal(resolved.reasoning?.defaultEffort, 'high')
+  // 系统提示变化走历史追加；工具更新不声明
+  assert.equal(resolved.systemPromptUpdate, 'in-history')
+  assert.equal(resolved.toolUpdate, undefined)
+  assert.equal((await adapter.prepareCall('codebuddy', 'reasoner')).model.systemPromptUpdate, 'in-history')
 })
 
 test('adapter translates pi streaming events and emits usage before finish', async () => {
@@ -122,8 +128,8 @@ test('adapter rejects pi deferred-tool completions that DSH cannot consume', asy
   }, /deferred tool response/)
 })
 
-test('adapter layers session-stable request headers and payload hooks over each call', async () => {
-  const seen: { headers?: Record<string, string>; payload?: unknown; sessionId?: string }[] = []
+function recordingModels() {
+  const seen: { headers: Record<string, string>; payload?: unknown; sessionId?: string }[] = []
   const models = fakeModels()
   const base = models.streamSimple
   models.streamSimple = ((m: Model<'openai-completions'>, c: Context, options?: SimpleStreamOptions) => {
@@ -131,16 +137,121 @@ test('adapter layers session-stable request headers and payload hooks over each 
     seen.at(-1)!.payload = options?.onPayload?.({ model: 'reasoner' }, m)
     return base(m, c, options)
   }) as Models['streamSimple']
+  return { models, seen }
+}
+
+async function drain(adapter: CodeBuddyAdapter, options: Partial<GenerateOptions> = {}) {
+  for await (const _chunk of adapter.stream({ provider: 'codebuddy', model: 'reasoner', messages: [],
+    reasoningEffort: ReasoningEffortId('medium'), ...options })) { /* drain */ }
+}
+
+const user = createMessage({ role: 'user', source: { kind: 'user' }, content: [{ type: 'text', text: 'hi' }] })
+const assistant = createMessage({ role: 'assistant', source: { kind: 'model', provider: 'codebuddy', model: 'reasoner' },
+  content: [{ type: 'tool-call', id: ToolCallId('c1'), name: 'read_file', arguments: '{}' }] })
+const tool = createMessage({ role: 'tool', source: { kind: 'tool', callId: ToolCallId('c1') }, toolCallId: ToolCallId('c1'),
+  content: [{ type: 'text', text: 'ok' }] })
+
+test('adapter sends the CLI User-Agent, per-call context headers, and payload hooks', async () => {
+  const { models, seen } = recordingModels()
   const adapter = new CodeBuddyAdapter(models, undefined, undefined, {
-    requestHeaders: (sessionId): Record<string, string> => sessionId ? { 'x-conversation-id': `conv-${sessionId}` } : {},
+    requestContext: new RequestContextTracker({ enabled: true }),
     onPayload: (payload, sessionId) => ({ ...(payload as object), prompt_cache_key: sessionId }),
   })
-  for (const sessionId of ['ses_1', 'ses_1']) {
-    for await (const _chunk of adapter.stream({ provider: 'codebuddy', model: 'reasoner', messages: [], reasoningEffort: ReasoningEffortId('medium'), sessionId: sessionId as never })) { /* drain */ }
-  }
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user, assistant, tool] })
   assert.equal(seen.length, 2)
-  assert.equal(seen[0]!.headers?.['x-conversation-id'], 'conv-ses_1')
-  assert.equal(seen[1]!.headers?.['x-conversation-id'], 'conv-ses_1')
-  assert.match(seen[0]!.headers?.['User-Agent'] ?? '', /^CLI\/2\.125\.0 CodeBuddy\/2\.125\.0 /)
+  const [first, second] = seen.map(({ headers }) => headers)
+  assert.equal(first!['User-Agent'], 'CLI/2.168.2 CodeBuddy/2.168.2')
+  assert.equal(first!['X-Conversation-ID'], conversationIdFor('ses_1'))
+  assert.equal(second!['X-Conversation-Request-ID'], first!['X-Conversation-Request-ID'])
+  assert.notEqual(second!['X-Request-ID'], first!['X-Request-ID'])
+  for (const headers of [first!, second!]) {
+    const names = Object.keys(headers).map(name => name.toLowerCase())
+    assert.equal(new Set(names).size, names.length)
+  }
   assert.deepEqual(seen[0]!.payload, { model: 'reasoner', prompt_cache_key: 'ses_1' })
+})
+
+test('adapter reports a finished compaction so the next main call carries X-Context-Compacted', async () => {
+  const { models, seen } = recordingModels()
+  const adapter = new CodeBuddyAdapter(models, undefined, undefined, { requestContext: new RequestContextTracker({ enabled: true }) })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user], purpose: 'compaction' })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
+  assert.equal(seen[1]!.headers['X-Compaction'], 'manual')
+  assert.equal(seen[2]!.headers['X-Context-Compacted'], 'manual')
+})
+
+test('adapter omits context headers when CLI headers are disabled', async () => {
+  const { models, seen } = recordingModels()
+  const adapter = new CodeBuddyAdapter(models, undefined, undefined, { requestContext: new RequestContextTracker({ enabled: false }) })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
+  assert.deepEqual(seen[0]!.headers, { 'User-Agent': 'CLI/2.168.2 CodeBuddy/2.168.2' })
+})
+
+test('mid-history system updates render in place without changing earlier message bytes', async () => {
+  const contexts: Context[] = []
+  const models = fakeModels()
+  const base = models.streamSimple
+  models.streamSimple = ((m: Model<'openai-completions'>, c: Context, options?: SimpleStreamOptions) => {
+    contexts.push(c)
+    return base(m, c, options)
+  }) as Models['streamSimple']
+  const adapter = new CodeBuddyAdapter(models)
+  const system = (text: string) => createMessage({ role: 'system', source: { kind: 'system-prompt' }, content: [{ type: 'text', text }] })
+  const answer = createMessage({ role: 'assistant', source: { kind: 'model', provider: 'codebuddy', model: 'reasoner' },
+    content: [{ type: 'text', text: 'ok' }] })
+  const first = [system('Base prompt'), user]
+  await drain(adapter, { messages: first })
+  await drain(adapter, { messages: [...first, answer, system('Plan mode prompt'), system(''), user] })
+  const bytes = (c: Context) => c.messages.map(({ timestamp: _timestamp, ...message }) => JSON.stringify(message))
+  assert.equal(contexts[0]!.systemPrompt, 'Base prompt')
+  assert.equal(contexts[1]!.systemPrompt, 'Base prompt')
+  assert.deepEqual(bytes(contexts[1]!).slice(0, 1), bytes(contexts[0]!))
+  assert.deepEqual(contexts[1]!.messages.map(message => message.role), ['user', 'assistant', 'user', 'user'])
+  assert.equal(contexts[1]!.messages[2]!.content, '<system-reminder>\nPlan mode prompt\n</system-reminder>')
+})
+
+const imageRef = { attachmentId: 'att_1', mediaType: 'image/png', bytes: 3, width: 10, height: 10, name: 'a.png' }
+const userWithImage = createMessage({ role: 'user', source: { kind: 'user' },
+  content: [{ type: 'text', text: 'look' }, { type: 'image', attachment: imageRef }] } as never)
+
+test('a title call made while the main call reads attachments still links to the new turn root', async () => {
+  const { models, seen } = recordingModels()
+  let release!: () => void
+  const gate = new Promise<void>(resolve => { release = resolve })
+  const adapter = new CodeBuddyAdapter(models, undefined, undefined, {
+    requestContext: new RequestContextTracker({ enabled: true }),
+    images: { available: () => true, read: async () => { await gate; return { data: new Uint8Array([1]), mediaType: 'image/png' } } },
+  })
+  const main = drain(adapter, { sessionId: 'ses_1' as never, messages: [userWithImage] })
+  // 标题调用只带文本，不等附件
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user], purpose: 'session-title' })
+  release()
+  await main
+  const [title, first] = seen.map(({ headers }) => headers)
+  assert.equal(title!['X-Agent-Purpose'], 'conversation_topic')
+  assert.equal(first!['X-Agent-Purpose'], 'conversation')
+  assert.equal(title!['X-Root-Request-ID'], first!['X-Root-Request-ID'])
+  assert.notEqual(title!['X-Conversation-Request-ID'], first!['X-Conversation-Request-ID'])
+})
+
+test('a main call that fails before sending hands X-Context-Compacted to the next one', async () => {
+  const { models, seen } = recordingModels()
+  let fail = false
+  const adapter = new CodeBuddyAdapter(models, undefined, undefined, {
+    requestContext: new RequestContextTracker({ enabled: true }),
+    images: { available: () => true, read: async () => {
+      if (fail) throw new Error('attachment gone')
+      return { data: new Uint8Array([1]), mediaType: 'image/png' }
+    } },
+  })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user], purpose: 'compaction' })
+  fail = true
+  await assert.rejects(drain(adapter, { sessionId: 'ses_1' as never, messages: [userWithImage] }), /attachment gone/)
+  fail = false
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [userWithImage] })
+  assert.equal(seen.length, 3)
+  assert.equal(seen[2]!.headers['X-Context-Compacted'], 'manual')
 })

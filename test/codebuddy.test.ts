@@ -10,6 +10,8 @@ import type {
 import {
   BUSINESS_CODES,
   BUILTIN_MODELS,
+  codeBuddyCompletionsApi,
+  createCacheRetentionLatch,
   createCodeBuddyProvider,
   createCodeBuddyOAuth,
   fetchCodeBuddyModels,
@@ -18,8 +20,8 @@ import {
   PATHS,
   prepareCodeBuddyPayload,
   resolveCodeBuddyProductEnvironment,
-  conversationHeaders,
   conversationIdFor,
+  withCacheRetention,
   withPromptCacheKey,
 } from "../src/codebuddy.ts";
 
@@ -342,9 +344,7 @@ test("refresh uses refresh headers, no enterprise headers, and preserves account
 });
 
 test("toAuth derives personal request auth without enterprise headers", async () => {
-  const oauth = createCodeBuddyOAuth({
-    conversationRequestId: () => "conversation-1",
-  });
+  const oauth = createCodeBuddyOAuth();
   const auth = await oauth.toAuth({
     type: "oauth",
     access: "access",
@@ -360,13 +360,14 @@ test("toAuth derives personal request auth without enterprise headers", async ()
   assert.equal(auth.headers?.["x-domain"], "www.codebuddy.ai");
   assert.equal(auth.headers?.["x-agent-intent"], "craft");
   assert.equal(auth.headers?.["x-user-id"], "user-1");
-  assert.equal(auth.headers?.["x-conversation-request-id"], "conversation1");
-  assert.equal(auth.headers?.["x-conversation-id"], "conversation-1");
-  assert.equal(auth.headers?.["x-request-id"], "conversation1");
-  assert.equal(auth.headers?.["x-conversation-message-id"], "conversation1");
-  assert.equal(auth.headers?.["x-agent-purpose"], "conversation");
+  // 会话 / turn / 消息 id 与 agent 用途改由适配器按调用写入，toAuth 只留身份类头
+  for (const name of ["x-conversation-id", "x-conversation-request-id", "x-request-id",
+    "x-conversation-message-id", "x-agent-purpose"]) {
+    assert.equal(auth.headers?.[name], undefined, name);
+  }
   assert.equal(auth.headers?.["x-codebuddy-request"], "1");
-  assert.equal(auth.headers?.["x-ide-version"], "2.125.0");
+  assert.equal(auth.headers?.["x-ide-version"], "2.168.2");
+  assert.equal(auth.headers?.["User-Agent"], "CLI/2.168.2 CodeBuddy/2.168.2");
   assert.equal(auth.headers?.["x-stainless-lang"], "js");
   assert.equal(auth.headers?.["x-enterprise-id"], undefined);
   assert.equal(auth.headers?.["x-tenant-id"], undefined);
@@ -374,9 +375,7 @@ test("toAuth derives personal request auth without enterprise headers", async ()
 });
 
 test("toAuth adds both required enterprise headers and omits department info", async () => {
-  const oauth = createCodeBuddyOAuth({
-    conversationRequestId: () => "conversation-2",
-  });
+  const oauth = createCodeBuddyOAuth();
   const auth = await oauth.toAuth({
     type: "oauth",
     access: "access",
@@ -978,6 +977,32 @@ test("cloud config reproduces cli + craft + chat visibility and accepts only exp
   );
 });
 
+test("fetchCodeBuddyModels disambiguates catalog models that share a display name", async () => {
+  const models = await fetchCodeBuddyModels(refreshContext(), {
+    fetch: async (input) => {
+      if (new URL(String(input)).pathname === "/v3/config") {
+        return jsonResponse({
+          code: 0,
+          data: {
+            models: [
+              { id: "hy3", name: "Hy3" },
+              { id: "hy3-x", name: "Hy3" },
+              { id: "glm-5.1", name: "GLM-5.1" },
+            ],
+            agents: [{ name: "cli", models: ["hy3", "hy3-x", "glm-5.1"] }],
+          },
+        });
+      }
+      return jsonResponse({ code: 0, data: [] });
+    },
+  });
+
+  const names = Object.fromEntries(models.map(({ id, name }) => [id, name]));
+  assert.equal(names["hy3"], "Hy3 (hy3)");
+  assert.equal(names["hy3-x"], "Hy3 (hy3-x)");
+  assert.equal(names["glm-5.1"], "GLM-5.1");
+});
+
 test("fetchCodeBuddyModels uses the official static fallback for an empty enterprise catalog", async () => {
   const diagnostics: Array<{
     event: string;
@@ -1111,10 +1136,49 @@ test("conversationIdFor is a stable UUID-shaped id per dsh session", () => {
   assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 });
 
-test("conversationHeaders follows the CLI header switch and needs a session", () => {
-  assert.deepEqual(conversationHeaders(undefined, true), {});
-  assert.deepEqual(conversationHeaders("ses_1", false), {});
-  assert.deepEqual(conversationHeaders("ses_1", true), { "x-conversation-id": conversationIdFor("ses_1") });
+test("withCacheRetention writes the latched value only when the body has none", () => {
+  assert.deepEqual(withCacheRetention({ model: "m" }, "long"), { model: "m", cache_retention: "long" });
+  assert.deepEqual(withCacheRetention({ model: "m" }, "short"), { model: "m", cache_retention: "short" });
+  assert.deepEqual(withCacheRetention({ cache_retention: "short" }, "long"), { cache_retention: "short" });
+  assert.equal(withCacheRetention(undefined, "long"), undefined);
+});
+
+test("cache retention latches per session at its first request", () => {
+  let preference: "long" | "short" = "long";
+  const latch = createCacheRetentionLatch(() => preference, 2);
+  assert.equal(latch("ses_1"), "long");
+  preference = "short";
+  assert.equal(latch("ses_1"), "long");
+  assert.equal(latch("ses_2"), "short");
+  assert.equal(latch(undefined), "short");
+  preference = "long";
+  assert.equal(latch("ses_2"), "short");
+  // 超出上限淘汰最久未用的 ses_1，之后重新按当前偏好锁定
+  assert.equal(latch("ses_3"), "long");
+  preference = "short";
+  assert.equal(latch("ses_1"), "short");
+});
+
+test("reasoning off sends no reasoning_effort while an unset level keeps the default", async () => {
+  const bodies: Record<string, unknown>[] = [];
+  const model = { ...BUILTIN_MODELS[0]!, reasoning: true, baseUrl: "https://example.test/v2" };
+  for (const reasoning of ["off", undefined, "low", "high"]) {
+    const stream = codeBuddyCompletionsApi().streamSimple(
+      model,
+      { messages: [{ role: "user", content: "hi", timestamp: 0 }] } as never,
+      {
+        apiKey: "test",
+        reasoning: reasoning as "low" | undefined,
+        fetch: async (_input: unknown, init?: RequestInit) => {
+          bodies.push(JSON.parse(String(init?.body)));
+          throw new Error("stop after capture");
+        },
+      } as never,
+    );
+    for await (const _event of stream) { /* drain */ }
+  }
+  assert.deepEqual(bodies.map((body) => body.reasoning_effort), [undefined, "high", "low", "high"]);
+  assert.equal("reasoning_effort" in bodies[0]!, false);
 });
 
 test("withPromptCacheKey only injects when enabled and keeps the 64-char cap", () => {
