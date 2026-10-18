@@ -41,7 +41,7 @@ export function apply(ctx, config = {}) {
     fixedName: (process.env.DSH_PEER_NAME || config.name || '').trim() || null,
     agents: ctx.agents,
     makeMessage: (text, source) => createUserMessage({ content: [{ type: 'text', text }], source }),
-    log: (line) => console.log(line),
+    log: (line) => console.error(line), // 写 stderr：headless --json 的 stdout 只放 NDJSON 事件
   });
 
   const infoOf = (agent) => {
@@ -136,7 +136,7 @@ export function apply(ctx, config = {}) {
   const onExit = () => core.stop();
   ctx.effect(() => {
     core.start().then(
-      () => console.log(`[dsh-peer] 已登记 pid ${pid}，socket ${core.transport.path}`),
+      () => console.error(`[dsh-peer] 已登记 pid ${pid}，socket ${core.transport.path}`),
       (error) => console.warn(`[dsh-peer] 启动失败：${error && error.message}`),
     );
     process.on('exit', onExit); // 兜底：异常退出时也删自己的三件
