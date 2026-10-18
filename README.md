@@ -2,7 +2,7 @@
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的 CodeBuddy 插件：提供 OAuth 登录、账号动态模型目录、流式请求以及推理等级选择。
 
-本分支面向 **DSH 0.2.0 系列**，已验收的准确版本为 **0.2.0-rc.2**，SDK 依赖固定到该版本。正式 `0.2.0` 发布后需要复验；本分支不承诺兼容 `0.1.x`。插件从 `0.1.4` 起包含本次设置与接入改造。
+本分支面向 **DSH 0.2.x**：`engines.dsh` 声明为 `>=0.2.1-rc.2 <0.3.0-0`，已验收的准确版本为 **0.2.1-rc.2**，SDK 开发依赖固定到该版本。本分支不承诺兼容 `0.1.x`。插件从 `0.1.4` 起包含设置与接入改造，`0.1.5` 起会话级 `x-conversation-id` 修复提示缓存每轮失效的问题（见下文）。
 
 ## 功能
 
@@ -17,7 +17,7 @@
 
 ## 前置要求
 
-- DeepSeek Harness `0.1.6-alpha.2`
+- DeepSeek Harness `0.2.1-rc.2` 及之后的 0.2.x（`engines.dsh`：`>=0.2.1-rc.2 <0.3.0-0`；0.2.0 及更早版本请用 0.1.x 的 release）
 - Node.js `22.19+` 或 `24+`
 
 ## 从 GitHub 安装
@@ -31,7 +31,7 @@ dsh web
 
 如果 Web 应用使用自定义 profile，请将 `web` 换成该 profile 名称，并使用 `dsh --profile <name>` 启动。
 
-### DSH 0.2.0-rc.2 的 pnpm 安全策略
+### DSH 0.2.x 的 pnpm 安全策略
 
 `@earendil-works/pi-ai` 的传递依赖包含两个安装脚本，但 CodeBuddy 的 OpenAI 兼容路径不需要运行它们。若安装时出现 `ERR_PNPM_IGNORED_BUILDS`，请在 `$DSH_HOME/profiles/web/pnpm-workspace.yaml` 中把 DSH 自动生成的占位值改为：
 
@@ -87,6 +87,14 @@ dsh plugin --profile web add github:Lbryany/dsh-codebuddy
 ```sh
 dsh plugin --profile web remove @lbryany/dsh-codebuddy
 ```
+
+## 会话标识与提示缓存
+
+CodeBuddy 服务端按 `x-conversation-id` 识别一个对话。0.1.5 之前插件每次请求都生成一个随机的 conversation id（pi-ai 每次请求都重新调用 `toAuth`，那里拿不到会话），同一个 dsh 会话的每一轮都像一个新对话，服务端的提示缓存每轮都失效。现在：
+
+- `x-conversation-id` 由 dsh 的会话 id 哈希成稳定的 UUID，同一会话每轮相同；`x-request-id`、`x-conversation-message-id`、`x-conversation-request-id` 仍逐请求变化。思路与 cc-switch 一致：跨轮稳定的 session / conversation id 才能当会话身份，逐请求 id 只能当请求 id。
+- `PI_CODEBUDDY_CLI_HEADERS=0` 关闭 CLI 请求头时，这个会话级头也一起关闭。
+- 可选：`PI_CODEBUDDY_PROMPT_CACHE_KEY=1` 时在请求体里加 OpenAI 的 `prompt_cache_key`（取 dsh 会话 id，最长 64 字符），供 OpenAI 兼容上游按会话路由缓存。默认关闭，因为严格的上游会拒绝未知字段。
 
 ## 命令
 
