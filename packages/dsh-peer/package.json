@@ -1,0 +1,65 @@
+{
+  "name": "@lbryany/dsh-peer",
+  "version": "0.1.0",
+  "description": "Discovery and messaging between dsh sessions on the same machine",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "peer",
+    "multi-agent"
+  ],
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.5",
+    "@deepseek-ai/dsh-agent": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-commands": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-session-title": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": { "optional": true },
+    "@deepseek-ai/dsh-agent": { "optional": true },
+    "@deepseek-ai/dsh-commands": { "optional": true },
+    "@deepseek-ai/dsh-llm": { "optional": true },
+    "@deepseek-ai/dsh-session-title": { "optional": true },
+    "@deepseek-ai/dsh-tools": { "optional": true }
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "link-dsh": "node scripts/link-dsh.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "node --test test/*.test.mjs"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lbryany/dsh-peer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lbryany/dsh-peer/issues"
+  },
+  "homepage": "https://github.com/Lbryany/dsh-peer#readme"
+}
