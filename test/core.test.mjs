@@ -191,3 +191,45 @@ test('P9 subagent 过滤与合并写', async (t) => {
   await sleep(40);
   assert.equal(a.stats.writes - before, 1);
 });
+
+test('P10 草稿不登记 / 首条消息后登记 / 固定名 / 排序与截断', async (t) => {
+  let clock = 1000;
+  const { a, b, dir } = await setup(t, { fixedA: 'office' });
+  // 空草稿：挂起，不进注册表；固定名不被它拿走
+  assert.equal(a.register({ id: sid('d0d0'), cwd: '/x/alpha', hasUserMessage: false }), null);
+  assert.equal(a.has(sid('d0d0')), false); assert.equal(a.isPending(sid('d0d0')), true);
+  a.flush();
+  assert.equal(JSON.parse(readFileSync(join(dir, `${process.pid}.json`), 'utf8')).sessions.length, 0);
+  // 另一个草稿先发话：它拿到固定名
+  a.register({ id: sid('e1e1'), cwd: '/x/alpha', hasUserMessage: false });
+  const first = a.noteUserMessage(sid('e1e1'));
+  assert.equal(first.name, 'office'); assert.equal(first.nameSource, 'config');
+  // 已有用户消息的会话（左栏点开的旧会话）立即登记，按缺省名
+  const old = a.register({ id: sid('f2f2'), cwd: '/x/alpha', hasUserMessage: true });
+  assert.equal(old.name, 'alpha-f2f2');
+  // 第一个草稿后来才发话：缺省名
+  assert.equal(a.noteUserMessage(sid('d0d0')).name, 'alpha-d0d0');
+  assert.equal(a.isPending(sid('d0d0')), false);
+  // 挂起后 unregister：再来消息也不登记
+  a.register({ id: sid('c3c3'), cwd: '/x', hasUserMessage: false }); a.unregister(sid('c3c3'));
+  assert.equal(a.noteUserMessage(sid('c3c3')), null);
+
+  // 排序与截断：用注入时钟的独立实例
+  const c = createPeerCore({ dir: join(dir, '..', 'run3'), pid: FAKE + 2, agents: { get() {} }, makeMessage, isAlive: () => true, namesFile: join(dir, '..', 'n3.json'), now: () => clock });
+  for (let i = 0; i < 25; i++) { clock += 10; c.register({ id: `${String(i).padStart(4, '0')}aaaa-x`, cwd: '/w/p' }); }
+  clock += 10; c.setStatus('0003aaaa-x', 'running');     // running 排在最前
+  clock += 10; c.setStatus('0005aaaa-x', 'idle');        // 状态没变：不更新
+  clock += 10; c.register({ id: '0001aaaa-x', cwd: '/w/p' }); // 再登记算活跃
+  const self = '0000aaaa-x';
+  const v = c.listView(self);
+  assert.equal(v.entries[0].session, self); assert.equal(v.entries[0].self, true);
+  assert.equal(v.entries[1].session, '0003aaaa-x');
+  assert.equal(v.entries[2].session, '0001aaaa-x');
+  assert.equal(v.entries[3].session, '0024aaaa-x');
+  assert.equal(v.entries.length, 21); assert.equal(v.hidden, 4);
+  assert.match(c.listText(self), /还有 4 个未列出，peer_list 传 all: true 看全部。/);
+  const all = c.listView(self, { all: true });
+  assert.equal(all.entries.length, 25); assert.equal(all.hidden, 0);
+  assert.doesNotMatch(c.listText(self, { all: true }), /未列出/);
+  assert.ok(b);
+});

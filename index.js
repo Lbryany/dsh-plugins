@@ -3,7 +3,7 @@ import { defineTool } from '@deepseek-ai/dsh-tools';
 import { createUserMessage } from '@deepseek-ai/dsh-llm';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { createPeerCore, formatList } from './lib/core.js';
+import { createPeerCore } from './lib/core.js';
 import { defaultProcStartOf, resolvePeerDir } from './lib/registry.js';
 
 export const name = 'dsh-peer';
@@ -44,9 +44,13 @@ export function apply(ctx, config = {}) {
     log: (line) => console.error(line), // 写 stderr：headless --json 的 stdout 只放 NDJSON 事件
   });
 
+  // 会话日志里是否已有用户消息：左栏点开的旧会话、resume 回来的会话有；Web UI 预建的空草稿没有
+  const hasUserMessage = (session) => {
+    try { return session.deriveMessages().some((m) => m && m.role === 'user'); } catch { return true; } // 读不到时按有处理，不让会话消失
+  };
   const infoOf = (agent) => {
     const header = (agent.session && agent.session.header) || {};
-    return { id: agent.id, cwd: header.cwd || null, origin: header.origin, status: agent.status, title: titleOf(agent) };
+    return { id: agent.id, cwd: header.cwd || null, origin: header.origin, status: agent.status, title: titleOf(agent), hasUserMessage: hasUserMessage(agent.session) };
   };
   // 调用方会话：子 agent 会话不登记，沿 parentSession 找到登记过的根会话，用它的身份发
   const callerOf = (agent) => {
@@ -69,6 +73,8 @@ export function apply(ctx, config = {}) {
   ctx.on('session/disposed', (session) => { const id = sessionIdOf(session); if (id) core.unregister(id); });
   ctx.on('agent/status', ({ agent, status }) => { core.setStatus(agent.id, status); });
   ctx.on('session/event', (session, event) => {
+    // 空草稿的第一条用户消息：此刻才登记（固定名也在此刻分配）
+    if (event && event.type === 'user/message') { const id = sessionIdOf(session); if (id && core.isPending(id)) core.noteUserMessage(id); }
     if (event && event.type === 'session/title' && event.data && event.data.title) core.setTitle(sessionIdOf(session), event.data.title);
   });
 
@@ -81,11 +87,11 @@ export function apply(ctx, config = {}) {
 
   ctx.tools.register(defineTool({
     name: 'peer_list',
-    description: `列出本机其他正在运行的 dsh 会话（含本进程的其他会话）。用户问"还有哪些 dsh / agent 在跑"、或要给别的会话发消息前先查名字时调用。${TAIL}`,
-    parameters: {},
+    description: `列出本机其他正在运行的 dsh 会话（含本进程的其他会话）。用户问"还有哪些 dsh / agent 在跑"、或要给别的会话发消息前先查名字时调用。正在运行的排在前面，其余按最近活跃排序，缺省最多列 20 个。${TAIL}`,
+    parameters: { all: { type: 'boolean', description: '缺省 false：最多列 20 个其他会话。为 true 时列出全部' } },
     output: TEXT_OUTPUT,
     isConcurrencySafe: () => true,
-    async execute(_args, exec) { return { ok: true, text: formatList(core.list(callerOf(exec && exec.agent))) }; },
+    async execute(args, exec) { return { ok: true, text: core.listText(callerOf(exec && exec.agent), { all: args.all === true }) }; },
   }));
 
   ctx.tools.register(defineTool({
@@ -118,7 +124,7 @@ export function apply(ctx, config = {}) {
     c.effect(() => c.commands.register({
       name: 'peers',
       description: '列出本机正在运行的 dsh 会话（peer）',
-      handler: ({ agent }) => ({ kind: 'success', text: formatList(core.list(callerOf(agent))) }),
+      handler: ({ agent }) => ({ kind: 'success', text: core.listText(callerOf(agent)) }),
     }), 'dsh-peer.cmd.peers');
     c.effect(() => c.commands.register({
       name: 'peer-name',
