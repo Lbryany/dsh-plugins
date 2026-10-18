@@ -95,9 +95,10 @@ CodeBuddy 服务端按 `x-conversation-id` 识别一个对话。0.1.5 之前插�
 
 - `X-Conversation-ID` 由 dsh 的会话 id 哈希成稳定的 UUID，同一会话每轮相同（没有会话 id 的调用用随机 UUIDv7）。思路与 cc-switch 一致：跨轮稳定的 session / conversation id 才能当会话身份。
 - 其余上下文头与官方 CLI 2.168.2 对齐，由适配器按调用生成：
-  - turn 按 dsh 传入的消息历史划分：最后一条（忽略 system）是用户消息时开新 turn，工具 / 助手消息续用当前 turn。`X-Conversation-Request-ID` 与 `X-Root-Request-ID` 取 turn id，同 turn 的工具后续调用不变。
+  - turn 按 dsh 消息来源划分（官方 CLI 只在用户输入被接纳时更新 turn id）：从历史末尾往前找第一条决定性消息，真正的用户输入（本轮输入、`user` / `schedule` / `webhook` 来源）开新 turn，模型输出复用当前 turn；工具结果、子 agent 通知（`subagent-settled` / `agent-message` / `team-message` 等）、`model-selection` / `runtime-context` 等上下文注入以及未知来源都跳过。`X-Conversation-Request-ID` 与 `X-Root-Request-ID` 取 turn id。已知局限：dsh 不区分 steer 与新输入，工具循环中途插入的用户消息会开新 turn。
   - `X-Request-ID` = `X-Conversation-Message-ID`，每次调用新生成。
-  - `X-Agent-Type` / `X-Agent-Purpose`：主调用 `main` / `conversation`，上下文压缩 `compaction` / `context_compact`（另带 `X-Compaction: manual`），会话标题 `auxiliary` / `conversation_topic`；压缩与标题调用复用当前 turn。压缩成功后同一会话的下一次主调用带一次 `X-Context-Compacted: manual`。
+  - `X-Agent-Type` / `X-Agent-Purpose`：主调用 `main` / `conversation`，上下文压缩 `compaction` / `context_compact`（另带 `X-Compaction: manual`，复用当前 turn），会话标题 `auxiliary` / `conversation_topic`。压缩成功后同一会话的下一次主调用带一次 `X-Context-Compacted`：压缩检查点由 `/compact` 命令产生（带 `sourceCommandId`）时为 `manual`，否则为 `auto`。
+  - 会话标题同 CLI 用独立的标题子会话：每次新的 `X-Conversation-ID`、新的 run id 与 trace，只有 `X-Root-Request-ID` 指向主会话当前任务（主会话还没有任务时等于自己的 run id），不影响主会话的 turn。
   - `X-Agent-Runtime` 取环境变量 `CODEBUDDY_AGENT_RUNTIME`（`local-agent` / `cloud-agent` / `agent-agent`，其余为 `other`，未设置为 `other`）。
   - trace：每个 turn 一个 trace id、每次调用一个 span id，写 `traceparent`、`b3`、`X-B3-TraceId` / `X-B3-SpanId` / `X-B3-Sampled`、`X-Trace-ID`；`baggage` 带会话 id 与 turn id。
   - 不发 `X-Parent-Conversation-ID`：dsh 不告诉插件父子会话关系，子 agent 会话按独立会话处理。

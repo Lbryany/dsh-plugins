@@ -142,6 +142,8 @@ async function drain(adapter: CodeBuddyAdapter, options: Partial<GenerateOptions
 }
 
 const user = createMessage({ role: 'user', source: { kind: 'user' }, content: [{ type: 'text', text: 'hi' }] })
+const assistant = createMessage({ role: 'assistant', source: { kind: 'model', provider: 'codebuddy', model: 'reasoner' },
+  content: [{ type: 'tool-call', id: ToolCallId('c1'), name: 'read_file', arguments: '{}' }] })
 const tool = createMessage({ role: 'tool', source: { kind: 'tool', callId: ToolCallId('c1') }, toolCallId: ToolCallId('c1'),
   content: [{ type: 'text', text: 'ok' }] })
 
@@ -152,7 +154,7 @@ test('adapter sends the CLI User-Agent, per-call context headers, and payload ho
     onPayload: (payload, sessionId) => ({ ...(payload as object), prompt_cache_key: sessionId }),
   })
   await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
-  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user, tool] })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user, assistant, tool] })
   assert.equal(seen.length, 2)
   const [first, second] = seen.map(({ headers }) => headers)
   assert.equal(first!['User-Agent'], 'CLI/2.168.2 CodeBuddy/2.168.2')

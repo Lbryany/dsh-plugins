@@ -7,6 +7,8 @@ import {
   normalizeAgentRuntime,
   requestContextHeaders,
   RequestContextTracker,
+  sourceRole,
+  type CallMessage,
   type ModelCallInput,
 } from '../src/request-context.ts'
 
@@ -60,6 +62,52 @@ test('tool follow-ups reuse the turn and a new user message starts the next one'
   assert.notEqual(next['X-Trace-ID'], calls[0]!['X-Trace-ID'])
 })
 
+const from = (role: string, kind: string, extra: Record<string, unknown> = {}) => ({ role, source: { kind, ...extra } })
+
+test('turns follow message sources: only real user input starts one', () => {
+  const tracker = new RequestContextTracker({ enabled: true })
+  const request = (messages: CallMessage[]) => headersOf(tracker, { sessionId: 'ses_1', messages })['X-Conversation-Request-ID']
+  const history: CallMessage[] = [from('system', 'system-prompt'), user, from('user', 'runtime-context')]
+  const first = request(history)
+  history.push(from('assistant', 'model'), from('tool', 'tool'))
+  assert.equal(request(history), first)
+  history.push(from('assistant', 'model'), from('user', 'subagent-settled'))
+  assert.equal(request(history), first)
+  history.push(from('assistant', 'model'), from('user', 'agent-message'))
+  assert.equal(request(history), first)
+  history.push(from('assistant', 'model'), from('user', 'some-future-kind'))
+  assert.equal(request(history), first)
+  for (const kind of ['team-message', 'goal', 'user-question-reply', 'working-directory', 'skill-invocation']) {
+    assert.equal(request([...history, from('assistant', 'model'), from('user', kind)]), first, kind)
+  }
+
+  history.push(from('assistant', 'model'), from('user', 'user'))
+  const second = request(history)
+  assert.notEqual(second, first)
+  history.push(from('assistant', 'model'), from('user', 'user'), from('user', 'model-selection'))
+  const third = request(history)
+  assert.notEqual(third, second)
+  history.push(from('assistant', 'model'), from('user', 'schedule'))
+  const fourth = request(history)
+  assert.notEqual(fourth, third)
+  history.push(from('assistant', 'model'), from('user', 'webhook'))
+  assert.notEqual(request(history), fourth)
+})
+
+test('source roles classify system, developer, unsourced, and unknown messages', () => {
+  assert.equal(sourceRole({ role: 'user' }), 'input')
+  assert.equal(sourceRole({ role: 'assistant' }), 'model')
+  assert.equal(sourceRole({ role: 'tool' }), 'context')
+  assert.equal(sourceRole(from('system', 'user')), 'context')
+  assert.equal(sourceRole(from('developer', 'user')), 'context')
+  assert.equal(sourceRole(from('user', 'brand-new-kind')), 'context')
+  // 只有上下文注入时开新 turn
+  const tracker = new RequestContextTracker({ enabled: true })
+  const a = headersOf(tracker, { sessionId: 's', messages: [user] })
+  const b = headersOf(tracker, { sessionId: 's', messages: [from('user', 'runtime-context')] })
+  assert.notEqual(b['X-Conversation-Request-ID'], a['X-Conversation-Request-ID'])
+})
+
 test('a tool follow-up without a known turn starts a new one', () => {
   const tracker = new RequestContextTracker({ enabled: true })
   const first = headersOf(tracker, { sessionId: 'ses_1', messages: [user, assistant, tool] })
@@ -108,6 +156,17 @@ test('compaction reuses the turn and flags only the next main call', () => {
   assert.equal(later['X-Context-Compacted'], undefined)
 })
 
+test('X-Context-Compacted reports auto unless the checkpoint came from a command', () => {
+  const run = (checkpoint: CallMessage) => {
+    const tracker = new RequestContextTracker({ enabled: true })
+    headersOf(tracker, { sessionId: 'ses_1', messages: [user] })
+    tracker.complete(tracker.begin({ sessionId: 'ses_1', purpose: 'compaction', messages: [user] })!)
+    return headersOf(tracker, { sessionId: 'ses_1', messages: [from('system', 'system-prompt'), checkpoint, user] })
+  }
+  assert.equal(run(from('user', 'compact-checkpoint', { compactionId: 'c1' }))['X-Context-Compacted'], 'auto')
+  assert.equal(run(from('user', 'compact-checkpoint', { compactionId: 'c1', sourceCommandId: 'cmd' }))['X-Context-Compacted'], 'manual')
+})
+
 test('an unfinished compaction does not flag the next main call', () => {
   const tracker = new RequestContextTracker({ enabled: true })
   headersOf(tracker, { sessionId: 'ses_1', messages: [user] })
@@ -115,19 +174,31 @@ test('an unfinished compaction does not flag the next main call', () => {
   assert.equal(headersOf(tracker, { sessionId: 'ses_1', messages: [user] })['X-Context-Compacted'], undefined)
 })
 
-test('session titles are auxiliary calls that reuse but never replace the current turn', () => {
+test('session titles get an independent identity linked only by the root', () => {
   const tracker = new RequestContextTracker({ enabled: true })
   const main = headersOf(tracker, { sessionId: 'ses_1', messages: [user] })
-  const title = headersOf(tracker, { sessionId: 'ses_1', purpose: 'session-title', messages: [user] })
-  assert.equal(title['X-Agent-Type'], 'auxiliary')
-  assert.equal(title['X-Agent-Purpose'], 'conversation_topic')
-  assert.equal(title['X-Conversation-Request-ID'], main['X-Conversation-Request-ID'])
+  const titles = [1, 2].map(() => headersOf(tracker, { sessionId: 'ses_1', purpose: 'session-title', messages: [user] }))
+  for (const title of titles) {
+    assert.equal(title['X-Agent-Type'], 'auxiliary')
+    assert.equal(title['X-Agent-Purpose'], 'conversation_topic')
+    assert.match(title['X-Conversation-ID']!, /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+    assert.notEqual(title['X-Conversation-ID'], main['X-Conversation-ID'])
+    assert.notEqual(title['X-Conversation-Request-ID'], main['X-Conversation-Request-ID'])
+    assert.equal(title['X-Root-Request-ID'], main['X-Root-Request-ID'])
+    assert.notEqual(title['X-Trace-ID'], main['X-Trace-ID'])
+    assert.equal(title.baggage, `codebuddy.session_id=${title['X-Conversation-ID']},`
+      + `codebuddy.conversation_request_id=${title['X-Conversation-Request-ID']}`)
+    assert.equal(title['X-Parent-Conversation-ID'], undefined)
+  }
+  assert.notEqual(titles[0]!['X-Conversation-ID'], titles[1]!['X-Conversation-ID'])
   const followUp = headersOf(tracker, { sessionId: 'ses_1', messages: [user, assistant, tool] })
   assert.equal(followUp['X-Conversation-Request-ID'], main['X-Conversation-Request-ID'])
+  assert.equal(followUp['X-Trace-ID'], main['X-Trace-ID'])
 
-  // 没有当前 turn 时临时新建，但不登记
+  // 没有当前 turn 时 root 就是自己的 run id，且不登记
   const fresh = new RequestContextTracker({ enabled: true })
   const orphan = headersOf(fresh, { sessionId: 'ses_2', purpose: 'session-title', messages: [user] })
+  assert.equal(orphan['X-Root-Request-ID'], orphan['X-Conversation-Request-ID'])
   const toolCall = headersOf(fresh, { sessionId: 'ses_2', messages: [user, assistant, tool] })
   assert.notEqual(toolCall['X-Conversation-Request-ID'], orphan['X-Conversation-Request-ID'])
 })

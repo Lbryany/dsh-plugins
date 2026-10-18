@@ -5,7 +5,7 @@ import { conversationIdFor, SEND_CLI_HEADERS } from './codebuddy.ts'
 /**
  * 与 CodeBuddy Code 2.168.2 对齐的逐调用请求上下文：每次模型调用拍一份不可变快照
  * （会话 / turn / 消息 id、trace、agent 类型与用途、压缩状态），再序列化成 CLI 同款请求头。
- * turn 由 dsh 传入的消息历史划分：最后一条是 user 开新 turn，tool / assistant 续用当前 turn。
+ * turn 按 dsh 消息来源划分，见 SOURCE_ROLES。
  */
 
 const RUNTIMES = ['local-agent', 'cloud-agent', 'agent-agent'] as const
@@ -20,13 +20,60 @@ export function normalizeAgentRuntime(value: unknown): AgentRuntime | undefined 
 }
 
 export type CallPurpose = 'compaction' | 'session-title'
-/** CLI 不知道压缩触发方式时默认 manual；dsh 也不告诉我们。 */
-export type CompactionKind = 'manual'
+/** 同 CLI 的 compactionKindOf；dsh 不区分 reactive，故只有 manual / auto。 */
+export type CompactionKind = 'manual' | 'auto'
+
+/** 只用到 dsh RequestMessage 的角色与来源。 */
+export interface CallMessage {
+  readonly role: string
+  readonly source?: { readonly kind: string; readonly sourceCommandId?: unknown }
+}
 
 export interface ModelCallInput {
   sessionId?: string
   purpose?: CallPurpose
-  messages: readonly { role: string }[]
+  messages: readonly CallMessage[]
+}
+
+/**
+ * dsh 消息来源 → turn 划分角色。CLI 只在"用户输入被接纳"时更新 conversationRequestId：
+ * 子 agent 通知、steer、工具结果、注入的上下文都沿用当前 id。所以从历史末尾往前找第一条
+ * 决定性消息：input 开新 turn，model（之后的工具结果、通知等都算当前任务的续写）复用；
+ * context 跳过，未知来源也按 context 处理。
+ * 已知局限：dsh 不区分 steer 与新输入，工具循环中途插入的用户消息会开新 turn。
+ */
+type SourceRole = 'input' | 'model' | 'context'
+const SOURCE_ROLES: Readonly<Record<string, SourceRole>> = {
+  user: 'input', schedule: 'input', webhook: 'input',
+  model: 'model',
+  tool: 'context', 'agent-message': 'context', 'subagent-settled': 'context', 'team-message': 'context',
+  goal: 'context', 'user-question-reply': 'context',
+  'system-prompt': 'context', 'model-selection': 'context', 'runtime-context': 'context',
+  'working-directory': 'context', 'user-approval': 'context', 'ptc-mode': 'context', 'tool-registry': 'context',
+  'skill-invocation': 'context', 'session-reference': 'context', 'plan-mode': 'context',
+  'cordis-host-runner': 'context', 'compact-checkpoint': 'context',
+}
+
+export function sourceRole(message: CallMessage): SourceRole {
+  if (message.role === 'system' || message.role === 'developer') return 'context'
+  // 没有 source 的 user 是 dsh 尚未持久化的本轮输入（RequestUserInput）
+  if (!message.source) return message.role === 'user' ? 'input' : message.role === 'assistant' ? 'model' : 'context'
+  return SOURCE_ROLES[message.source.kind] ?? 'context'
+}
+
+function startsNewTurn(messages: readonly CallMessage[]): boolean {
+  for (let index = messages.length - 1; index >= 0; index--) {
+    const role = sourceRole(messages[index]!)
+    if (role !== 'context') return role === 'input'
+  }
+  return true
+}
+
+/** dsh 的 /compact 命令会在压缩检查点上记 sourceCommandId，自动压缩没有。 */
+function compactionKindOf(messages: readonly CallMessage[]): CompactionKind {
+  const checkpoint = [...messages].reverse().find(message => message.source?.kind === 'compact-checkpoint')
+  if (!checkpoint) return 'manual'
+  return checkpoint.source!.sourceCommandId === undefined ? 'auto' : 'manual'
 }
 
 export interface ModelCallContext {
@@ -69,7 +116,7 @@ interface Turn {
 
 interface SessionState {
   turn?: Turn
-  compacted?: CompactionKind
+  compacted?: boolean
 }
 
 const PURPOSES = {
@@ -99,31 +146,37 @@ export class RequestContextTracker implements RequestContextSource {
     if (!this.enabled) return undefined
     const { sessionId, purpose } = call
     let turn: Turn
+    let conversationId: string | undefined
     let contextCompacted: CompactionKind | undefined
     if (purpose === undefined) {
       const state = sessionId === undefined ? undefined : this.touch(sessionId, true)!
-      const role = [...call.messages].reverse().find(message => message.role !== 'system')?.role
-      const continues = role === 'tool' || role === 'assistant'
-      turn = continues && state?.turn ? state.turn : this.newTurn()
+      turn = state?.turn && !startsNewTurn(call.messages) ? state.turn : this.newTurn()
       if (state) {
         state.turn = turn
         // 压缩后的第一次主调用带一次 X-Context-Compacted
-        contextCompacted = state.compacted
+        if (state.compacted) contextCompacted = compactionKindOf(call.messages)
         state.compacted = undefined
       }
+    } else if (purpose === 'session-title') {
+      // 同 CLI 每次新建独立的标题子会话：新会话 id、新 run id，只经 root 关联主会话当前任务
+      const root = sessionId === undefined ? undefined : this.touch(sessionId, false)?.turn?.rootRequestId
+      const run = this.newTurn()
+      turn = root ? { ...run, rootRequestId: root } : run
+      conversationId = this.uuid()
     } else {
-      // 一次性辅助调用复用当前 turn；没有时临时建一个，不登记
+      // 压缩复用当前 turn；没有时临时建一个，不登记
       turn = (sessionId === undefined ? undefined : this.touch(sessionId, false)?.turn) ?? this.newTurn()
     }
     const roles = PURPOSES[purpose ?? 'main']
     return Object.freeze({
       ...(sessionId === undefined ? {} : { sessionId }),
-      conversationId: sessionId === undefined ? this.uuid() : conversationIdFor(sessionId),
+      conversationId: conversationId ?? (sessionId === undefined ? this.uuid() : conversationIdFor(sessionId)),
       ...turn,
       messageId: compact(this.uuid()),
       spanId: this.nonZeroHex(8),
       ...roles,
       runtime: normalizeAgentRuntime(this.runtime()) ?? 'other',
+      // 压缩请求本身看不出触发方式，同 CLI 默认 manual
       ...(purpose === 'compaction' ? { compaction: 'manual' as const } : {}),
       ...(contextCompacted ? { contextCompacted } : {}),
     })
@@ -131,7 +184,7 @@ export class RequestContextTracker implements RequestContextSource {
 
   complete(context: ModelCallContext): void {
     if (!context.compaction || context.sessionId === undefined) return
-    this.touch(context.sessionId, true)!.compacted = context.compaction
+    this.touch(context.sessionId, true)!.compacted = true
   }
 
   private newTurn(): Turn {
