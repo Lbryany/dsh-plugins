@@ -9,7 +9,8 @@ import { createRpcHandler, registerManagement } from './rpc.ts'
 import type { CommandInvocation } from '@deepseek-ai/dsh-commands'
 import { credentialRef } from '@deepseek-ai/dsh-credentials'
 import { createModels } from '@earendil-works/pi-ai'
-import { conversationHeaders, createCodeBuddyProvider, withPromptCacheKey } from './codebuddy.ts'
+import { createCodeBuddyProvider, withPromptCacheKey } from './codebuddy.ts'
+import { RequestContextTracker } from './request-context.ts'
 import { CodeBuddyAdapter } from './adapter.ts'
 import { DshCredentialStore } from './credential-store.ts'
 import { FileModelsStore } from './models-store.ts'
@@ -54,7 +55,7 @@ export function apply(ctx: Context, config?: { defaultSite: Volatile<string> }):
   // 重启后先把落盘的目录拿回来，不等联网
   void service.restore().catch(error => ctx.logger.error(`CodeBuddy 目录缓存恢复失败：${String(error)}`))
   const registration = ctx.llm.registerAdapter([PROVIDER], new CodeBuddyAdapter(models, service.accountSignal, service.refreshModels, {
-    requestHeaders: sessionId => conversationHeaders(sessionId),
+    requestContext: new RequestContextTracker(),
     onPayload: (payload, sessionId) => debugPayload(withPromptCacheKey(payload, sessionId), sessionId),
     ...(requestDebugEnabled ? { onResponse: debugResponse, fetch: debugFetch } : {}),
     // 附件服务按请求时解析：它可能晚于本插件加载

@@ -93,8 +93,15 @@ dsh plugin --profile web remove @lbryany/dsh-codebuddy
 
 CodeBuddy 服务端按 `x-conversation-id` 识别一个对话。0.1.5 之前插件每次请求都生成一个随机的 conversation id（pi-ai 每次请求都重新调用 `toAuth`，那里拿不到会话），同一个 dsh 会话的每一轮都像一个新对话，服务端的提示缓存每轮都失效。现在：
 
-- `x-conversation-id` 由 dsh 的会话 id 哈希成稳定的 UUID，同一会话每轮相同；`x-request-id`、`x-conversation-message-id`、`x-conversation-request-id` 仍逐请求变化。思路与 cc-switch 一致：跨轮稳定的 session / conversation id 才能当会话身份，逐请求 id 只能当请求 id。
-- `PI_CODEBUDDY_CLI_HEADERS=0` 关闭 CLI 请求头时，这个会话级头也一起关闭。
+- `X-Conversation-ID` 由 dsh 的会话 id 哈希成稳定的 UUID，同一会话每轮相同（没有会话 id 的调用用随机 UUIDv7）。思路与 cc-switch 一致：跨轮稳定的 session / conversation id 才能当会话身份。
+- 其余上下文头与官方 CLI 2.168.2 对齐，由适配器按调用生成：
+  - turn 按 dsh 传入的消息历史划分：最后一条（忽略 system）是用户消息时开新 turn，工具 / 助手消息续用当前 turn。`X-Conversation-Request-ID` 与 `X-Root-Request-ID` 取 turn id，同 turn 的工具后续调用不变。
+  - `X-Request-ID` = `X-Conversation-Message-ID`，每次调用新生成。
+  - `X-Agent-Type` / `X-Agent-Purpose`：主调用 `main` / `conversation`，上下文压缩 `compaction` / `context_compact`（另带 `X-Compaction: manual`），会话标题 `auxiliary` / `conversation_topic`；压缩与标题调用复用当前 turn。压缩成功后同一会话的下一次主调用带一次 `X-Context-Compacted: manual`。
+  - `X-Agent-Runtime` 取环境变量 `CODEBUDDY_AGENT_RUNTIME`（`local-agent` / `cloud-agent` / `agent-agent`，其余为 `other`，未设置为 `other`）。
+  - trace：每个 turn 一个 trace id、每次调用一个 span id，写 `traceparent`、`b3`、`X-B3-TraceId` / `X-B3-SpanId` / `X-B3-Sampled`、`X-Trace-ID`；`baggage` 带会话 id 与 turn id。
+  - 不发 `X-Parent-Conversation-ID`：dsh 不告诉插件父子会话关系，子 agent 会话按独立会话处理。
+- `PI_CODEBUDDY_CLI_HEADERS=0` 关闭 CLI 请求头时，上述上下文头全部不发。
 - 可选：`PI_CODEBUDDY_PROMPT_CACHE_KEY=1` 时在请求体里加 OpenAI 的 `prompt_cache_key`（取 dsh 会话 id，最长 64 字符），供 OpenAI 兼容上游按会话路由缓存。默认关闭，因为严格的上游会拒绝未知字段。
 
 ## 模型目录缓存
@@ -112,7 +119,7 @@ CodeBuddy 服务端按 `x-conversation-id` 识别一个对话。0.1.5 之前插�
 
 - `PI_CODEBUDDY_DEBUG_LOG=<文件>` 时，每次聊天请求追加一行请求体摘要（字段、字节数、消息角色与长度、工具名）和一行响应状态 / 响应头（不含任何凭据、不含响应体）。
 - 诊断开启时 `PI_CODEBUDDY_STRIP=tools,reasoning_effort,stream_options,temperature,max_tokens` 可按字段名从请求体剔除指定字段，用于排查某个部署或模型不接受哪个字段。
-- 2026-10-18 实测：国内站网关对本插件的聊天请求最初返回 HTTP 400、业务码 11128 "request illegal"（提示"没通过渠道校验，可能不是官方客户端发出"），目录接口正常。同日按 CodeBuddy 技术团队指导，把聊天请求的 `User-Agent` 改为恰好 `CLI/2.125.0 CodeBuddy/2.125.0`，去掉 dsh 署名后缀（偏离 dsh 的 `attributionHeaders()` 约定）。结果：待补。
+- 2026-10-18 实测：国内站网关对本插件的聊天请求最初返回 HTTP 400、业务码 11128 "request illegal"（提示"没通过渠道校验，可能不是官方客户端发出"），目录接口正常。同日按 CodeBuddy 技术团队指导，把聊天请求的 `User-Agent` 改为恰好 `CLI/2.125.0 CodeBuddy/2.125.0`，去掉 dsh 署名后缀（偏离 dsh 的 `attributionHeaders()` 约定）。结果：待补。之后对齐的 CLI 版本升到 2.168.2，当前 `User-Agent` 为 `CLI/2.168.2 CodeBuddy/2.168.2`，`x-ide-version` 同步为 `2.168.2`。
 
 ## 命令
 

@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -54,8 +54,8 @@ export const NETWORK_RETRY_DELAYS_MS = [250, 750] as const;
  */
 export const PLATFORM = process.env.PI_CODEBUDDY_PLATFORM?.trim() || "codebuddy";
 
-/** Version of the CLI bundle used by the reverse-engineering reference. */
-export const PLUGIN_VERSION = "2.125.0";
+/** 对齐的官方 CLI 版本（@tencent-ai/codebuddy-code）：User-Agent 与 x-ide-version 都由它拼出。 */
+export const PLUGIN_VERSION = "2.168.2";
 
 export const X_NO_HEADERS = {
   "X-No-Authorization": "true",
@@ -305,7 +305,8 @@ export const ENVELOPE: EnvelopeConfig = {
 };
 
 /**
- * 额外 CLI 请求头开关（x-ide-、x-conversation-、x-product 等，抓包实测）。
+ * 额外 CLI 请求头开关：toAuth 的身份类头（x-ide-、x-product 等，抓包实测）与适配器按调用写的
+ * 会话 / turn / trace 上下文头（request-context.ts）。
  * PI_CODEBUDDY_CLI_HEADERS=off 时回退到最简可用集
  * （x-domain + x-agent-intent + x-user-id/企业头 + x-stainless 系列）。
  */
@@ -319,24 +320,14 @@ export const SEND_CLI_HEADERS = envFlag("PI_CODEBUDDY_CLI_HEADERS", true);
 export const SEND_PROMPT_CACHE_KEY = envFlag("PI_CODEBUDDY_PROMPT_CACHE_KEY", false);
 
 /**
- * 会话级 x-conversation-id：同一个 dsh 会话的每一轮请求都带同一个 UUID 形状的 id（由会话 id 哈希得到），
- * 只有 x-request-id / x-conversation-message-id / x-conversation-request-id 逐请求变化。
- * pi-ai 每次请求都重新调用 toAuth，那里拿不到会话，只能生成随机 id；随机的 conversation id 会让
- * 服务端每轮都换缓存键（与 cc-switch 对 session / conversation id 的处理一致：跨轮稳定的才能当会话身份）。
+ * 会话级 X-Conversation-ID：同一个 dsh 会话的每一轮请求都带同一个 UUID 形状的 id（由会话 id 哈希得到）。
+ * 随机的 conversation id 会让服务端每轮都换缓存键（与 cc-switch 对 session / conversation id 的处理一致：
+ * 跨轮稳定的才能当会话身份）。turn / 消息级 id 见 request-context.ts。
  */
 export function conversationIdFor(sessionId: string): string {
   const hex = createHash("sha256").update(sessionId).digest("hex");
   const variant = ((parseInt(hex[16]!, 16) & 0x3) | 0x8).toString(16);
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
-}
-
-/** Per-request headers the adapter layers over toAuth's: a stable conversation id when a session is known. */
-export function conversationHeaders(
-  sessionId: string | undefined,
-  sendCliHeaders: boolean = SEND_CLI_HEADERS,
-): Record<string, string> {
-  if (!sendCliHeaders || !sessionId) return {};
-  return { "x-conversation-id": conversationIdFor(sessionId) };
 }
 
 /** OpenAI prompt_cache_key is capped at 64 characters. */
@@ -771,7 +762,6 @@ export interface CodeBuddyRuntimeOptions {
   expiresSafetyMarginMs?: number;
   platform?: string;
   pluginVersion?: string;
-  conversationRequestId?: () => string;
   /** Send the extra CLI request headers (defaults to SEND_CLI_HEADERS). */
   sendCliHeaders?: boolean;
   /** Optional local diagnostic sink. Values are sanitized before the default sink writes them. */
@@ -795,7 +785,6 @@ interface Runtime {
   expiresSafetyMarginMs: number;
   platform: string;
   pluginVersion: string;
-  conversationRequestId: () => string;
   sendCliHeaders: boolean;
   debug?: CodeBuddyDiagnosticSink;
   probeCloudConfig: boolean;
@@ -852,7 +841,6 @@ function makeRuntime(options: CodeBuddyRuntimeOptions = {}): Runtime {
       options.expiresSafetyMarginMs ?? EXPIRES_SAFETY_MARGIN_MS,
     platform: options.platform ?? PLATFORM,
     pluginVersion: options.pluginVersion ?? PLUGIN_VERSION,
-    conversationRequestId: options.conversationRequestId ?? randomUUID,
     sendCliHeaders: options.sendCliHeaders ?? SEND_CLI_HEADERS,
     debug:
       options.debug ??
@@ -1140,10 +1128,6 @@ function optionalString(value: unknown): string | undefined {
 
 function optionalNumber(value: unknown): number | undefined {
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
-}
-
-function compactRequestId(value: string): string {
-  return value.replaceAll("-", "");
 }
 
 function isOfficialSaaSRoot(root: string): boolean {
@@ -1545,32 +1529,19 @@ export function createCodeBuddyOAuth(
     const uid = optionalString(credential.uid);
     const enterpriseId = optionalString(credential.enterpriseId);
 
-    // Extra CLI headers (x-ide-*/x-conversation-*/x-product) are from real
-    // 2.125.0 captures; gate them so a deployment can fall back to the minimal
-    // header set that the reverse-engineering reference验证过可用.
+    // 身份类 CLI 头（x-ide-*/x-product 等，抓包实测）；可关闭以回退到最简头集。
+    // 会话 / turn / 消息 id、agent 用途与 trace 由适配器按调用写入（request-context.ts），
+    // pi-ai 每次请求都重新调用 toAuth，这里拿不到会话。
     const cliHeaders = runtime.sendCliHeaders
-      ? (() => {
-          const conversationId = runtime.conversationRequestId();
-          const conversationRequestId = compactRequestId(
-            runtime.conversationRequestId(),
-          );
-          // x-request-id and x-conversation-message-id share one message id.
-          const messageId = compactRequestId(runtime.conversationRequestId());
-          return {
-            "x-agent-purpose": "conversation",
-            "x-requested-with": "XMLHttpRequest",
-            "x-conversation-id": conversationId,
-            "x-conversation-request-id": conversationRequestId,
-            "x-request-id": messageId,
-            "x-conversation-message-id": messageId,
-            "x-ide-type": "CLI",
-            "x-ide-name": "CLI",
-            "x-ide-version": runtime.pluginVersion,
-            "x-private-data": "false",
-            "x-codebuddy-request": "1",
-            ...(isOfficialSaaSRoot(baseUrl) ? { "x-product": "SaaS" } : {}),
-          };
-        })()
+      ? {
+          "x-requested-with": "XMLHttpRequest",
+          "x-ide-type": "CLI",
+          "x-ide-name": "CLI",
+          "x-ide-version": runtime.pluginVersion,
+          "x-private-data": "false",
+          "x-codebuddy-request": "1",
+          ...(isOfficialSaaSRoot(baseUrl) ? { "x-product": "SaaS" } : {}),
+        }
       : {};
 
     return {

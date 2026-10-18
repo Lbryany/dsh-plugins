@@ -18,7 +18,6 @@ import {
   PATHS,
   prepareCodeBuddyPayload,
   resolveCodeBuddyProductEnvironment,
-  conversationHeaders,
   conversationIdFor,
   withPromptCacheKey,
 } from "../src/codebuddy.ts";
@@ -342,9 +341,7 @@ test("refresh uses refresh headers, no enterprise headers, and preserves account
 });
 
 test("toAuth derives personal request auth without enterprise headers", async () => {
-  const oauth = createCodeBuddyOAuth({
-    conversationRequestId: () => "conversation-1",
-  });
+  const oauth = createCodeBuddyOAuth();
   const auth = await oauth.toAuth({
     type: "oauth",
     access: "access",
@@ -360,13 +357,14 @@ test("toAuth derives personal request auth without enterprise headers", async ()
   assert.equal(auth.headers?.["x-domain"], "www.codebuddy.ai");
   assert.equal(auth.headers?.["x-agent-intent"], "craft");
   assert.equal(auth.headers?.["x-user-id"], "user-1");
-  assert.equal(auth.headers?.["x-conversation-request-id"], "conversation1");
-  assert.equal(auth.headers?.["x-conversation-id"], "conversation-1");
-  assert.equal(auth.headers?.["x-request-id"], "conversation1");
-  assert.equal(auth.headers?.["x-conversation-message-id"], "conversation1");
-  assert.equal(auth.headers?.["x-agent-purpose"], "conversation");
+  // 会话 / turn / 消息 id 与 agent 用途改由适配器按调用写入，toAuth 只留身份类头
+  for (const name of ["x-conversation-id", "x-conversation-request-id", "x-request-id",
+    "x-conversation-message-id", "x-agent-purpose"]) {
+    assert.equal(auth.headers?.[name], undefined, name);
+  }
   assert.equal(auth.headers?.["x-codebuddy-request"], "1");
-  assert.equal(auth.headers?.["x-ide-version"], "2.125.0");
+  assert.equal(auth.headers?.["x-ide-version"], "2.168.2");
+  assert.equal(auth.headers?.["User-Agent"], "CLI/2.168.2 CodeBuddy/2.168.2");
   assert.equal(auth.headers?.["x-stainless-lang"], "js");
   assert.equal(auth.headers?.["x-enterprise-id"], undefined);
   assert.equal(auth.headers?.["x-tenant-id"], undefined);
@@ -374,9 +372,7 @@ test("toAuth derives personal request auth without enterprise headers", async ()
 });
 
 test("toAuth adds both required enterprise headers and omits department info", async () => {
-  const oauth = createCodeBuddyOAuth({
-    conversationRequestId: () => "conversation-2",
-  });
+  const oauth = createCodeBuddyOAuth();
   const auth = await oauth.toAuth({
     type: "oauth",
     access: "access",
@@ -1135,12 +1131,6 @@ test("conversationIdFor is a stable UUID-shaped id per dsh session", () => {
   assert.equal(id, conversationIdFor("ses_123"));
   assert.notEqual(id, conversationIdFor("ses_124"));
   assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
-});
-
-test("conversationHeaders follows the CLI header switch and needs a session", () => {
-  assert.deepEqual(conversationHeaders(undefined, true), {});
-  assert.deepEqual(conversationHeaders("ses_1", false), {});
-  assert.deepEqual(conversationHeaders("ses_1", true), { "x-conversation-id": conversationIdFor("ses_1") });
 });
 
 test("withPromptCacheKey only injects when enabled and keeps the 64-char cap", () => {

@@ -25,7 +25,9 @@ import type {
   Tool,
 } from '@earendil-works/pi-ai'
 
+import { PLUGIN_VERSION } from './codebuddy.ts'
 import { REASONING_LEVELS as LEVELS } from './contract.ts'
+import { mergeHeaders, requestContextHeaders, type RequestContextSource } from './request-context.ts'
 import { toBase64, type ImageReader } from './images.ts'
 type Level = (typeof LEVELS)[number]
 
@@ -144,10 +146,10 @@ function finishReason(reason: 'stop' | 'length' | 'toolUse'): StreamChunk & { ty
   return { type: 'finish', reason: { kind: 'stop' } }
 }
 
-/** Per-request hooks keyed by the dsh session: stable conversation headers and payload tweaks. */
+/** Per-request hooks keyed by the dsh session: request context headers and payload tweaks. */
 export interface CodeBuddyRequestHooks {
-  /** Extra headers for one request; merged over toAuth's headers so a session-level id wins. */
-  requestHeaders?: (sessionId: string | undefined) => Record<string, string>
+  /** 每次调用的会话 / turn / trace 上下文；缺省或返回 undefined 时不发上下文头。 */
+  requestContext?: RequestContextSource
   /** Last-minute payload edit (for example `prompt_cache_key`); return the payload to send. */
   onPayload?: (payload: unknown, sessionId: string | undefined) => unknown
   /** Response status and headers for diagnostics; never the body. */
@@ -230,19 +232,20 @@ export class CodeBuddyAdapter extends LlmAdapter {
     const onResponse = this.hooks.onResponse
     const context = await toPiContext(options, supportsImages(model, this.hooks.images) ? this.hooks.images : undefined, signal)
     signal.throwIfAborted()
+    // 快照在发请求前一次拍定；pi-ai 不重试，一次 streamSimple 只发一个请求
+    const call = this.hooks.requestContext?.begin({ sessionId, purpose: options.purpose, messages: options.messages })
     const stream = this.models.streamSimple(model, context, {
       temperature: options.temperature,
       maxTokens: options.maxTokens,
       reasoning: options.reasoningEffort as ThinkingLevel | undefined,
       signal,
       sessionId,
-      headers: {
-        // Exact value per the CodeBuddy technical team (2026-10-18). This departs
-        // from dsh's attributionHeaders() adapter contract on purpose.
-        'User-Agent': 'CLI/2.125.0 CodeBuddy/2.125.0',
-        // Session-stable conversation id overrides the per-request one toAuth generated.
-        ...this.hooks.requestHeaders?.(sessionId),
-      },
+      headers: mergeHeaders(
+        // 按 CodeBuddy 技术团队要求恰好为官方 CLI 的 UA（不带 dsh 署名），
+        // 有意偏离 dsh 的 attributionHeaders() 适配器约定。
+        { 'User-Agent': `CLI/${PLUGIN_VERSION} CodeBuddy/${PLUGIN_VERSION}` },
+        call ? requestContextHeaders(call) : undefined,
+      ),
       ...(onPayload ? { onPayload: (payload: unknown) => onPayload(payload, sessionId) } : {}),
       ...(onResponse ? { onResponse: (response: { status: number; headers: Record<string, string> }) => onResponse(response.status, response.headers, sessionId) } : {}),
       ...(() => { const f = this.hooks.fetch?.(sessionId); return f ? { fetch: f } : {} })(),
@@ -283,6 +286,7 @@ export class CodeBuddyAdapter extends LlmAdapter {
         if (event.reason === 'deferred') {
           throw new LlmError('CodeBuddy returned a deferred tool response, which DSH cannot consume', 'UNSUPPORTED')
         }
+        if (call) this.hooks.requestContext?.complete?.(call)
         yield { type: 'usage', usage: {
           inputTokens: event.message.usage.input,
           outputTokens: event.message.usage.output,
