@@ -2,6 +2,9 @@ export const PROVIDER = 'codebuddy'
 export const DEFAULT_SITE = 'https://www.codebuddy.ai'
 export const REASONING_LEVELS = ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] as const
 export type ReasoningLevel = typeof REASONING_LEVELS[number]
+/** 提示缓存保留时长偏好：default 不指定，1h 在请求体加 cache_retention: "long"。 */
+export const CACHE_RETENTIONS = ['default', '1h'] as const
+export type CacheRetention = typeof CACHE_RETENTIONS[number]
 
 export interface LoginView {
   phase: 'idle' | 'starting' | 'waiting_browser' | 'authenticated' | 'failed' | 'cancelled'
@@ -41,7 +44,7 @@ export interface StatusView {
   catalog: CatalogView
 }
 
-export interface PreferencesView { defaultSite: string; writable: boolean }
+export interface PreferencesView { defaultSite: string; cacheRetention: CacheRetention; writable: boolean }
 export interface DefaultModelView {
   available: boolean
   provider?: string
@@ -52,6 +55,10 @@ export interface DefaultModelView {
 export class PublicError extends Error {
   readonly code: string
   constructor(code: string, message: string) { super(message); this.code = code }
+}
+
+export function isCacheRetention(value: unknown): value is CacheRetention {
+  return (CACHE_RETENTIONS as readonly unknown[]).includes(value)
 }
 
 export function normalizeSite(raw: string): string {

@@ -9,7 +9,7 @@ import type { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { en, zh } from './client-locales.ts'
 const Translation = createContext<(key: string) => string>(key => key)
 import { createClientState, type ClientController } from './client-state.ts'
-import { DEFAULT_SITE, REASONING_LEVELS } from './contract.ts'
+import { DEFAULT_SITE, REASONING_LEVELS, type CacheRetention } from './contract.ts'
 
 export const inject = ['slots', 'connection', 'locale']
 
@@ -106,6 +106,8 @@ function ModelsPanel({ controller }: { controller: ClientController }) {
     setSelected(saved?.provider === 'codebuddy' ? saved.model ?? '' : '')
     setEffort(saved?.provider === 'codebuddy' ? saved.reasoningEffort ?? 'high' : 'high')
   }, [saved?.provider, saved?.model, saved?.reasoningEffort])
+  const [retention, setRetention] = useState<CacheRetention>(state.preferences?.cacheRetention ?? 'default')
+  useEffect(() => { if (state.preferences) setRetention(state.preferences.cacheRetention) }, [state.preferences?.cacheRetention])
   const model = catalog.models.find(model => model.id === selected)
   const canSave = state.status!.account.hasCredential && catalog.status === 'ready' && !catalog.cached && saved?.available && model
   return <><div className="cb-card"><h3>{t('模型目录')}</h3>
@@ -131,6 +133,16 @@ function ModelsPanel({ controller }: { controller: ClientController }) {
     {model && <p className="cb-muted">{t('上下文窗口：')}{model.contextWindow.toLocaleString()} tokens。{model.reasoning ? t('推理等级由适配器统一映射，实际效果取决于模型。') : t('此模型不启用推理。')}</p>}
     <Button variant="outline" disabled={state.busy || !canSave} onClick={() => void controller.action('default-model/select', { model: selected, reasoningEffort: model?.reasoning ? effort : 'off' })}>{t('保存为 DSH 默认模型')}</Button>
     <p className="cb-muted">{t('用于后续采用默认模型的新会话；已有会话保持自己的模型选择。')}</p>
+  </div><div className="cb-card"><h3>{t('提示缓存保留时长')}</h3>
+    <label>{t('保留时长')} <select aria-label={t('提示缓存保留时长')} value={retention} disabled={state.busy || !state.preferences?.writable}
+      onChange={event => setRetention(event.target.value as CacheRetention)}>
+      <option value="default">{t('默认（不指定）')}</option><option value="1h">{t('1 小时')}</option>
+    </select></label>
+    <div className="cb-row"><Button variant="outline" disabled={state.busy || !state.preferences?.writable || retention === state.preferences?.cacheRetention}
+      onClick={() => void controller.action('preferences/update', { cacheRetention: retention })}>{t('保存缓存设置')}</Button>
+      {!state.preferences?.writable && <span className="cb-muted">{t('当前 DSH 配置只读')}</span>}
+    </div>
+    <p className="cb-muted">{t('选“1 小时”时聊天请求带 cache_retention: "long"，与官方 CLI 一致；保存后对之后的请求立即生效。')}</p>
   </div></>
 }
 

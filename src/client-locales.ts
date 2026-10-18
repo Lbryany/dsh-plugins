@@ -21,5 +21,9 @@ export const en: Record<string, string> = {
   '推理等级由适配器统一映射，实际效果取决于模型。': 'The adapter maps reasoning levels; actual behavior depends on the model.',
   '此模型不启用推理。': 'This model does not use reasoning.', '保存为 DSH 默认模型': 'Save as DSH default',
   '用于后续采用默认模型的新会话；已有会话保持自己的模型选择。': 'Applies to future conversations using the default. Existing conversations keep their selection.',
+  '提示缓存保留时长': 'Prompt cache retention', '保留时长': 'Retention', '默认（不指定）': 'Default (unspecified)', '1 小时': '1 hour',
+  '保存缓存设置': 'Save cache setting',
+  '选“1 小时”时聊天请求带 cache_retention: "long"，与官方 CLI 一致；保存后对之后的请求立即生效。':
+    'With 1 hour, chat requests send cache_retention: "long" like the official CLI. Takes effect for subsequent requests once saved.',
 }
 export const zh = Object.fromEntries(Object.keys(en).map(key => [key, key]))

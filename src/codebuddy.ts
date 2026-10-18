@@ -21,6 +21,8 @@ import {
 } from "@earendil-works/pi-ai";
 import { openAICompletionsApi } from "@earendil-works/pi-ai/compat";
 
+import type { CacheRetention } from "./contract.ts";
+
 export const PROVIDER_ID = "codebuddy";
 export const DEFAULT_SITE_ROOT = "https://www.codebuddy.ai";
 
@@ -341,6 +343,12 @@ export function withPromptCacheKey<T>(
 ): T {
   if (!enabled || !sessionId || typeof payload !== "object" || payload === null) return payload;
   return { ...payload, prompt_cache_key: sessionId.slice(0, PROMPT_CACHE_KEY_MAX) };
+}
+
+/** 偏好为 1h 时同 CLI 在请求体加 `cache_retention: "long"`；默认不加该字段。 */
+export function withCacheRetention<T>(payload: T, retention: CacheRetention): T {
+  if (retention !== "1h" || typeof payload !== "object" || payload === null) return payload;
+  return { ...payload, cache_retention: "long" };
 }
 
 const ZERO_COST = {

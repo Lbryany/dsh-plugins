@@ -17,3 +17,27 @@ test('management rejects extra fields and never reflects provider exceptions', a
   const unknown = await rpc('shell/run', {}, signal)
   if (!unknown.ok) assert.equal(unknown.error.code, 'not-found')
 })
+
+test('preferences/update accepts either field and rejects missing, empty, or invalid values', async () => {
+  const stored: { defaultSite: string; cacheRetention?: string } = { defaultSite: 'global' }
+  const preferences = createPreferences({
+    read: () => stored.defaultSite, readCacheRetention: () => stored.cacheRetention, writable: () => true,
+    write: async patch => { Object.assign(stored, patch) },
+  })
+  const rpc = createRpcHandler({ service: {} as CodeBuddyService, preferences })
+  const signal = new AbortController().signal
+  const retention = await rpc('preferences/update', { cacheRetention: '1h' }, signal)
+  assert.deepEqual(retention, { ok: true, value: { defaultSite: 'https://www.codebuddy.ai', cacheRetention: '1h', writable: true } })
+  const site = await rpc('preferences/update', { defaultSite: 'cn' }, signal)
+  assert.equal(site.ok && (site.value as { cacheRetention: string }).cacheRetention, '1h')
+  const status = await rpc('preferences/status', {}, signal)
+  assert.deepEqual(status, { ok: true, value: { defaultSite: 'https://copilot.tencent.com', cacheRetention: '1h', writable: true } })
+  for (const payload of [{}, { defaultSite: '' }, { cacheRetention: 'forever' }, { cacheRetention: 1 }, { ttl: '1h' }]) {
+    const result = await rpc('preferences/update', payload, signal)
+    assert.equal(result.ok, false, JSON.stringify(payload))
+    if (!result.ok) assert.equal(result.error.code, 'bad-request')
+  }
+  const readOnly = createRpcHandler({ service: {} as CodeBuddyService, preferences: createPreferences({ read: () => 'global' }) })
+  const denied = await readOnly('preferences/update', { cacheRetention: '1h' }, signal)
+  assert.equal(!denied.ok && denied.error.code, 'read-only')
+})

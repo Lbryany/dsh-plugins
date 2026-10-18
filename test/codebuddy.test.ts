@@ -19,6 +19,7 @@ import {
   prepareCodeBuddyPayload,
   resolveCodeBuddyProductEnvironment,
   conversationIdFor,
+  withCacheRetention,
   withPromptCacheKey,
 } from "../src/codebuddy.ts";
 
@@ -1131,6 +1132,12 @@ test("conversationIdFor is a stable UUID-shaped id per dsh session", () => {
   assert.equal(id, conversationIdFor("ses_123"));
   assert.notEqual(id, conversationIdFor("ses_124"));
   assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+});
+
+test("withCacheRetention only adds cache_retention long for the 1h preference", () => {
+  assert.deepEqual(withCacheRetention({ model: "m" }, "default"), { model: "m" });
+  assert.deepEqual(withCacheRetention({ model: "m" }, "1h"), { model: "m", cache_retention: "long" });
+  assert.equal(withCacheRetention(undefined, "1h"), undefined);
 });
 
 test("withPromptCacheKey only injects when enabled and keeps the 64-char cap", () => {
