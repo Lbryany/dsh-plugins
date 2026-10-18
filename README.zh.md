@@ -10,10 +10,16 @@
 
 用 `link:` 装本地仓库时，先在仓库里运行 `node scripts/link-dsh.mjs`，把 `@deepseek-ai/dsh-llm`、`dsh-tools` 链到本机的 dsh 安装目录（找不到时设置环境变量 `DSH_BIN` 为 dsh 的 `lib/bin.js`）。
 
+## 哪些会话会登记
+
+只登记有过用户消息的根会话：
+- 在 Web UI 左栏点开的旧会话、被 resume 回来的会话，日志里已经有用户消息，加载进内存就登记。
+- Web UI 打开页面时预建的空草稿不登记。等它出现第一条用户消息时才登记。
+
 ## 名字
 
 - 缺省名：`<cwd 目录名>-<sessionId 前 4 位>`，例如 `dsh-projects-b9c3`。目录名会被规整：转小写，非法字符换成 `-`。
-- 固定名：给 headless 长跑的 agent 用。环境变量 `DSH_PEER_NAME` 或插件配置 `name`，环境变量优先。只有该进程**第一个**登记的会话用这个名字，后面的会话仍用缺省名。
+- 固定名：给 headless 长跑的 agent 用。环境变量 `DSH_PEER_NAME` 或插件配置 `name`，环境变量优先。只有该进程**第一个**登记的会话（也就是第一个发话的会话）用这个名字，后面的会话仍用缺省名。
 - 改名：在对话里输入 `/peer-name <名字>`，或让模型调用 `peer_rename`。改过的名字按 sessionId 记在 `~/.dsh-peer/names.json`，会话被 resume 回来时会沿用。
 - 规则：`^[a-z0-9][a-z0-9_-]{0,39}$`，整个注册表内唯一。撞名时自动加 `-2`、`-3`，并在返回文本里说明。
 - 子 agent 派生的会话不登记。它调用 `peer_*` 时，用所属根会话的身份。
@@ -22,10 +28,10 @@
 
 | 名称 | 作用 |
 |---|---|
-| `peer_list` | 列出本机在线的 dsh 会话，列：名字、状态、cwd、标题、profile、进程。本会话标「（本会话）」，同进程的会话标「（同进程）」。 |
+| `peer_list({ all? })` | 列出本机在线的 dsh 会话，列：名字、状态、cwd、标题、profile、进程。本会话排第一行，标「（本会话）」；同进程的会话标「（同进程）」。其余会话 running 在前，再按最近活跃时间（`lastActiveAt`，登记、状态变化、收到消息时更新）倒序。缺省最多列 20 个，超出时末尾提示还有几个；`all: true` 列出全部。 |
 | `peer_send({ to, text, steer? })` | `to` 填名字，或 sessionId 前缀（至少 4 位，带不带 `session-` 前缀都可以）。`steer: true` 会插进对方当前这一轮；缺省是排到对方的下一轮。 |
 | `peer_rename({ name })` | 改本会话的名字。 |
-| `/peers` | 同 `peer_list`。 |
+| `/peers` | 同 `peer_list`（缺省最多 20 个）。 |
 | `/peer-name <名字>` | 同 `peer_rename`；不带参数时显示当前名字。 |
 
 headless 没有 commands 服务，这两个斜杠命令会被静默跳过，三个工具照常可用。
