@@ -142,7 +142,7 @@ function ModelsPanel({ controller }: { controller: ClientController }) {
       onClick={() => void controller.action('preferences/update', { cacheRetention: retention })}>{t('保存缓存设置')}</Button>
       {!state.preferences?.writable && <span className="cb-muted">{t('当前 DSH 配置只读')}</span>}
     </div>
-    <p className="cb-muted">{t('聊天请求体带 cache_retention（1 小时为 "long"，短为 "short"）。取值在每个会话首次请求时锁定，修改只对之后新开的会话生效。')}</p>
+    <p className="cb-muted">{t('聊天请求体带 cache_retention：1 小时发 "long"，5 分钟发 "short"。每个会话沿用首次请求时的取值，修改只对之后新开的会话生效。')}</p>
   </div></>
 }
 

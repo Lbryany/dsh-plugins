@@ -91,10 +91,11 @@ export interface ModelCallContext {
   readonly contextCompacted?: CompactionKind
 }
 
-/** 适配器只依赖这两个方法：调用开始拍快照，压缩调用成功结束后回报。 */
+/** 调用开始拍快照；压缩调用成功结束后回报；请求未发出就失败时归还一次性状态。 */
 export interface RequestContextSource {
   begin(call: ModelCallInput): ModelCallContext | undefined
   complete?(context: ModelCallContext): void
+  release?(context: ModelCallContext): void
 }
 
 export interface RequestContextOptions {
@@ -184,6 +185,11 @@ export class RequestContextTracker implements RequestContextSource {
 
   complete(context: ModelCallContext): void {
     if (!context.compaction || context.sessionId === undefined) return
+    this.touch(context.sessionId, true)!.compacted = true
+  }
+
+  release(context: ModelCallContext): void {
+    if (!context.contextCompacted || context.sessionId === undefined) return
     this.touch(context.sessionId, true)!.compacted = true
   }
 

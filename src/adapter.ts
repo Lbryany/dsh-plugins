@@ -230,19 +230,28 @@ export class CodeBuddyAdapter extends LlmAdapter {
     const signal = options.signal ? AbortSignal.any([options.signal, account]) : account
     signal.throwIfAborted()
     if (options.stop?.length) throw new LlmError('CodeBuddy adapter does not support stop sequences', 'UNSUPPORTED')
-    await this.refresh({ allowNetwork: true, signal })
-    signal.throwIfAborted()
-    const model = this.models.getModel('codebuddy', options.model)
-    if (model === undefined) throw new LlmError(`CodeBuddy model "${options.model}" is not available`, 'MODEL_NOT_FOUND')
+    const sessionId = options.sessionId === undefined ? undefined : String(options.sessionId)
+    // 同 CLI 在接纳输入时就分配 turn：快照在任何 await 之前同步拍定，读附件期间并发的标题调用也能拿到本 turn 的 root。
+    // pi-ai 不重试，一次 streamSimple 只发一个请求。
+    const call = this.hooks.requestContext?.begin({ sessionId, purpose: options.purpose, messages: options.messages })
+    let model: Model<Api> | undefined
+    let context: PiContext
+    try {
+      await this.refresh({ allowNetwork: true, signal })
+      signal.throwIfAborted()
+      model = this.models.getModel('codebuddy', options.model)
+      if (model === undefined) throw new LlmError(`CodeBuddy model "${options.model}" is not available`, 'MODEL_NOT_FOUND')
+      context = await toPiContext(options, supportsImages(model, this.hooks.images) ? this.hooks.images : undefined, signal)
+      signal.throwIfAborted()
+    } catch (error) {
+      // 请求没发出去：把本次消耗的一次性状态（X-Context-Compacted）还回去
+      if (call) this.hooks.requestContext?.release?.(call)
+      throw error
+    }
 
     const open = new Map<number, { kind: 'text' | 'reasoning' | 'tool-call'; text: string; id?: string; name?: string }>()
-    const sessionId = options.sessionId === undefined ? undefined : String(options.sessionId)
     const onPayload = this.hooks.onPayload
     const onResponse = this.hooks.onResponse
-    const context = await toPiContext(options, supportsImages(model, this.hooks.images) ? this.hooks.images : undefined, signal)
-    signal.throwIfAborted()
-    // 快照在发请求前一次拍定；pi-ai 不重试，一次 streamSimple 只发一个请求
-    const call = this.hooks.requestContext?.begin({ sessionId, purpose: options.purpose, messages: options.messages })
     const stream = this.models.streamSimple(model, context, {
       temperature: options.temperature,
       maxTokens: options.maxTokens,

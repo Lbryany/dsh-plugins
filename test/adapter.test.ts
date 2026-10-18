@@ -211,3 +211,47 @@ test('mid-history system updates render in place without changing earlier messag
   assert.deepEqual(contexts[1]!.messages.map(message => message.role), ['user', 'assistant', 'user', 'user'])
   assert.equal(contexts[1]!.messages[2]!.content, '<system-reminder>\nPlan mode prompt\n</system-reminder>')
 })
+
+const imageRef = { attachmentId: 'att_1', mediaType: 'image/png', bytes: 3, width: 10, height: 10, name: 'a.png' }
+const userWithImage = createMessage({ role: 'user', source: { kind: 'user' },
+  content: [{ type: 'text', text: 'look' }, { type: 'image', attachment: imageRef }] } as never)
+
+test('a title call made while the main call reads attachments still links to the new turn root', async () => {
+  const { models, seen } = recordingModels()
+  let release!: () => void
+  const gate = new Promise<void>(resolve => { release = resolve })
+  const adapter = new CodeBuddyAdapter(models, undefined, undefined, {
+    requestContext: new RequestContextTracker({ enabled: true }),
+    images: { available: () => true, read: async () => { await gate; return { data: new Uint8Array([1]), mediaType: 'image/png' } } },
+  })
+  const main = drain(adapter, { sessionId: 'ses_1' as never, messages: [userWithImage] })
+  // 标题调用只带文本，不等附件
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user], purpose: 'session-title' })
+  release()
+  await main
+  const [title, first] = seen.map(({ headers }) => headers)
+  assert.equal(title!['X-Agent-Purpose'], 'conversation_topic')
+  assert.equal(first!['X-Agent-Purpose'], 'conversation')
+  assert.equal(title!['X-Root-Request-ID'], first!['X-Root-Request-ID'])
+  assert.notEqual(title!['X-Conversation-Request-ID'], first!['X-Conversation-Request-ID'])
+})
+
+test('a main call that fails before sending hands X-Context-Compacted to the next one', async () => {
+  const { models, seen } = recordingModels()
+  let fail = false
+  const adapter = new CodeBuddyAdapter(models, undefined, undefined, {
+    requestContext: new RequestContextTracker({ enabled: true }),
+    images: { available: () => true, read: async () => {
+      if (fail) throw new Error('attachment gone')
+      return { data: new Uint8Array([1]), mediaType: 'image/png' }
+    } },
+  })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [user], purpose: 'compaction' })
+  fail = true
+  await assert.rejects(drain(adapter, { sessionId: 'ses_1' as never, messages: [userWithImage] }), /attachment gone/)
+  fail = false
+  await drain(adapter, { sessionId: 'ses_1' as never, messages: [userWithImage] })
+  assert.equal(seen.length, 3)
+  assert.equal(seen[2]!.headers['X-Context-Compacted'], 'manual')
+})

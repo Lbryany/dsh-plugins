@@ -23,7 +23,7 @@ export const en: Record<string, string> = {
   '用于后续采用默认模型的新会话；已有会话保持自己的模型选择。': 'Applies to future conversations using the default. Existing conversations keep their selection.',
   '提示缓存保留时长': 'Prompt cache retention', '保留时长': 'Retention', '1 小时（默认，同 CLI）': '1 hour (default, same as CLI)', '短（5 分钟）': 'Short (5 minutes)',
   '保存缓存设置': 'Save cache setting',
-  '聊天请求体带 cache_retention（1 小时为 "long"，短为 "short"）。取值在每个会话首次请求时锁定，修改只对之后新开的会话生效。':
-    'Chat requests send cache_retention ("long" for 1 hour, "short" for short). The value is fixed at each conversation\'s first request; changes apply to new conversations only.',
+  '聊天请求体带 cache_retention：1 小时发 "long"，5 分钟发 "short"。每个会话沿用首次请求时的取值，修改只对之后新开的会话生效。':
+    'Chat requests send cache_retention: "long" for 1 hour or "short" for 5 minutes. Each conversation keeps the value from its first request, so changes apply to new conversations only.',
 }
 export const zh = Object.fromEntries(Object.keys(en).map(key => [key, key]))
