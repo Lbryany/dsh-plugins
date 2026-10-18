@@ -345,10 +345,30 @@ export function withPromptCacheKey<T>(
   return { ...payload, prompt_cache_key: sessionId.slice(0, PROMPT_CACHE_KEY_MAX) };
 }
 
-/** 偏好为 1h 时同 CLI 在请求体加 `cache_retention: "long"`；默认不加该字段。 */
+/** 同 CLI 只在请求体还没有 cache_retention 时写入。 */
 export function withCacheRetention<T>(payload: T, retention: CacheRetention): T {
-  if (retention !== "1h" || typeof payload !== "object" || payload === null) return payload;
-  return { ...payload, cache_retention: "long" };
+  if (typeof payload !== "object" || payload === null) return payload;
+  if ((payload as Record<string, unknown>).cache_retention !== undefined) return payload;
+  return { ...payload, cache_retention: retention };
+}
+
+/**
+ * 同 CLI 把 cache_retention 锁在会话上：每个 dsh 会话首次请求时读取当前偏好，之后会话内不变
+ * （标题、压缩调用带同一个会话 id，自然继承）。最多记 maxSessions 个会话，淘汰最久未用的。
+ */
+export function createCacheRetentionLatch(
+  read: () => CacheRetention,
+  maxSessions = 1000,
+): (sessionId: string | undefined) => CacheRetention {
+  const latched = new Map<string, CacheRetention>();
+  return (sessionId) => {
+    if (sessionId === undefined) return read();
+    const value = latched.get(sessionId) ?? read();
+    latched.delete(sessionId);
+    latched.set(sessionId, value);
+    if (latched.size > maxSessions) latched.delete(latched.keys().next().value!);
+    return value;
+  };
 }
 
 const ZERO_COST = {
@@ -1108,7 +1128,7 @@ function wrapCodeBuddyEvents(
   return target;
 }
 
-function codeBuddyCompletionsApi(
+export function codeBuddyCompletionsApi(
   envelope: EnvelopeConfig = ENVELOPE,
 ): ProviderStreams {
   const delegate = openAICompletionsApi();
@@ -1119,11 +1139,14 @@ function codeBuddyCompletionsApi(
       );
     },
     streamSimple(model, context, options) {
+      // pi-ai 把 reasoning "off" 变成不发 reasoning_effort，envelope 不能再补默认值：
+      // 官方 CLI 关闭思考时删掉 reasoning 设置，请求体不带 reasoning_effort。
+      const off = (options?.reasoning as string | undefined) === "off";
       return wrapCodeBuddyEvents(
         delegate.streamSimple(
           model,
           context,
-          withCodeBuddyPayload(options, envelope),
+          withCodeBuddyPayload(options, off ? { ...envelope, reasoningEffort: undefined } : envelope),
         ),
       );
     },

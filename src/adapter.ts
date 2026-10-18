@@ -92,7 +92,11 @@ async function toPiContext(options: GenerateOptions, images: ImageReader | undef
   for (const message of leadingSystem ? history.slice(1) : history) {
     if (message.role === 'developer') throw new LlmError('CodeBuddy does not support developer messages', 'UNSUPPORTED_CONTENT')
     if (message.role === 'system') {
-      messages.push({ role: 'user', content: textFrom(message.content), timestamp: Date.now() })
+      // 声明了 in-history，dsh 会把系统提示的变化追加成历史中的 system 消息。网关是否接受对话中途的
+      // system 角色未验证（pi-ai 在不支持时会把它折进首条系统提示，破坏缓存前缀），所以照官方 CLI
+      // 注入上下文的做法，作为 <system-reminder> 包裹的 user 文本放在原位；空文本跳过（同 dsh-llm-pi-ai）。
+      const text = textFrom(message.content)
+      if (text.length > 0) messages.push({ role: 'user', content: `<system-reminder>\n${text}\n</system-reminder>`, timestamp: Date.now() })
       continue
     }
     if (message.role === 'tool') {
@@ -209,9 +213,12 @@ export class CodeBuddyAdapter extends LlmAdapter {
     await this.refresh({ allowNetwork: true, signal: combined })
     combined.throwIfAborted()
     const model = this.models.getModel('codebuddy', id)
-    if (model === undefined) return { provider, id, name: id, inputModalities: ['text'] }
+    // 系统提示变化追加到历史而不是改写首条，保住整段会话的缓存前缀（同官方 dsh-llm-deepseek）。
+    // 工具更新不声明：每次请求都带完整工具列表。
+    if (model === undefined) return { provider, id, name: id, inputModalities: ['text'], systemPromptUpdate: 'in-history' }
     return {
       ...modelInfo(provider, model, this.hooks.images),
+      systemPromptUpdate: 'in-history',
       context: { contextWindow: model.contextWindow },
       defaultMaxTokens: model.maxTokens,
       ...(model.reasoning ? { reasoning: { efforts: EFFORTS, defaultEffort: ReasoningEffortId('high') } } : {}),

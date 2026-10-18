@@ -11,7 +11,7 @@
 - `/codebuddy-login [site]` 登录国内版、国际版或自定义 CodeBuddy 站点。
 - 在 dsh 模型选择器中显示独立的 `CodeBuddy` 分类。
 - 登录后动态加载当前账号可用的模型。
-- 支持 `Off / Minimal / Low / Medium / High / Xhigh / Max` 推理等级。
+- 支持 `Off / Minimal / Low / Medium / High / Xhigh / Max` 推理等级。选 Off 时请求体不带 `reasoning_effort`（同官方 CLI 关闭思考）；调用方没指定等级时才默认补 `high`（`PI_CODEBUDDY_REASONING_EFFORT` 可改或关闭）。
 - OAuth 凭据通过 dsh Credential Store 持久化；模型目录落盘到 `$DSH_HOME/codebuddy/models-cache.json`，重启后先恢复上次目录再按需联网。
 - 目录里标 `supportsImages` 的模型可以在 dsh 里直接发图片（经 dsh 附件服务缩放后内联 base64）。
 - 提供 `/codebuddy-status` 和 `/codebuddy-logout`。
@@ -103,7 +103,8 @@ CodeBuddy 服务端按 `x-conversation-id` 识别一个对话。0.1.5 之前插�
   - trace：每个 turn 一个 trace id、每次调用一个 span id，写 `traceparent`、`b3`、`X-B3-TraceId` / `X-B3-SpanId` / `X-B3-Sampled`、`X-Trace-ID`；`baggage` 带会话 id 与 turn id。
   - 不发 `X-Parent-Conversation-ID`：dsh 不告诉插件父子会话关系，子 agent 会话按独立会话处理。
 - `PI_CODEBUDDY_CLI_HEADERS=0` 关闭 CLI 请求头时，上述上下文头全部不发。
-- 设置页“模型与运行”的“提示缓存保留时长”选“1 小时”时，聊天请求体带 `cache_retention: "long"`（与官方 CLI 一致）；“默认（不指定）”不加该字段。保存后对之后的请求立即生效。
+- 聊天请求体默认带 `cache_retention: "long"`（约 1 小时，同官方 CLI）；设置页“模型与运行”的“提示缓存保留时长”可改为“短（5 分钟）”即 `"short"`。同 CLI，取值在每个 dsh 会话的首次请求时锁定，会话内的标题、压缩调用沿用；修改设置只影响之后新开的会话。0.1.6 及之前保存的 `default` / `1h` 都按 `long` 读取。
+- 适配器声明 `systemPromptUpdate: "in-history"`：系统提示变化（如进入 plan 模式）由 dsh 追加到历史，而不是改写首条系统提示，之前的请求前缀不变、缓存继续命中。历史中途的系统提示以 `<system-reminder>` 包裹的 user 消息放在原位（同官方 CLI 注入上下文的方式），首条系统提示仍走 system 角色。工具更新不声明，每次请求都带完整工具列表。
 - 可选：`PI_CODEBUDDY_PROMPT_CACHE_KEY=1` 时在请求体里加 OpenAI 的 `prompt_cache_key`（取 dsh 会话 id，最长 64 字符），供 OpenAI 兼容上游按会话路由缓存。默认关闭，因为严格的上游会拒绝未知字段。
 
 ## 模型目录缓存
@@ -138,7 +139,7 @@ OAuth 凭据存储在 dsh 凭据引用 `CODEBUDDY_OAUTH` 中。插件不会把 a
 1. 在“账号与连接”选择中国站、国际站或自定义 URL，按需保存默认站点，然后登录并打开授权页面。
 2. 页面显示授权等待、成功、失败或取消状态；“已保存登录凭据”不代表模型目录一定可用。
 3. 在“模型与运行”刷新目录，选择模型和推理等级，保存为 DSH 默认模型。保存只影响后续采用默认模型的会话。
-4. 在“模型与运行”的“提示缓存保留时长”选择“默认（不指定）”或“1 小时”，保存到插件配置。
+4. 在“模型与运行”的“提示缓存保留时长”选择“1 小时（默认，同 CLI）”或“短（5 分钟）”，保存到插件配置；只对之后新开的会话生效。
 
 刷新失败时保留账号凭据和上次成功目录，缓存目录不能用于新的默认模型保存。非推理模型隐藏推理选项；七档推理强度是适配器映射，不表示已对每个模型验证所有档位。只读配置会明确显示不可保存。
 

@@ -2,8 +2,8 @@ export const PROVIDER = 'codebuddy'
 export const DEFAULT_SITE = 'https://www.codebuddy.ai'
 export const REASONING_LEVELS = ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] as const
 export type ReasoningLevel = typeof REASONING_LEVELS[number]
-/** 提示缓存保留时长偏好：default 不指定，1h 在请求体加 cache_retention: "long"。 */
-export const CACHE_RETENTIONS = ['default', '1h'] as const
+/** 请求体 cache_retention 的取值：long 约 1 小时（官方 CLI 默认），short 约 5 分钟。 */
+export const CACHE_RETENTIONS = ['long', 'short'] as const
 export type CacheRetention = typeof CACHE_RETENTIONS[number]
 
 export interface LoginView {
@@ -59,6 +59,11 @@ export class PublicError extends Error {
 
 export function isCacheRetention(value: unknown): value is CacheRetention {
   return (CACHE_RETENTIONS as readonly unknown[]).includes(value)
+}
+
+/** 读配置用：旧版的 default / 1h 以及缺失、非法值都按 CLI 默认 long。 */
+export function normalizeCacheRetention(value: unknown): CacheRetention {
+  return value === 'short' ? 'short' : 'long'
 }
 
 export function normalizeSite(raw: string): string {

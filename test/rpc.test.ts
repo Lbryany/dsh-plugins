@@ -26,18 +26,18 @@ test('preferences/update accepts either field and rejects missing, empty, or inv
   })
   const rpc = createRpcHandler({ service: {} as CodeBuddyService, preferences })
   const signal = new AbortController().signal
-  const retention = await rpc('preferences/update', { cacheRetention: '1h' }, signal)
-  assert.deepEqual(retention, { ok: true, value: { defaultSite: 'https://www.codebuddy.ai', cacheRetention: '1h', writable: true } })
+  const retention = await rpc('preferences/update', { cacheRetention: 'short' }, signal)
+  assert.deepEqual(retention, { ok: true, value: { defaultSite: 'https://www.codebuddy.ai', cacheRetention: 'short', writable: true } })
   const site = await rpc('preferences/update', { defaultSite: 'cn' }, signal)
-  assert.equal(site.ok && (site.value as { cacheRetention: string }).cacheRetention, '1h')
+  assert.equal(site.ok && (site.value as { cacheRetention: string }).cacheRetention, 'short')
   const status = await rpc('preferences/status', {}, signal)
-  assert.deepEqual(status, { ok: true, value: { defaultSite: 'https://copilot.tencent.com', cacheRetention: '1h', writable: true } })
-  for (const payload of [{}, { defaultSite: '' }, { cacheRetention: 'forever' }, { cacheRetention: 1 }, { ttl: '1h' }]) {
+  assert.deepEqual(status, { ok: true, value: { defaultSite: 'https://copilot.tencent.com', cacheRetention: 'short', writable: true } })
+  for (const payload of [{}, { defaultSite: '' }, { cacheRetention: 'forever' }, { cacheRetention: '1h' }, { cacheRetention: 1 }, { ttl: 'long' }]) {
     const result = await rpc('preferences/update', payload, signal)
     assert.equal(result.ok, false, JSON.stringify(payload))
     if (!result.ok) assert.equal(result.error.code, 'bad-request')
   }
   const readOnly = createRpcHandler({ service: {} as CodeBuddyService, preferences: createPreferences({ read: () => 'global' }) })
-  const denied = await readOnly('preferences/update', { cacheRetention: '1h' }, signal)
+  const denied = await readOnly('preferences/update', { cacheRetention: 'short' }, signal)
   assert.equal(!denied.ok && denied.error.code, 'read-only')
 })

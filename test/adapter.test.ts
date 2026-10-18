@@ -88,6 +88,10 @@ test('adapter exposes CodeBuddy grouping, dynamic models, and reasoning levels',
   assert.deepEqual(resolved.reasoning?.efforts.map(({ id }) => id),
     ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'])
   assert.equal(resolved.reasoning?.defaultEffort, 'high')
+  // 系统提示变化走历史追加；工具更新不声明
+  assert.equal(resolved.systemPromptUpdate, 'in-history')
+  assert.equal(resolved.toolUpdate, undefined)
+  assert.equal((await adapter.prepareCall('codebuddy', 'reasoner')).model.systemPromptUpdate, 'in-history')
 })
 
 test('adapter translates pi streaming events and emits usage before finish', async () => {
@@ -183,4 +187,27 @@ test('adapter omits context headers when CLI headers are disabled', async () => 
   const adapter = new CodeBuddyAdapter(models, undefined, undefined, { requestContext: new RequestContextTracker({ enabled: false }) })
   await drain(adapter, { sessionId: 'ses_1' as never, messages: [user] })
   assert.deepEqual(seen[0]!.headers, { 'User-Agent': 'CLI/2.168.2 CodeBuddy/2.168.2' })
+})
+
+test('mid-history system updates render in place without changing earlier message bytes', async () => {
+  const contexts: Context[] = []
+  const models = fakeModels()
+  const base = models.streamSimple
+  models.streamSimple = ((m: Model<'openai-completions'>, c: Context, options?: SimpleStreamOptions) => {
+    contexts.push(c)
+    return base(m, c, options)
+  }) as Models['streamSimple']
+  const adapter = new CodeBuddyAdapter(models)
+  const system = (text: string) => createMessage({ role: 'system', source: { kind: 'system-prompt' }, content: [{ type: 'text', text }] })
+  const answer = createMessage({ role: 'assistant', source: { kind: 'model', provider: 'codebuddy', model: 'reasoner' },
+    content: [{ type: 'text', text: 'ok' }] })
+  const first = [system('Base prompt'), user]
+  await drain(adapter, { messages: first })
+  await drain(adapter, { messages: [...first, answer, system('Plan mode prompt'), system(''), user] })
+  const bytes = (c: Context) => c.messages.map(({ timestamp: _timestamp, ...message }) => JSON.stringify(message))
+  assert.equal(contexts[0]!.systemPrompt, 'Base prompt')
+  assert.equal(contexts[1]!.systemPrompt, 'Base prompt')
+  assert.deepEqual(bytes(contexts[1]!).slice(0, 1), bytes(contexts[0]!))
+  assert.deepEqual(contexts[1]!.messages.map(message => message.role), ['user', 'assistant', 'user', 'user'])
+  assert.equal(contexts[1]!.messages[2]!.content, '<system-reminder>\nPlan mode prompt\n</system-reminder>')
 })

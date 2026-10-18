@@ -9,7 +9,7 @@ import { createRpcHandler, registerManagement } from './rpc.ts'
 import type { CommandInvocation } from '@deepseek-ai/dsh-commands'
 import { credentialRef } from '@deepseek-ai/dsh-credentials'
 import { createModels } from '@earendil-works/pi-ai'
-import { createCodeBuddyProvider, withCacheRetention, withPromptCacheKey } from './codebuddy.ts'
+import { createCacheRetentionLatch, createCodeBuddyProvider, withCacheRetention, withPromptCacheKey } from './codebuddy.ts'
 import { RequestContextTracker } from './request-context.ts'
 import { CodeBuddyAdapter } from './adapter.ts'
 import { DshCredentialStore } from './credential-store.ts'
@@ -19,7 +19,7 @@ import { createImageReader } from './images.ts'
 import type {} from '@deepseek-ai/dsh-attachment'
 import { authorizationUrlText } from './login.ts'
 import { CodeBuddyService } from './service.ts'
-import { DEFAULT_SITE, PROVIDER, type CacheRetention } from './contract.ts'
+import { DEFAULT_SITE, PROVIDER } from './contract.ts'
 
 export { PROVIDER } from './contract.ts'
 export const name = 'llm-codebuddy'
@@ -27,10 +27,11 @@ export const inject = ['llm', 'commands', 'credentials']
 export const CREDENTIAL_REF = credentialRef('CODEBUDDY_OAUTH')
 export const Config = z.object({
   defaultSite: z.string().default(DEFAULT_SITE).volatile(),
-  cacheRetention: z.union([z.const('default'), z.const('1h')]).default('default').volatile(),
+  // default / 1h 是 0.1.6 之前的取值，读取时都按 long 处理
+  cacheRetention: z.union([z.const('long'), z.const('short'), z.const('default'), z.const('1h')]).default('long').volatile(),
 })
 
-export function apply(ctx: Context, config?: { defaultSite: Volatile<string>; cacheRetention?: Volatile<CacheRetention> }): void {
+export function apply(ctx: Context, config?: { defaultSite: Volatile<string>; cacheRetention?: Volatile<string> }): void {
   let settings: SettingsForms | undefined
   const entryId = ctx.fiber.entry?.options.id
   const preferences = createPreferences({
@@ -58,11 +59,12 @@ export function apply(ctx: Context, config?: { defaultSite: Volatile<string>; ca
   installProvider()
   // 重启后先把落盘的目录拿回来，不等联网
   void service.restore().catch(error => ctx.logger.error(`CodeBuddy 目录缓存恢复失败：${String(error)}`))
+  const cacheRetention = createCacheRetentionLatch(() => preferences.status().cacheRetention)
   const registration = ctx.llm.registerAdapter([PROVIDER], new CodeBuddyAdapter(models, service.accountSignal, service.refreshModels, {
     requestContext: new RequestContextTracker(),
-    // 缓存保留时长按请求读取当前偏好，保存后立即生效
+    // 缓存保留时长在会话首次请求时锁定（同 CLI），改设置只影响新会话
     onPayload: (payload, sessionId) => debugPayload(
-      withCacheRetention(withPromptCacheKey(payload, sessionId), preferences.status().cacheRetention), sessionId),
+      withCacheRetention(withPromptCacheKey(payload, sessionId), cacheRetention(sessionId)), sessionId),
     ...(requestDebugEnabled ? { onResponse: debugResponse, onUsage: debugUsage, fetch: debugFetch } : {}),
     // 附件服务按请求时解析：它可能晚于本插件加载
     images: createImageReader(() => ctx.get('attachments')),

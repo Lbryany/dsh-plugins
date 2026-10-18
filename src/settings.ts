@@ -1,4 +1,4 @@
-import { DEFAULT_SITE, isCacheRetention, normalizeSite, PublicError, type CacheRetention, type PreferencesView } from './contract.ts'
+import { DEFAULT_SITE, isCacheRetention, normalizeCacheRetention, normalizeSite, PublicError, type CacheRetention, type PreferencesView } from './contract.ts'
 
 export interface PreferencesPatch { defaultSite?: string; cacheRetention?: CacheRetention }
 
@@ -12,10 +12,9 @@ interface PreferencesBackend {
 
 export function createPreferences(backend: PreferencesBackend) {
   const status = (): PreferencesView => {
-    const retention = backend.readCacheRetention?.()
     return {
       defaultSite: normalizeSite(backend.read() || DEFAULT_SITE),
-      cacheRetention: isCacheRetention(retention) ? retention : 'default',
+      cacheRetention: normalizeCacheRetention(backend.readCacheRetention?.()),
       writable: Boolean(backend.write && backend.writable?.()),
     }
   }

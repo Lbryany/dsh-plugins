@@ -10,6 +10,8 @@ import type {
 import {
   BUSINESS_CODES,
   BUILTIN_MODELS,
+  codeBuddyCompletionsApi,
+  createCacheRetentionLatch,
   createCodeBuddyProvider,
   createCodeBuddyOAuth,
   fetchCodeBuddyModels,
@@ -1134,10 +1136,49 @@ test("conversationIdFor is a stable UUID-shaped id per dsh session", () => {
   assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 });
 
-test("withCacheRetention only adds cache_retention long for the 1h preference", () => {
-  assert.deepEqual(withCacheRetention({ model: "m" }, "default"), { model: "m" });
-  assert.deepEqual(withCacheRetention({ model: "m" }, "1h"), { model: "m", cache_retention: "long" });
-  assert.equal(withCacheRetention(undefined, "1h"), undefined);
+test("withCacheRetention writes the latched value only when the body has none", () => {
+  assert.deepEqual(withCacheRetention({ model: "m" }, "long"), { model: "m", cache_retention: "long" });
+  assert.deepEqual(withCacheRetention({ model: "m" }, "short"), { model: "m", cache_retention: "short" });
+  assert.deepEqual(withCacheRetention({ cache_retention: "short" }, "long"), { cache_retention: "short" });
+  assert.equal(withCacheRetention(undefined, "long"), undefined);
+});
+
+test("cache retention latches per session at its first request", () => {
+  let preference: "long" | "short" = "long";
+  const latch = createCacheRetentionLatch(() => preference, 2);
+  assert.equal(latch("ses_1"), "long");
+  preference = "short";
+  assert.equal(latch("ses_1"), "long");
+  assert.equal(latch("ses_2"), "short");
+  assert.equal(latch(undefined), "short");
+  preference = "long";
+  assert.equal(latch("ses_2"), "short");
+  // 超出上限淘汰最久未用的 ses_1，之后重新按当前偏好锁定
+  assert.equal(latch("ses_3"), "long");
+  preference = "short";
+  assert.equal(latch("ses_1"), "short");
+});
+
+test("reasoning off sends no reasoning_effort while an unset level keeps the default", async () => {
+  const bodies: Record<string, unknown>[] = [];
+  const model = { ...BUILTIN_MODELS[0]!, reasoning: true, baseUrl: "https://example.test/v2" };
+  for (const reasoning of ["off", undefined, "low", "high"]) {
+    const stream = codeBuddyCompletionsApi().streamSimple(
+      model,
+      { messages: [{ role: "user", content: "hi", timestamp: 0 }] } as never,
+      {
+        apiKey: "test",
+        reasoning: reasoning as "low" | undefined,
+        fetch: async (_input: unknown, init?: RequestInit) => {
+          bodies.push(JSON.parse(String(init?.body)));
+          throw new Error("stop after capture");
+        },
+      } as never,
+    );
+    for await (const _event of stream) { /* drain */ }
+  }
+  assert.deepEqual(bodies.map((body) => body.reasoning_effort), [undefined, "high", "low", "high"]);
+  assert.equal("reasoning_effort" in bodies[0]!, false);
 });
 
 test("withPromptCacheKey only injects when enabled and keeps the 64-char cap", () => {

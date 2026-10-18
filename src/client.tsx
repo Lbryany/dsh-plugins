@@ -106,7 +106,7 @@ function ModelsPanel({ controller }: { controller: ClientController }) {
     setSelected(saved?.provider === 'codebuddy' ? saved.model ?? '' : '')
     setEffort(saved?.provider === 'codebuddy' ? saved.reasoningEffort ?? 'high' : 'high')
   }, [saved?.provider, saved?.model, saved?.reasoningEffort])
-  const [retention, setRetention] = useState<CacheRetention>(state.preferences?.cacheRetention ?? 'default')
+  const [retention, setRetention] = useState<CacheRetention>(state.preferences?.cacheRetention ?? 'long')
   useEffect(() => { if (state.preferences) setRetention(state.preferences.cacheRetention) }, [state.preferences?.cacheRetention])
   const model = catalog.models.find(model => model.id === selected)
   const canSave = state.status!.account.hasCredential && catalog.status === 'ready' && !catalog.cached && saved?.available && model
@@ -136,13 +136,13 @@ function ModelsPanel({ controller }: { controller: ClientController }) {
   </div><div className="cb-card"><h3>{t('提示缓存保留时长')}</h3>
     <label>{t('保留时长')} <select aria-label={t('提示缓存保留时长')} value={retention} disabled={state.busy || !state.preferences?.writable}
       onChange={event => setRetention(event.target.value as CacheRetention)}>
-      <option value="default">{t('默认（不指定）')}</option><option value="1h">{t('1 小时')}</option>
+      <option value="long">{t('1 小时（默认，同 CLI）')}</option><option value="short">{t('短（5 分钟）')}</option>
     </select></label>
     <div className="cb-row"><Button variant="outline" disabled={state.busy || !state.preferences?.writable || retention === state.preferences?.cacheRetention}
       onClick={() => void controller.action('preferences/update', { cacheRetention: retention })}>{t('保存缓存设置')}</Button>
       {!state.preferences?.writable && <span className="cb-muted">{t('当前 DSH 配置只读')}</span>}
     </div>
-    <p className="cb-muted">{t('选“1 小时”时聊天请求带 cache_retention: "long"，与官方 CLI 一致；保存后对之后的请求立即生效。')}</p>
+    <p className="cb-muted">{t('聊天请求体带 cache_retention（1 小时为 "long"，短为 "short"）。取值在每个会话首次请求时锁定，修改只对之后新开的会话生效。')}</p>
   </div></>
 }
 
