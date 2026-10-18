@@ -12,6 +12,10 @@ import { createModels } from '@earendil-works/pi-ai'
 import { conversationHeaders, createCodeBuddyProvider, withPromptCacheKey } from './codebuddy.ts'
 import { CodeBuddyAdapter } from './adapter.ts'
 import { DshCredentialStore } from './credential-store.ts'
+import { FileModelsStore } from './models-store.ts'
+import { debugFetch, debugPayload, debugResponse, requestDebugEnabled } from './debug.ts'
+import { createImageReader } from './images.ts'
+import type {} from '@deepseek-ai/dsh-attachment'
 import { authorizationUrlText } from './login.ts'
 import { CodeBuddyService } from './service.ts'
 import { DEFAULT_SITE, PROVIDER } from './contract.ts'
@@ -36,7 +40,8 @@ export function apply(ctx: Context, config?: { defaultSite: Volatile<string> }):
     scope.effect(() => () => { settings = undefined })
   })
   const store = new DshCredentialStore(ctx.credentials, CREDENTIAL_REF)
-  const models = createModels({ credentials: store })
+  const modelsStore = new FileModelsStore()
+  const models = createModels({ credentials: store, modelsStore })
   const installProvider = () => {
     const revision = service.revision
     models.setProvider(createCodeBuddyProvider({
@@ -44,11 +49,16 @@ export function apply(ctx: Context, config?: { defaultSite: Volatile<string> }):
     }))
   }
   const service = new CodeBuddyService({ models, store, logger: ctx.logger,
-    registration: { replace: providers => registration.replace(providers) }, resetProvider: installProvider })
+    registration: { replace: providers => registration.replace(providers) }, resetProvider: installProvider, modelsStore })
   installProvider()
+  // 重启后先把落盘的目录拿回来，不等联网
+  void service.restore().catch(error => ctx.logger.error(`CodeBuddy 目录缓存恢复失败：${String(error)}`))
   const registration = ctx.llm.registerAdapter([PROVIDER], new CodeBuddyAdapter(models, service.accountSignal, service.refreshModels, {
     requestHeaders: sessionId => conversationHeaders(sessionId),
-    onPayload: (payload, sessionId) => withPromptCacheKey(payload, sessionId),
+    onPayload: (payload, sessionId) => debugPayload(withPromptCacheKey(payload, sessionId), sessionId),
+    ...(requestDebugEnabled ? { onResponse: debugResponse, fetch: debugFetch } : {}),
+    // 附件服务按请求时解析：它可能晚于本插件加载
+    images: createImageReader(() => ctx.get('attachments')),
   }))
   ctx.effect(() => () => service.dispose())
   let defaultHost: AgentDefaultModelConfig | undefined

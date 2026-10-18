@@ -4,6 +4,8 @@ import {
   ReasoningEffortId,
   ToolCallId,
   attributionHeaders,
+  offloadedImageText,
+  projectOffloadedImages,
   type ContentBlock,
   type GenerateOptions,
   type LlmModelInfo,
@@ -25,6 +27,7 @@ import type {
 } from '@earendil-works/pi-ai'
 
 import { REASONING_LEVELS as LEVELS } from './contract.ts'
+import { toBase64, type ImageReader } from './images.ts'
 type Level = (typeof LEVELS)[number]
 
 const EFFORTS = LEVELS.map(level => ({
@@ -32,15 +35,17 @@ const EFFORTS = LEVELS.map(level => ({
   name: level === 'off' ? 'Off' : level[0]!.toUpperCase() + level.slice(1),
 }))
 
-function modelInfo(provider: string, model: Model<Api>): LlmModelInfo {
+/** 目录里标 supportsImages 且附件服务可用的模型才声明图片输入；否则 dsh 在发送前就会拒绝带图消息。 */
+function supportsImages(model: Model<Api>, images: ImageReader | undefined): boolean {
+  return images !== undefined && images.available() && model.input.includes('image')
+}
+
+function modelInfo(provider: string, model: Model<Api>, images: ImageReader | undefined): LlmModelInfo {
   return {
     provider,
     id: model.id,
     name: model.name,
-    // dsh image blocks are durable attachment references. Until this adapter
-    // resolves them through ctx.attachment, advertise the capability it can
-    // faithfully serialize instead of silently dropping images.
-    inputModalities: ['text'],
+    inputModalities: supportsImages(model, images) ? ['text', 'image'] : ['text'],
   }
 }
 
@@ -51,31 +56,59 @@ function textFrom(blocks: readonly ContentBlock[]): string {
   }).join('\n')
 }
 
-function toPiContext(options: GenerateOptions): PiContext {
+type PiPart = { type: 'text'; text: string } | { type: 'image'; data: string; mimeType: string }
+
+/**
+ * 把 dsh 的用户 / 工具内容块转成 pi-ai 的内容：文本合并，图片经附件服务取字节后作 base64 内联
+ * （pi-ai 的 openai-completions 会编成 image_url data URL）。没有图片读取器时图片只留占位文本。
+ */
+async function partsFrom(blocks: readonly ContentBlock[], images: ImageReader | undefined, signal: AbortSignal | undefined): Promise<PiPart[]> {
+  const parts: PiPart[] = []
+  const pushText = (text: string) => {
+    if (text.length === 0) return
+    const last = parts[parts.length - 1]
+    if (last?.type === 'text') last.text = `${last.text}\n${text}`
+    else parts.push({ type: 'text', text })
+  }
+  for (const block of blocks) {
+    if (block.type === 'text' || block.type === 'reasoning') pushText(block.text)
+    else if (block.type === 'image') {
+      if (!images?.available()) { pushText(offloadedImageText(block.attachment)); continue }
+      const image = await images.read(block.attachment, signal)
+      parts.push({ type: 'image', data: toBase64(image.data), mimeType: image.mediaType })
+    }
+  }
+  return parts
+}
+
+async function toPiContext(options: GenerateOptions, images: ImageReader | undefined, signal: AbortSignal | undefined): Promise<PiContext> {
   const messages: PiContext['messages'] = []
   const toolNames = new Map<string, string>()
-  const leadingSystem = options.system === undefined && options.messages[0]?.role === 'system'
-  const systemPrompt = leadingSystem ? textFrom(options.messages[0]!.content) || undefined : options.system
-  for (const message of leadingSystem ? options.messages.slice(1) : options.messages) {
+  // 已卸载的图片（超出预算时 dsh 记录的决定）只发占位文本
+  const history = projectOffloadedImages(options.messages, ref => offloadedImageText(ref))
+  const leadingSystem = options.system === undefined && history[0]?.role === 'system'
+  const systemPrompt = leadingSystem ? textFrom(history[0]!.content) || undefined : options.system
+  for (const message of leadingSystem ? history.slice(1) : history) {
     if (message.role === 'developer') throw new LlmError('CodeBuddy does not support developer messages', 'UNSUPPORTED_CONTENT')
     if (message.role === 'system') {
       messages.push({ role: 'user', content: textFrom(message.content), timestamp: Date.now() })
       continue
     }
     if (message.role === 'tool') {
+      const parts = await partsFrom(message.content, images, signal)
       messages.push({
         role: 'toolResult', toolCallId: String(message.toolCallId),
         toolName: toolNames.get(String(message.toolCallId)) ?? '',
-        content: [{ type: 'text', text: textFrom(message.content) }],
+        content: parts.length > 0 ? parts : [{ type: 'text', text: '' }],
         isError: message.isError ?? false, timestamp: Date.now(),
       })
       continue
     }
     if (message.role === 'user') {
-      const text = message.content
-        .flatMap(block => block.type === 'text' || block.type === 'reasoning' ? [block.text] : [])
-        .join('\n')
-      if (text.length > 0) messages.push({ role: 'user', content: text, timestamp: Date.now() })
+      const parts = await partsFrom(message.content, images, signal)
+      if (parts.length === 0) continue
+      const content = parts.length === 1 && parts[0]!.type === 'text' ? parts[0]!.text : parts
+      messages.push({ role: 'user', content, timestamp: Date.now() })
       continue
     }
     if (message.role === 'assistant') {
@@ -118,6 +151,12 @@ export interface CodeBuddyRequestHooks {
   requestHeaders?: (sessionId: string | undefined) => Record<string, string>
   /** Last-minute payload edit (for example `prompt_cache_key`); return the payload to send. */
   onPayload?: (payload: unknown, sessionId: string | undefined) => unknown
+  /** Response status and headers for diagnostics; never the body. */
+  onResponse?: (status: number, headers: Record<string, string>, sessionId: string | undefined) => void
+  /** Resolves dsh image attachments to bytes; absent means text-only models. */
+  images?: ImageReader
+  /** Diagnostic fetch wrapper for one request; undefined keeps the default. */
+  fetch?: (sessionId: string | undefined) => typeof fetch | undefined
 }
 
 export class CodeBuddyAdapter extends LlmAdapter {
@@ -157,7 +196,7 @@ export class CodeBuddyAdapter extends LlmAdapter {
     signal.throwIfAborted()
     await this.refresh({ allowNetwork: true, signal })
     signal.throwIfAborted()
-    return this.models.getModels('codebuddy').map(model => modelInfo(provider, model))
+    return this.models.getModels('codebuddy').map(model => modelInfo(provider, model, this.hooks.images))
   }
 
   override async resolveModel(provider: string, id: string, signal?: AbortSignal): Promise<LlmResolvedModelInfo> {
@@ -169,7 +208,7 @@ export class CodeBuddyAdapter extends LlmAdapter {
     const model = this.models.getModel('codebuddy', id)
     if (model === undefined) return { provider, id, name: id, inputModalities: ['text'] }
     return {
-      ...modelInfo(provider, model),
+      ...modelInfo(provider, model, this.hooks.images),
       context: { contextWindow: model.contextWindow },
       defaultMaxTokens: model.maxTokens,
       ...(model.reasoning ? { reasoning: { efforts: EFFORTS, defaultEffort: ReasoningEffortId('high') } } : {}),
@@ -189,7 +228,10 @@ export class CodeBuddyAdapter extends LlmAdapter {
     const open = new Map<number, { kind: 'text' | 'reasoning' | 'tool-call'; text: string; id?: string; name?: string }>()
     const sessionId = options.sessionId === undefined ? undefined : String(options.sessionId)
     const onPayload = this.hooks.onPayload
-    const stream = this.models.streamSimple(model, toPiContext(options), {
+    const onResponse = this.hooks.onResponse
+    const context = await toPiContext(options, supportsImages(model, this.hooks.images) ? this.hooks.images : undefined, signal)
+    signal.throwIfAborted()
+    const stream = this.models.streamSimple(model, context, {
       temperature: options.temperature,
       maxTokens: options.maxTokens,
       reasoning: options.reasoningEffort as ThinkingLevel | undefined,
@@ -203,6 +245,8 @@ export class CodeBuddyAdapter extends LlmAdapter {
         ...this.hooks.requestHeaders?.(sessionId),
       },
       ...(onPayload ? { onPayload: (payload: unknown) => onPayload(payload, sessionId) } : {}),
+      ...(onResponse ? { onResponse: (response: { status: number; headers: Record<string, string> }) => onResponse(response.status, response.headers, sessionId) } : {}),
+      ...(() => { const f = this.hooks.fetch?.(sessionId); return f ? { fetch: f } : {} })(),
     })
     for await (const event of stream) {
       signal.throwIfAborted()

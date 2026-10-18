@@ -1,6 +1,6 @@
 {
   "name": "@lbryany/dsh-codebuddy",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "CodeBuddy OAuth, dynamic models, and reasoning controls for DeepSeek Harness",
   "keywords": [
     "dsh-plugin",
@@ -101,6 +101,7 @@
   "devDependencies": {
     "@deepseek-ai/cordis": "~4.0.5",
     "@deepseek-ai/dsh-agent-default-model": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-attachment": "0.2.1-rc.2",
     "@deepseek-ai/dsh-client-connection": "0.2.1-rc.2",
     "@deepseek-ai/dsh-client-locale": "0.2.1-rc.2",
     "@deepseek-ai/dsh-client-ui-primitives": "0.2.1-rc.2",

@@ -2,7 +2,7 @@
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的 CodeBuddy 插件：提供 OAuth 登录、账号动态模型目录、流式请求以及推理等级选择。
 
-本分支面向 **DSH 0.2.x**：`engines.dsh` 声明为 `>=0.2.1-rc.2 <0.3.0-0`，已验收的准确版本为 **0.2.1-rc.2**，SDK 开发依赖固定到该版本。本分支不承诺兼容 `0.1.x`。插件从 `0.1.4` 起包含设置与接入改造，`0.1.5` 起会话级 `x-conversation-id` 修复提示缓存每轮失效的问题（见下文）。
+本分支面向 **DSH 0.2.x**：`engines.dsh` 声明为 `>=0.2.1-rc.2 <0.3.0-0`，已验收的准确版本为 **0.2.1-rc.2**，SDK 开发依赖固定到该版本。本分支不承诺兼容 `0.1.x`。插件从 `0.1.4` 起包含设置与接入改造，`0.1.5` 起会话级 `x-conversation-id` 修复提示缓存每轮失效的问题（见下文）；`0.1.6` 起模型目录落盘缓存、支持图片输入、可开请求诊断。
 
 ## 功能
 
@@ -12,7 +12,8 @@
 - 在 dsh 模型选择器中显示独立的 `CodeBuddy` 分类。
 - 登录后动态加载当前账号可用的模型。
 - 支持 `Off / Minimal / Low / Medium / High / Xhigh / Max` 推理等级。
-- OAuth 凭据通过 dsh Credential Store 持久化，重启后自动恢复模型目录。
+- OAuth 凭据通过 dsh Credential Store 持久化；模型目录落盘到 `$DSH_HOME/codebuddy/models-cache.json`，重启后先恢复上次目录再按需联网。
+- 目录里标 `supportsImages` 的模型可以在 dsh 里直接发图片（经 dsh 附件服务缩放后内联 base64）。
 - 提供 `/codebuddy-status` 和 `/codebuddy-logout`。
 
 ## 前置要求
@@ -70,7 +71,7 @@ cd dsh-codebuddy
 npm ci
 npm run check
 npm pack --ignore-scripts
-dsh plugin --profile web add ./lbryany-dsh-codebuddy-0.1.4.tgz
+dsh plugin --profile web add ./lbryany-dsh-codebuddy-0.1.6.tgz
 dsh web
 ```
 
@@ -95,6 +96,23 @@ CodeBuddy 服务端按 `x-conversation-id` 识别一个对话。0.1.5 之前插�
 - `x-conversation-id` 由 dsh 的会话 id 哈希成稳定的 UUID，同一会话每轮相同；`x-request-id`、`x-conversation-message-id`、`x-conversation-request-id` 仍逐请求变化。思路与 cc-switch 一致：跨轮稳定的 session / conversation id 才能当会话身份，逐请求 id 只能当请求 id。
 - `PI_CODEBUDDY_CLI_HEADERS=0` 关闭 CLI 请求头时，这个会话级头也一起关闭。
 - 可选：`PI_CODEBUDDY_PROMPT_CACHE_KEY=1` 时在请求体里加 OpenAI 的 `prompt_cache_key`（取 dsh 会话 id，最长 64 字符），供 OpenAI 兼容上游按会话路由缓存。默认关闭，因为严格的上游会拒绝未知字段。
+
+## 模型目录缓存
+
+- 目录由 pi-ai 的 ModelsStore 落盘到 `$DSH_HOME/codebuddy/models-cache.json`（没有 `DSH_HOME` 时是 `~/.dsh/...`）。Host 重启后先从文件恢复（设置页标"正在显示上次成功的目录"），第一次请求或手动"刷新目录"再联网核对。
+- 每次请求前适配器都会刷新一次目录；上次成功联网刷新距今不超过 `PI_CODEBUDDY_CATALOG_TTL_MS`（默认 600000，即 10 分钟；设 0 表示每次都联网）时直接跳过网络。设置页的"刷新目录"始终联网。
+- 联网刷新失败时保留上次目录；退出登录会一并删掉缓存文件里的本账号条目。
+
+## 图片输入
+
+- 目录里 `supportsImages` 为真的模型（如 Deepseek-V4.1-Flash）在 dsh 里声明图片输入；用户消息与工具结果里的图片经 dsh 附件服务按长边 2048 像素、4 MiB 以内取出，再以 base64 data URL 放进 OpenAI 兼容请求体。
+- 不支持图片的模型仍只声明文本，dsh 会在发送前拦下带图消息。dsh 标记为已卸载的图片只发占位文本。
+
+## 请求诊断
+
+- `PI_CODEBUDDY_DEBUG_LOG=<文件>` 时，每次聊天请求追加一行请求体摘要（字段、字节数、消息角色与长度、工具名）和一行响应状态 / 响应头（不含任何凭据、不含响应体）。
+- 诊断开启时 `PI_CODEBUDDY_STRIP=tools,reasoning_effort,stream_options,temperature,max_tokens` 可按字段名从请求体剔除指定字段，用于排查某个部署或模型不接受哪个字段。
+- 2026-10-18 实测：国内站网关对本插件的聊天请求返回 HTTP 400、业务码 11128 "request illegal"（提示"没通过渠道校验，可能不是官方客户端发出"），目录接口正常。这是服务端的客户端渠道校验，本插件不会绕过；请使用 CodeBuddy 官方提供的第三方接入方式。
 
 ## 命令
 
