@@ -154,6 +154,8 @@ export interface CodeBuddyRequestHooks {
   onPayload?: (payload: unknown, sessionId: string | undefined) => unknown
   /** Response status and headers for diagnostics; never the body. */
   onResponse?: (status: number, headers: Record<string, string>, sessionId: string | undefined) => void
+  /** Token usage of one finished call for diagnostics, with the request id it answers. */
+  onUsage?: (usage: { input: number; output: number; cacheRead: number; cacheWrite: number }, sessionId: string | undefined, requestId: string | undefined) => void
   /** Resolves dsh image attachments to bytes; absent means text-only models. */
   images?: ImageReader
   /** Diagnostic fetch wrapper for one request; undefined keeps the default. */
@@ -287,6 +289,7 @@ export class CodeBuddyAdapter extends LlmAdapter {
           throw new LlmError('CodeBuddy returned a deferred tool response, which DSH cannot consume', 'UNSUPPORTED')
         }
         if (call) this.hooks.requestContext?.complete?.(call)
+        this.hooks.onUsage?.(event.message.usage, sessionId, call?.messageId)
         yield { type: 'usage', usage: {
           inputTokens: event.message.usage.input,
           outputTokens: event.message.usage.output,

@@ -67,3 +67,7 @@ export function debugFetch(sessionId: string | undefined): typeof fetch | undefi
     return response
   }
 }
+
+export function debugUsage(usage: { input: number; output: number; cacheRead: number; cacheWrite: number }, sessionId: string | undefined, requestId: string | undefined): void {
+  debugLine('chat.usage', { sessionId, requestId, input: usage.input, output: usage.output, cacheRead: usage.cacheRead, cacheWrite: usage.cacheWrite })
+}

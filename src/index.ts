@@ -14,7 +14,7 @@ import { RequestContextTracker } from './request-context.ts'
 import { CodeBuddyAdapter } from './adapter.ts'
 import { DshCredentialStore } from './credential-store.ts'
 import { FileModelsStore } from './models-store.ts'
-import { debugFetch, debugPayload, debugResponse, requestDebugEnabled } from './debug.ts'
+import { debugFetch, debugPayload, debugResponse, debugUsage, requestDebugEnabled } from './debug.ts'
 import { createImageReader } from './images.ts'
 import type {} from '@deepseek-ai/dsh-attachment'
 import { authorizationUrlText } from './login.ts'
@@ -63,7 +63,7 @@ export function apply(ctx: Context, config?: { defaultSite: Volatile<string>; ca
     // 缓存保留时长按请求读取当前偏好，保存后立即生效
     onPayload: (payload, sessionId) => debugPayload(
       withCacheRetention(withPromptCacheKey(payload, sessionId), preferences.status().cacheRetention), sessionId),
-    ...(requestDebugEnabled ? { onResponse: debugResponse, fetch: debugFetch } : {}),
+    ...(requestDebugEnabled ? { onResponse: debugResponse, onUsage: debugUsage, fetch: debugFetch } : {}),
     // 附件服务按请求时解析：它可能晚于本插件加载
     images: createImageReader(() => ctx.get('attachments')),
   }))
