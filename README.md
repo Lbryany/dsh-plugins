@@ -112,7 +112,7 @@ CodeBuddy 服务端按 `x-conversation-id` 识别一个对话。0.1.5 之前插�
 
 - `PI_CODEBUDDY_DEBUG_LOG=<文件>` 时，每次聊天请求追加一行请求体摘要（字段、字节数、消息角色与长度、工具名）和一行响应状态 / 响应头（不含任何凭据、不含响应体）。
 - 诊断开启时 `PI_CODEBUDDY_STRIP=tools,reasoning_effort,stream_options,temperature,max_tokens` 可按字段名从请求体剔除指定字段，用于排查某个部署或模型不接受哪个字段。
-- 2026-10-18 实测：国内站网关对本插件的聊天请求返回 HTTP 400、业务码 11128 "request illegal"（提示"没通过渠道校验，可能不是官方客户端发出"），目录接口正常。这是服务端的客户端渠道校验，本插件不会绕过；请使用 CodeBuddy 官方提供的第三方接入方式。
+- 2026-10-18 实测：国内站网关对本插件的聊天请求最初返回 HTTP 400、业务码 11128 "request illegal"（提示"没通过渠道校验，可能不是官方客户端发出"），目录接口正常。同日按 CodeBuddy 技术团队指导，把聊天请求的 `User-Agent` 改为恰好 `CLI/2.125.0 CodeBuddy/2.125.0`，去掉 dsh 署名后缀（偏离 dsh 的 `attributionHeaders()` 约定）。结果：待补。
 
 ## 命令
 

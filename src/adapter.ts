@@ -3,7 +3,6 @@ import {
   LlmError,
   ReasoningEffortId,
   ToolCallId,
-  attributionHeaders,
   offloadedImageText,
   projectOffloadedImages,
   type ContentBlock,
@@ -238,9 +237,9 @@ export class CodeBuddyAdapter extends LlmAdapter {
       signal,
       sessionId,
       headers: {
-        // Preserve CodeBuddy's required CLI identity while satisfying dsh's
-        // mandatory public product attribution on the same wire request.
-        'User-Agent': `CLI/2.125.0 CodeBuddy/2.125.0 ${attributionHeaders()['user-agent']}`,
+        // Exact value per the CodeBuddy technical team (2026-10-18). This departs
+        // from dsh's attributionHeaders() adapter contract on purpose.
+        'User-Agent': 'CLI/2.125.0 CodeBuddy/2.125.0',
         // Session-stable conversation id overrides the per-request one toAuth generated.
         ...this.hooks.requestHeaders?.(sessionId),
       },

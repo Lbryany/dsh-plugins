@@ -141,6 +141,6 @@ test('adapter layers session-stable request headers and payload hooks over each 
   assert.equal(seen.length, 2)
   assert.equal(seen[0]!.headers?.['x-conversation-id'], 'conv-ses_1')
   assert.equal(seen[1]!.headers?.['x-conversation-id'], 'conv-ses_1')
-  assert.match(seen[0]!.headers?.['User-Agent'] ?? '', /^CLI\/2\.125\.0 CodeBuddy\/2\.125\.0 /)
+  assert.equal(seen[0]!.headers?.['User-Agent'], 'CLI/2.125.0 CodeBuddy/2.125.0')
   assert.deepEqual(seen[0]!.payload, { model: 'reasoner', prompt_cache_key: 'ses_1' })
 })
