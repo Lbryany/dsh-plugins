@@ -1,0 +1,3 @@
+- insert:
+    - id: dsh-peer
+      name: '@lbryany/dsh-peer'
