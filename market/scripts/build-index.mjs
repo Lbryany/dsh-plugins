@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 生成 dist/index.json。
 //   node scripts/build-index.mjs [--repo owner/name] [--dry-run] [--out dist/index.json]
-// 环境变量：GITHUB_TOKEN（可选，提高 API 限额）、INDEX_URL（默认 https://lbryany.github.io/dsh-plugin-market/index.json）
+// 环境变量：GITHUB_TOKEN（可选，提高 API 限额）、INDEX_URL（默认 https://lbryany.github.io/dsh-plugins/index.json）
 
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -11,7 +11,7 @@ import { buildIndex } from './lib/build.mjs';
 import { loadMarketIndexLib } from './lib/market-index.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const DEFAULT_INDEX_URL = 'https://lbryany.github.io/dsh-plugin-market/index.json';
+const DEFAULT_INDEX_URL = 'https://lbryany.github.io/dsh-plugins/index.json';
 
 function parseArgs(argv) {
   const args = { dryRun: false, out: 'dist/index.json' };

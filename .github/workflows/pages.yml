@@ -1,4 +1,4 @@
-# 生成索引并部署到 GitHub Pages；部署后对线上 URL 自检。
+# 生成插件市场索引（market/）并部署到 GitHub Pages；部署后对线上 URL 自检。
 # 触发：push main、每天一次（UTC 03:17）、手动。
 name: 发布索引到 Pages
 
@@ -21,12 +21,16 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: market
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: market/package-lock.json
       - run: npm ci
       - run: npm test
       - name: 生成索引
@@ -38,7 +42,7 @@ jobs:
           enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: market/dist
 
   deploy:
     needs: build
@@ -55,12 +59,16 @@ jobs:
   verify:
     needs: deploy
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: market
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: market/package-lock.json
       - run: npm ci
       - name: 线上自检（Pages 生效有几十秒延迟，最多重试 6 次）
         run: |
