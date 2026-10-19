@@ -33,5 +33,22 @@
       "headless"
     ],
     "author": "Lbryany"
+  },
+  {
+    "repo": "Lbryany/dsh-plugins",
+    "dir": "packages/dsh-widget",
+    "title": {
+      "zh": "对话内交互卡片",
+      "en": "Interactive chat widgets"
+    },
+    "description": {
+      "zh": "在对话里生成可交互的 HTML 卡片（fork 自 dsh-visualize 0.1.7），卡片状态可持久化并回流模型，支持卡片追问与外链。",
+      "en": "Interactive HTML widgets inside the conversation (forked from dsh-visualize 0.1.7), with persisted widget state fed back to the model, follow-up questions from cards, and external links."
+    },
+    "category": "workflow",
+    "labels": [
+      "web"
+    ],
+    "author": "Lbryany"
   }
 ]
