@@ -2,3 +2,5 @@ node_modules/
 *.log
 *.tgz
 .tmp/
+# 本地说明页，不发布
+docs/agent-messaging-explainer.html
