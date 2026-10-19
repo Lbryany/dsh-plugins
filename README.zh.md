@@ -12,6 +12,7 @@ Lbryany 的 [DeepSeek Harness（dsh）](https://www.npmjs.com/package/@deepseek-
 |---|---|---|
 | `@lbryany/dsh-herdr` | [packages/dsh-herdr](packages/dsh-herdr) | 会话生命周期状态同步到 Herdr（无界面） |
 | `@lbryany/dsh-peer` | [packages/dsh-peer](packages/dsh-peer) | 同机 dsh 会话之间的发现与消息投递（`peer_list` / `peer_send` / `peer_rename`） |
+| `@lbryany/dsh-widget` | [packages/dsh-widget](packages/dsh-widget) | 对话内可交互卡片（fork 自 Nagi-ovo/dsh-visualize），带状态持久化、状态回流模型、卡片追问与外链；未发布 |
 
 dsh-herdr 原来在独立仓库（已归档），2026-10-19 连同提交历史迁入本仓库。
 
@@ -33,7 +34,7 @@ dsh-herdr 原来在独立仓库（已归档），2026-10-19 连同提交历史�
 ## 开发
 
 各插件互相独立，没有共享的构建步骤：
-- dsh-herdr 是 TypeScript，用 tsdown 构建，构建产物 `lib/` 提交在仓库里；
+- dsh-herdr、dsh-widget 是 TypeScript，用 tsdown 构建，构建产物 `lib/` 提交在仓库里；
 - dsh-peer 是纯 JS。
 
 在插件目录里运行 `npm run check`（有 `package-lock.json` 的先 `npm ci`），打 tag 之前必须先跑通。CI（`.github/workflows/ci.yml`）在 push 和 PR 时对每个插件都跑一遍，并核对提交的 `lib/` 与构建结果一致。

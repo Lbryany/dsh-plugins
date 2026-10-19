@@ -1,0 +1,17 @@
+dsh-widget
+Copyright (c) 2026 Bryan Lee
+
+本包 fork 自 Nagi-ovo/dsh-visualize（https://github.com/Nagi-ovo/dsh-visualize），
+fork 基点：v0.1.7，提交 1ab0d903b4d689524e9f72e5a4624e93d0b47cd2。
+上游以 BSD 3-Clause 许可发布，原文见 LICENSE.dsh-visualize；上游代码的版权归其作者，
+沿用的部分继续受该许可约束。本包新增与修改的部分以 MIT 许可发布（见 LICENSE）。
+
+相对上游的修改：
+- 改名：包名 @lbryany/dsh-widget，插件名与补丁 id dsh-widget，落盘目录 <DSH_HOME>/widget，
+  消息类型前缀 dsh-widget:，设置路由 /api/dsh-widget/*；工具名与技能名仍为 visualize。
+- 新增 frame 内的宿主桥 window.dsh：卡片状态读写、状态事件、经确认框发起追问、外链。
+- 新增宿主侧状态存储（<DSH_HOME>/widget/state）与把 modelContent 作为不可信数据回流模型的系统提示段。
+- 技能文本末尾追加中文章节；改用 npm 构建；去掉上游的演示媒体文件与 CI 配置。
+
+本包的桥接口在语义上参照了 ZCode Gen UI 的公开契约数值（16 KiB、100 条、64 KiB、
+不可信标注与转义规则），没有复制其代码或文档文字。

@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [dsh-herdr, dsh-peer]
+        package: [dsh-herdr, dsh-peer, dsh-widget]
     defaults:
       run:
         working-directory: packages/${{ matrix.package }}
