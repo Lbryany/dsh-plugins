@@ -1,6 +1,7 @@
 [
   {
-    "repo": "Lbryany/dsh-codebuddy",
+    "repo": "Lbryany/dsh-plugins",
+    "dir": "packages/dsh-codebuddy",
     "title": {
       "zh": "CodeBuddy 模型接入",
       "en": "CodeBuddy models"
@@ -16,7 +17,8 @@
     "author": "Lbryany"
   },
   {
-    "repo": "Lbryany/dsh-herdr",
+    "repo": "Lbryany/dsh-plugins",
+    "dir": "packages/dsh-herdr",
     "title": {
       "zh": "Herdr 状态同步",
       "en": "Herdr status"

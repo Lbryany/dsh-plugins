@@ -1,0 +1,28 @@
+# 各插件独立检查：有 package-lock 的先 npm ci；跑 npm run check；有构建的核对提交进仓库的 lib/ 与构建结果一致
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [dsh-codebuddy, dsh-herdr, dsh-peer]
+    defaults:
+      run:
+        working-directory: packages/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: 安装依赖
+        run: if [ -f package-lock.json ]; then npm ci; fi
+      - run: npm run check
+      - name: 核对提交的构建产物
+        run: if grep -q '"build"' package.json; then git diff --exit-code -- lib; fi

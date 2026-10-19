@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "node scripts/build-index.mjs",
-    "check": "node scripts/check-index.mjs https://lbryany.github.io/dsh-plugin-market/index.json",
+    "check": "node scripts/check-index.mjs https://lbryany.github.io/dsh-plugins/index.json",
     "test": "node --test test/*.test.mjs"
   },
   "devDependencies": {
@@ -19,6 +19,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lbryany/dsh-plugin-market.git"
+    "url": "git+https://github.com/Lbryany/dsh-plugins.git",
+    "directory": "market"
   }
 }
