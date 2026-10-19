@@ -4,3 +4,4 @@ node_modules/
 .tmp/
 # 本地说明页，不发布
 docs/agent-messaging-explainer.html
+packages/dsh-codebuddy/docs/codebuddy-request-headers-spec.md
