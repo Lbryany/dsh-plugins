@@ -9,11 +9,14 @@ declare const inject: string[];
 declare const CREDENTIAL_REF: import("@deepseek-ai/dsh-credentials").CredentialRef;
 declare const Config: z<Schemastery.ObjectS<NoInfer<{
   defaultSite: z<string, string, "volatile-defined">;
+  cacheRetention: z<"long" | "short" | "default" | "1h", "long" | "short" | "default" | "1h", "volatile-defined">;
 }>>, Schemastery.ObjectT<NoInfer<{
   defaultSite: z<string, string, "volatile-defined">;
+  cacheRetention: z<"long" | "short" | "default" | "1h", "long" | "short" | "default" | "1h", "volatile-defined">;
 }>>, "plain">;
 declare function apply(ctx: Context, config?: {
   defaultSite: Volatile<string>;
+  cacheRetention?: Volatile<string>;
 }): void;
 //#endregion
 export { CREDENTIAL_REF, Config, PROVIDER, apply, inject, name };

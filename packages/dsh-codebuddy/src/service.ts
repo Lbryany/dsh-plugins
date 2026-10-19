@@ -1,4 +1,4 @@
-import type { CredentialStore, Models, ModelsRefreshOptions, ModelsRefreshResult } from '@earendil-works/pi-ai'
+import type { CredentialStore, Models, ModelsRefreshOptions, ModelsRefreshResult, ModelsStore } from '@earendil-works/pi-ai'
 import { CodeBuddyLoginManager, type LoginLogger, type LoginRegistration } from './login.ts'
 import { normalizeSite, PROVIDER, PublicError, type CatalogView, type StatusView } from './contract.ts'
 
@@ -8,7 +8,19 @@ interface ServiceOptions {
   registration: LoginRegistration
   logger: LoginLogger
   resetProvider?(): void
+  /** 落盘的目录缓存；给了才会在启动时恢复、退出时清掉。 */
+  modelsStore?: Pick<ModelsStore, 'read' | 'delete'>
+  /** 目录新鲜期：上次成功刷新距今不超过它时，普通刷新不联网（缺省 CATALOG_TTL_MS）。 */
+  catalogTtlMs?: number
+  now?: () => number
 }
+
+/** 目录缓存新鲜期缺省 10 分钟；可用 PI_CODEBUDDY_CATALOG_TTL_MS 覆盖（0 = 每次都联网）。 */
+export const CATALOG_TTL_MS = (() => {
+  const raw = process.env.PI_CODEBUDDY_CATALOG_TTL_MS?.trim()
+  const parsed = raw === undefined || raw === '' ? Number.NaN : Number(raw)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 600_000
+})()
 
 export class CodeBuddyService {
   readonly login: CodeBuddyLoginManager
@@ -21,10 +33,14 @@ export class CodeBuddyService {
   private catalog: CatalogView = { status: 'idle', models: [], cached: false }
   private source?: string
   private refreshTask?: { epoch: number; promise: Promise<ModelsRefreshResult> }
+  private readonly ttl: number
+  private readonly now: () => number
 
   constructor(options: ServiceOptions) {
     this.options = options
     this.models = options.models
+    this.ttl = options.catalogTtlMs ?? CATALOG_TTL_MS
+    this.now = options.now ?? Date.now
     this.login = new CodeBuddyLoginManager({
       login: (...args) => this.models.login(...args),
       getModels: (...args) => this.models.getModels(...args),
@@ -33,6 +49,39 @@ export class CodeBuddyService {
   }
 
   get revision(): number { return this.epoch }
+
+  /**
+   * 启动时从落盘缓存恢复目录（不联网）：有凭据且缓存里有模型时，目录直接可用并标 cached，
+   * 之后第一次请求或手动刷新再联网核对。没有缓存就保持 idle。
+   */
+  async restore(): Promise<CatalogView> {
+    const epoch = this.epoch
+    const credential = await this.options.store.read(PROVIDER)
+    if (epoch !== this.epoch || this.disposed || !credential) return structuredClone(this.catalog)
+    const stored = await this.options.modelsStore?.read(PROVIDER).catch(() => undefined)
+    if (epoch !== this.epoch || this.disposed || !stored || stored.models.length === 0) return structuredClone(this.catalog)
+    try { await this.models.refresh({ allowNetwork: false, providers: [PROVIDER] }) } catch { /* 恢复失败就当没有缓存 */ }
+    if (epoch !== this.epoch || this.disposed || this.catalog.status !== 'idle') return structuredClone(this.catalog)
+    const models = this.catalogModels()
+    if (models.length > 0) {
+      this.catalog = { status: 'ready', cached: true, source: 'stored', updatedAt: stored.checkedAt, models }
+      this.options.registration.replace([PROVIDER])
+    }
+    return structuredClone(this.catalog)
+  }
+
+  private catalogModels() {
+    return this.models.getModels(PROVIDER).map(model => ({
+      id: model.id, name: model.name, reasoning: model.reasoning, contextWindow: model.contextWindow,
+    }))
+  }
+
+  /** 普通刷新是否可以不联网：上次成功联网刷新还在新鲜期内，且 pi-ai 里已有模型。 */
+  private catalogFresh(): boolean {
+    if (this.catalog.status !== 'ready' || this.catalog.cached || this.catalog.updatedAt === undefined) return false
+    if (this.ttl <= 0) return false
+    return this.now() - this.catalog.updatedAt < this.ttl && this.models.getModels(PROVIDER).length > 0
+  }
   accountSignal = (): AbortSignal => this.account.signal
 
   withAccount<T>(action: () => Promise<T>): Promise<T> {
@@ -103,6 +152,7 @@ export class CodeBuddyService {
       this.invalidate()
       await this.login.cancel()
       await this.models.logout(PROVIDER)
+      await this.options.modelsStore?.delete(PROVIDER).catch(() => {})
       this.login.reset()
       this.account = new AbortController()
       this.options.registration.replace([PROVIDER])
@@ -150,6 +200,8 @@ export class CodeBuddyService {
 
   refreshModels = (input: ModelsRefreshOptions = {}): Promise<ModelsRefreshResult> => {
     if (this.refreshTask?.epoch === this.epoch) return this.refreshTask.promise
+    // 每次请求前适配器都会调一次刷新；目录还新鲜就不联网，避免每条消息都去拉一次模型列表。
+    if (!input.force && input.allowNetwork !== false && this.catalogFresh()) return Promise.resolve({ aborted: false, errors: new Map() })
     const epoch = this.epoch
     this.catalog = { ...this.catalog, status: 'refreshing', error: undefined }
     const task = { epoch, promise: Promise.resolve().then(async () => {
@@ -160,11 +212,9 @@ export class CodeBuddyService {
       if (result.aborted || input.signal?.aborted || result.errors.has(PROVIDER)) {
         this.catalog = { ...this.catalog, status: 'error', cached: this.catalog.models.length > 0, error: 'models-unavailable' }
       } else {
-        const models = this.models.getModels(PROVIDER).map(model => ({
-            id: model.id, name: model.name, reasoning: model.reasoning, contextWindow: model.contextWindow,
-          }))
+        const models = this.catalogModels()
         const changed = JSON.stringify(models) !== JSON.stringify(this.catalog.models)
-        this.catalog = { status: 'ready', cached: false, source: this.source, updatedAt: Date.now(), models }
+        this.catalog = { status: 'ready', cached: false, source: this.source, updatedAt: this.now(), models }
         if (changed) this.options.registration.replace([PROVIDER])
       }
       return result
