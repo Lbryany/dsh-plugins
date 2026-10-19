@@ -102,6 +102,7 @@ DSH 默认会把已完成回合的工具过程折叠起来。折叠时，这一�
 
 - 只在 Web 界面渲染交互卡片，TUI 和 headless 客户端显示普通工具结果；headless 下没有状态路由，`setWidgetState` 以 `unavailable` 失败。
 - 卡片状态与对话分开保存，删除会话不会自动删除 `~/.dsh/widget/state/` 下对应的目录。
+- 追问在确认之后如果发送失败（例如会话已关闭或宿主拒收），只有 frame 里的 Promise 以 `failed` reject，宿主界面上没有任何提示；卡片要自己接住失败并告诉用户。
 - 手机端未实测。
 
 ## 开发

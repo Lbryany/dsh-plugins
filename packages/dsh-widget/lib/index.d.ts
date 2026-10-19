@@ -1275,15 +1275,15 @@ declare const saveStateRequestSchema: ZodObject<{
   title: ZodOptional<ZodString>;
   state: ZodType<WidgetState, ZodTypeDef, unknown>;
 }, "strict", ZodTypeAny, {
-  state: WidgetState;
   path: string;
   session: string;
+  state: WidgetState;
   title?: string | undefined;
 }, {
   path: string;
   session: string;
-  state?: unknown;
   title?: string | undefined;
+  state?: unknown;
 }>;
 type SaveStateRequest = TypeOf<typeof saveStateRequestSchema>;
 /** 落盘的一条卡片状态。 */
