@@ -143,10 +143,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lbryany/dsh-codebuddy.git"
+    "url": "https://github.com/Lbryany/dsh-plugins.git",
+    "directory": "packages/dsh-codebuddy"
   },
   "bugs": {
-    "url": "https://github.com/Lbryany/dsh-codebuddy/issues"
+    "url": "https://github.com/Lbryany/dsh-plugins/issues"
   },
-  "homepage": "https://github.com/Lbryany/dsh-codebuddy#readme"
+  "homepage": "https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-codebuddy#readme"
 }
