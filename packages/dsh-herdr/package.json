@@ -66,10 +66,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lbryany/dsh-herdr.git"
+    "url": "https://github.com/Lbryany/dsh-plugins.git",
+    "directory": "packages/dsh-herdr"
   },
   "bugs": {
-    "url": "https://github.com/Lbryany/dsh-herdr/issues"
+    "url": "https://github.com/Lbryany/dsh-plugins/issues"
   },
-  "homepage": "https://github.com/Lbryany/dsh-herdr#readme"
+  "homepage": "https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-herdr#readme"
 }
