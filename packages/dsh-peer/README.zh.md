@@ -1,93 +1,102 @@
 # dsh-peer
+中文 | [English](README.md)
 
-同一台机器上 dsh 会话之间的发现与消息投递。peer 的单位是**会话**：不同进程（任意 profile、Web / headless 都行）的会话互为 peer，同一进程里的不同会话也互为 peer。模型用 `peer_list` 查看谁在线，用 `peer_send` 给对方发消息；对方以一条用户消息（`form: 'relay'`）收到，回复也走 `peer_send`。全部是异步单向投递，不等回复。
+同机 dsh 活跃会话之间的发现与异步消息投递，支持跨进程、跨 profile 和同进程会话。**0.1.2** 要求 **DSH 0.2.1-rc.5 及以上、低于 0.3**。子 agent 使用所属根会话身份。
 
-## 安装到一个 profile
+## 安装
 
-1. 在 profile 目录（如 `~/.dsh/profiles/<p>/`）的 `package.json` 里，`dependencies` 加 `"@lbryany/dsh-peer": "<版本或 link:路径>"`。
-2. 在同一文件的 `dsh.profile.bundles` 末尾加 `"@lbryany/dsh-peer"`。
-3. 在 profile 目录运行 `pnpm install`，然后重启这个 profile 的 dsh。启动日志会出现 `[dsh-peer] 已登记 pid <pid>，socket <path>`。
+在 profile 依赖中加入 `@lbryany/dsh-peer@0.1.2`，在 `dsh.profile.bundles` 加入 `@lbryany/dsh-peer`，安装依赖后重启该 profile。本地开发可运行 `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`。安装与重启由用户明确操作。
 
-用 `link:` 装本地仓库时，先在仓库里运行 `node scripts/link-dsh.mjs`，把 `@deepseek-ai/dsh-llm`、`dsh-tools` 链到本机的 dsh 安装目录（找不到时设置环境变量 `DSH_BIN` 为 dsh 的 `lib/bin.js`）。
+## 消息与控制
 
-## 哪些会话会登记
-
-只登记有过用户消息的根会话：
-- 在 Web UI 左栏点开的旧会话、被 resume 回来的会话，日志里已经有用户消息，加载进内存就登记。
-- Web UI 打开页面时预建的空草稿不登记。等它出现第一条用户消息时才登记。
-
-## 名字
-
-- 缺省名：`<cwd 目录名>-<sessionId 前 4 位>`，例如 `dsh-projects-b9c3`。目录名会被规整：转小写，非法字符换成 `-`。
-- 固定名：给 headless 长跑的 agent 用。环境变量 `DSH_PEER_NAME` 或插件配置 `name`，环境变量优先。只有该进程**第一个**登记的会话（也就是第一个发话的会话）用这个名字，后面的会话仍用缺省名。
-- 改名：在对话里输入 `/peer-name <名字>`，或让模型调用 `peer_rename`。改过的名字按 sessionId 记在 `~/.dsh-peer/names.json`，会话被 resume 回来时会沿用。
-- 规则：`^[a-z0-9][a-z0-9_-]{0,39}$`，整个注册表内唯一。撞名时自动加 `-2`、`-3`，并在返回文本里说明。
-- 子 agent 派生的会话不登记。它调用 `peer_*` 时，用所属根会话的身份。
-
-## 工具与命令
-
-| 名称 | 作用 |
+| 入口 | 行为 |
 |---|---|
-| `peer_list({ all? })` | 列出本机在线的 dsh 会话，列：名字、状态、cwd、标题、profile、进程。本会话排第一行，标「（本会话）」；同进程的会话标「（同进程）」。其余会话 running 在前，再按最近活跃时间（`lastActiveAt`，登记、状态变化、收到消息时更新）倒序。缺省最多列 20 个，超出时末尾提示还有几个；`all: true` 列出全部。 |
-| `peer_send({ to, text, steer? })` | `to` 填名字，或 sessionId 前缀（至少 4 位，带不带 `session-` 前缀都可以）。`steer: true` 会插进对方当前这一轮；缺省是排到对方的下一轮。 |
-| `peer_rename({ name })` | 改本会话的名字。 |
-| `/peers` | 同 `peer_list`（缺省最多 20 个）。 |
-| `/peer-name <名字>` | 同 `peer_rename`；不带参数时显示当前名字。 |
+| `peer_list({all?,details?})` | 默认显示名字和状态，最多 20 个其他会话；`details:true` 查看目录等完整信息。 |
+| `peer_request({to,text,wait?})` / `peer_request({requests:[{to,text}],wait?})` | 单目标使用 `to/text`，多目标一次批量最多 8 个；两种写法互斥。默认交接并结束当前轮。还有本地工作时传 `wait:false`。 |
+| `peer_reply({requestId,kind,text,questionId?,wait?})` | 沿任务 ID 澄清（question）、回答（answer）或交付结果（result）；回答必须携带问题 ID。默认交接并结束当前轮。 |
+| `peer_wait({requestIds?})` | 等待已有远端任务，不发催问。空数组不等待；已排队消息交由宿主消费。 |
+| `peer_send({to,text,steer?})` | 使用名字或唯一的会话前缀（至少四位）。默认排入下一轮；仅用户要求立刻插话时使用 `steer:true`。 |
+| `peer_rename({name})` | 名字匹配 `^[a-z0-9][a-z0-9_-]{0,39}$`；撞名自动加后缀。 |
+| `/peers` | 显示列表和本会话已暂停的接收方向。 |
+| `/peer-name <名字>` | 改名；省略参数则显示当前名字。 |
+| `/peer-resume <名字或会话 ID>` | 仅用户可恢复一个接收方向并清空窗口，不重放消息、不启动模型。 |
 
-headless 没有 commands 服务，这两个斜杠命令会被静默跳过，三个工具照常可用。
+只登记已有用户消息的根会话，空草稿和子会话不登记。默认名字为 `<目录>-<会话前缀>`；`DSH_PEER_NAME` 或插件 `name` 指定第一个登记会话的名字。改名按会话 ID 持久保存。卡片里的 `@` 是展示格式，工具寻址仍填写不带 `@` 的名字。
 
-## 对方看到的消息
+收件卡片标题为 **来自 @reviewer · 原文第一行**。点击或用键盘展开后续正文，正文不重复第一行。单行消息没有空的正文展开入口。详情提供复制、原始记录和接收侧恢复入口，不常驻显示暂停提示。旧展示元数据缺失或无效时保留完整文本；关闭浏览器插件后完整宿主消息仍可读。
 
-```
-[peer 消息] 来自 roadmaper（cwd /home/me/Projects/dsh-projects，profile projects）
-<原文>
+模型仍收到完整来源说明与正文。提示规则要求仅发送新增任务、问题、实质进展或结果；纯确认、感谢、告别不回复，结果只发一次。接纳不等于任务完成。
 
-（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 "roadmaper"。）
-```
+## 请求与结果
 
-消息的 `source` 是 `{ kind: 'dsh-peer', form: 'relay', peer: { name, session, pid, cwd } }`。
+任务协作优先使用 `peer_request` 和 `peer_reply`；`peer_send` 保留旧版兼容且不会结束当前轮。交接仅在全部投递成功时结束当前轮，部分失败或回执未知会返回逐项状态；已接纳项继续执行，不自动重发。宿主保留同一响应里的其他工具及后来到达的用户消息。
 
-## 失败原因
+每个发送方向只能有一个未完成请求。结果排队后仍占位，直到接收会话消费结果才允许下一轮请求，避免多目标协作中提前催问。每个请求最多三轮澄清；结果仅投递一次，成功结果的相同重试只返回历史回执。
 
-| 错误 | 含义 |
+两端都须支持 `request-result-v1`；旧端返回不支持，不静默降级。每 Host 最多 512 条易失记录，从接纳开始保留 10 分钟；重启使在途请求失效。没有跨任意嵌套任务的全局预算保证，原方向保护继续生效。宿主设 `requests: false` 可停用结构化协议。
+
+宿主提供 SystemPrompt 服务时，插件注册普通协作规则，强调原用户范围、增量内容和真实结果，不替换 persona；`promptPolicy: false` 可关闭。完整 persona 可能屏蔽普通 section，因此确定性保护和工具提示始终保留。
+
+## 接收保护
+
+保护位于共同的接收入口，覆盖同进程和 socket 投递，也覆盖旧发送端。
+
+| 规则 | 默认值 |
 |---|---|
-| `unknown-peer` | 地址解析失败 |
-| `ambiguous-peer` | sessionId 前缀命中多个会话 |
-| `unsupported-address` | 地址里含 `@` |
-| `self` | 发给了自己 |
-| `not-live` | 目标会话已不在内存。不会 resume，也不会落盘 |
-| `unknown-session` | 对方进程里没有这个会话 |
-| `bad-token` | token 校验失败 |
-| `unreachable` / `timeout` | socket 连不上，或 5 秒内无响应 |
+| 相同来源/目标会话、精确正文及投递模式 | 首次接纳后 60 秒内抑制重复 |
+| 短滑动窗口 | 每 60 秒最多接纳 6 条 |
+| 长滑动窗口 | 10 分钟内接纳 12 条；下一次尝试暂停该方向 |
+| 恢复 | 用户明确操作；经过时间不会自动解除 |
+| 内存 | 最多 1024 个方向、每方向 64 个指纹；有效暂停不淘汰 |
 
-失败时，返回文本会附上当前的 peer 列表。
+只计成功接纳，失败回滚预留。改名、前缀寻址、子 agent 或切换投递模式不能重置方向预算；反方向和其他会话独立。旧版消息 ID 在最近 200 条回执内幂等，按来源和目标隔离。结构化指纹还区分请求、问题及消息类型，方向计数仍共享。
 
-## 文件与协议
+宿主配置示例：
 
-- 注册表目录：`$DSH_PEER_DIR` > `$XDG_RUNTIME_DIR/dsh-peer` > `~/.dsh-peer/run`，权限 0700。目录不放在 DSH_HOME 下，因为不同 profile 的 DSH_HOME 可能不同。
-- 每个进程三个文件：
-  - `<pid>.json`：进程与会话列表，0644，原子写，50 ms 内的多次变化合并成一次写入。
-  - `<pid>.key`：token，0600。
-  - `<pid>.sock`：Unix socket，0600。
-- 进程退出时删掉自己的三个文件。别的进程读注册表时，如果发现 pid 已不存在，或 Linux 下 `/proc/<pid>/stat` 的启动时刻对不上（说明 pid 被复用），就顺手清掉这些残留。
-- socket 协议：每次连接只发一条请求，以换行分隔的 JSON，服务端回一条后关闭连接。
-  - 请求：`{ v: 1, token, id, type: 'send', to: { session }, from: { pid, session, name, cwd, profile }, text, steer }`。
-  - `type: 'ping'` 只带 `token`。
-  - 响应：`{ ok: true, id, delivered: 'queued' | 'steered' | 'duplicate' }`，或 `{ ok: false, id, error }`。
-  - 单条请求上限 64 KiB；客户端连接加等待响应共 5 秒超时。接收方按消息 `id` 去重，记最近 200 条。
-- 同一进程内的会话之间直接投递，不经过 socket。
-
-## 限制与跨机器预留
-
-- 第一版只支持同一台机器。不做冷投递，不做同步等回复、组播 / 广播、消息历史，也没有终端 CLI。
-- Windows 下 socket 换成 named pipe（`\\.\pipe\dsh-peer-<pid>`）。只写了实现，没有实测。
-- 跨机器预留了两处：
-  - `lib/transport.js` 只暴露 `createTransport({ dir, pid, token, onRequest }) → { start, stop, send }`，core 只通过它和注册表的 `readOthers()` 与外界交互。第二版换成 hub 实现（TCP 加鉴权），工具、消息格式、命名都不用改。
-  - 注册表记录带 `protocol`，socket 请求带 `v`；地址保留 `name@host` 语法，第一版遇到这种地址报 `unsupported-address`。
-
-## 开发
-
+```yaml
+- id: dsh-peer
+  config:
+    protection:
+      dedupMs: 60000
+      shortMs: 60000
+      shortLimit: 6
+      longMs: 600000
+      longLimit: 12
 ```
-node scripts/link-dsh.mjs   # 只有 index.js 需要；单测不依赖 dsh
-node --test test/*.test.mjs
+
+参数必须为正整数；短窗口及数量不得超过长窗口及数量；longLimit 最多 64。`maxPairs` 可从 1024 调低，`maxFingerprints` 可从 64 调低。宿主可设 `protection: off` 关闭保护，模型工具不能修改。headless 没有命令界面，可通过受控重启或宿主配置恢复；重启会清空内存保护状态。
+
+## 结果与边界
+
+| 结果 | 含义 |
+|---|---|
+| `queued` / `steered` | 已接纳，不代表已处理 |
+| `duplicate` | 此 ID 已接纳过，没有再次投递 |
+| `duplicate-content` | 已抑制，不要确认或重发 |
+| `rate-limited` | 未投递；停止自动发送，不定时重试 |
+| `conversation-paused` | 未投递；需要用户在接收侧恢复 |
+| `guard-capacity` | 未投递；有界保护状态已满 |
+| `delivery-failed` | 同步接纳失败，已回滚预留 |
+| `timeout` / 无法解析回包 / 写入后断线 | 投递状态未知，不自动重发 |
+
+地址、token、目标会话和连接错误保留解释文本。保护错误不附 peer 列表；`retryAfterMs` 只解释窗口，不是重试指令。wire 仍为 `v:1`；新发送端不能约束旧接收端，应逐个升级接收进程。窗口之外持续发送新内容的慢速互聊不保证被截断；跨嵌套任务的全局预算与空闲订阅属于后续演进。
+
+通道信任同一系统用户的合作会话，声明的发送身份不是对恶意进程的认证。不提供冷投递、跨机器传输、积压队列统计或已读回执。Windows named pipe 有实现，尚未实测。卡片的只读状态接口由 DSH Connection 限定为 owner 访问，并校验接收会话已登记且存活；共享会话的非 owner 不能查询。恢复使用宿主带会话授权的命令接口。
+
+## 存储与开发
+
+注册表优先级：插件 `dir`、`DSH_PEER_DIR`、`XDG_RUNTIME_DIR/dsh-peer`、`~/.dsh-peer/run`。每进程持有 JSON、私有 key 和 socket，退出删除。改名默认存放于 `~/.dsh-peer/names.json`；测试或配置可用 `namesFile` 隔离。保护日志不写正文。协议单条请求最多 64 KiB，socket 超时为五秒。
+
+```sh
+npm install --legacy-peer-deps
+DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs
+npm run check
+npm run scenarios
+node scripts/request-scenarios.mjs
+node scripts/handoff-check.mjs
+npm run test:browser
+npm pack --dry-run --json
+node eval/run.mjs --dry
 ```
+
+浏览器检查使用临时 profile、打包产物、假消息投递与隔离 Chrome。模型评测使用冻结的 `PEER_BASELINE`。凭据可显式通过 `DSH_PEER_EVAL_API_KEY` 提供，也可在用户授权后只读复制现有 profile 到临时 DSH_HOME，再运行 `node eval/from-profile.mjs <副本目录>`；不需要独立账号。该入口只读取显式指定的副本，拒绝直接使用真实 `~/.dsh`。评测固定 deepseek-flash、温度 0、关闭 thinking；使用服务端输入计数预留预算，实际输入（含缓存）与输出均计入总量。模型评测与确定性测试分别记账。

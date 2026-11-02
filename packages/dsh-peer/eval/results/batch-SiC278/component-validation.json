@@ -1,0 +1,13 @@
+{
+  "hostFilesUnchanged": true,
+  "harnessUnchanged": true,
+  "casesAndThresholdsUnchanged": true,
+  "onlyDifferentFingerprint": [
+    "lib/client.js"
+  ],
+  "evaluatedClient": "2aa931d24bfe9a4309bcce1972d2afa25f5b5db32b65f4fc3fd338408fd54117",
+  "finalClient": "b96b52d6903757ecb8ba810af8cbcef1f353c4915a38cf388c77c9e9dfa601ba",
+  "reason": "Client-only malformed display metadata fallback; model process never imports this browser bundle.",
+  "unitEvidence": "test/evidence/green-b-unit.tap",
+  "browserEvidence": "test/evidence/browser-history/result.json"
+}

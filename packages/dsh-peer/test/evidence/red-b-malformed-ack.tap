@@ -1,0 +1,23 @@
+✔ B08 uncertain acknowledgement retains slot and reply phase (0.975667ms)
+✔ B09 failed admission fully restores pending state (0.423ms)
+✔ B09 empty waits, queued result, restart and unsupported capability (0.106083ms)
+✔ B09 capacity never evicts active work; expiry and mixed-version peers are explicit (5.711084ms)
+✖ B08 malformed acknowledgements retain uncertainty without throwing (0.127417ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 81.0735
+
+✖ failing tests:
+
+test at test/exchange-failure.test.mjs:48:1
+✖ B08 malformed acknowledgements retain uncertainty without throwing (0.127417ms)
+  TypeError [Error]: Cannot read properties of null (reading 'ok')
+      at Object.request (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/exchange.js:43:21)
+      at async TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/exchange-failure.test.mjs:50:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

@@ -1,0 +1,25 @@
+[
+  {
+    "id": "SB01",
+    "covers": [
+      "F-peer-B-01",
+      "F-peer-B-02"
+    ],
+    "status": "passed"
+  },
+  {
+    "id": "SB02",
+    "covers": [
+      "F-peer-B-01"
+    ],
+    "status": "passed"
+  },
+  {
+    "id": "SB03",
+    "covers": [
+      "F-peer-B-03",
+      "F-peer-B-04"
+    ],
+    "status": "passed"
+  }
+]

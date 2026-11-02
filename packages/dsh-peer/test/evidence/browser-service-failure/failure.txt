@@ -1,0 +1,2 @@
+Error: Host did not become ready
+    at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/scripts/browser-check.mjs:45:24

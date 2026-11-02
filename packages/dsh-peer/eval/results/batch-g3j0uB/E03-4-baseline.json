@@ -1,0 +1,45 @@
+{
+  "case": "E03",
+  "run": 4,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 413,
+    "output": 10,
+    "total": 423
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "收到，B 回复 42，正确。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到，B 回复 42，正确。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 413,
+        "completion_tokens": 10,
+        "native": {
+          "input_tokens": 157,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 10,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

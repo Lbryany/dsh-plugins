@@ -1,0 +1,81 @@
+[
+  {
+    "id": "@lbryany/dsh-peer@0.1.1",
+    "name": "@lbryany/dsh-peer",
+    "version": "0.1.1",
+    "size": 27071,
+    "unpackedSize": 73734,
+    "shasum": "1e5543020c11b18e83957df7e9ce957cdda8b62c",
+    "integrity": "sha512-v3nZ7Phjmd7eJpKdWBdnQ76Vrmv7AH+Jeyxg6Dpu7zQ5Cv71LY3t48y8lItB6hqE9IZ0DD9uqNB4acEC1dzoYw==",
+    "filename": "lbryany-dsh-peer-0.1.1.tgz",
+    "files": [
+      {
+        "path": "LICENSE",
+        "size": 1066,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 6828,
+        "mode": 420
+      },
+      {
+        "path": "README.zh.md",
+        "size": 5974,
+        "mode": 420
+      },
+      {
+        "path": "cordis.patch.yml",
+        "size": 61,
+        "mode": 420
+      },
+      {
+        "path": "index.js",
+        "size": 10740,
+        "mode": 420
+      },
+      {
+        "path": "lib/client.js",
+        "size": 13106,
+        "mode": 420
+      },
+      {
+        "path": "lib/core.js",
+        "size": 19866,
+        "mode": 420
+      },
+      {
+        "path": "lib/guard.js",
+        "size": 3563,
+        "mode": 420
+      },
+      {
+        "path": "lib/message.js",
+        "size": 791,
+        "mode": 420
+      },
+      {
+        "path": "lib/registry.js",
+        "size": 4786,
+        "mode": 420
+      },
+      {
+        "path": "lib/status-route.js",
+        "size": 848,
+        "mode": 420
+      },
+      {
+        "path": "lib/transport.js",
+        "size": 3798,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 2307,
+        "mode": 420
+      }
+    ],
+    "entryCount": 13,
+    "bundled": []
+  }
+]

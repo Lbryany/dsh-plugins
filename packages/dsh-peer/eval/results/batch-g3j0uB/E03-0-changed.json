@@ -1,0 +1,45 @@
+{
+  "case": "E03",
+  "run": 0,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 491,
+    "output": 25,
+    "total": 516
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "收到 B 的答案：6 × 7 = 42。这是纯确认性回复，无需再发送消息。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到 B 的答案：6 × 7 = 42。这是纯确认性回复，无需再发送消息。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 491,
+        "completion_tokens": 25,
+        "native": {
+          "input_tokens": 491,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 25,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

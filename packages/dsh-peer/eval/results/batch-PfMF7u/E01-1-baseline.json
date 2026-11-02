@@ -1,0 +1,167 @@
+{
+  "case": "E01",
+  "run": 1,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 1433,
+    "output": 184,
+    "total": 1617
+  },
+  "usageComplete": true,
+  "attempts": 1,
+  "turns": 3,
+  "reason": "natural",
+  "pass": false,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 1,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b\n数据检查完成：7 条记录全部通过，没有后续问题。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"b\"。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 414,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "收到 B 的检查结果，7 条记录全部通过，没有后续问题。任务这边可以收尾了。",
+        "tool_calls": [
+          {
+            "id": "call_00_kBr8jFTXEOHHsmlMkPn76174",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"收到，谢谢。7 条记录全部通过、无后续问题，我这边确认收尾。辛苦了。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到 B 的检查结果，7 条记录全部通过，没有后续问题。任务这边可以收尾了。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_kBr8jFTXEOHHsmlMkPn76174",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "收到，谢谢。7 条记录全部通过、无后续问题，我这边确认收尾。辛苦了。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 414,
+        "completion_tokens": 99,
+        "native": {
+          "input_tokens": 158,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 99,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_kBr8jFTXEOHHsmlMkPn76174",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"收到，谢谢。7 条记录全部通过、无后续问题，我这边确认收尾。辛苦了。\"}"
+        }
+      },
+      "args": {
+        "to": "b",
+        "text": "收到，谢谢。7 条记录全部通过、无后续问题，我这边确认收尾。辛苦了。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "b",
+        "session": "session-bbbb",
+        "sameProcess": true,
+        "text": "已发给 b（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 546,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已回复 B 确认收尾。当前状态：\n\n- **数据检查**：7 条记录全部通过\n- **遗留问题**：无\n- **状态**：任务完成，等待 B 的最终确认（如有）\n\n如果还有其他需要处理的事项，随时告诉我。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已回复 B 确认收尾。当前状态：\n\n- **数据检查**：7 条记录全部通过\n- **遗留问题**：无\n- **状态**：任务完成，等待 B 的最终确认（如有）\n\n如果还有其他需要处理的事项，随时告诉我。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 546,
+        "completion_tokens": 58,
+        "native": {
+          "input_tokens": 162,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 58,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "b",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-1MuGOB）\n收到，谢谢。7 条记录全部通过、无后续问题，我这边确认收尾。辛苦了。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"a\"。）"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 473,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "收到，A 已确认收尾，无需再回复。任务结束：7 条记录全部通过，双方已确认。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到，A 已确认收尾，无需再回复。任务结束：7 条记录全部通过，双方已确认。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 473,
+        "completion_tokens": 27,
+        "native": {
+          "input_tokens": 217,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 27,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

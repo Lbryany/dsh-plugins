@@ -1,0 +1,496 @@
+{
+  "case": "E05",
+  "run": 2,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 9101,
+    "output": 1249,
+    "total": 10350
+  },
+  "usageComplete": true,
+  "attempts": 4,
+  "turns": 5,
+  "reason": "token-cap",
+  "pass": false,
+  "rejected": 1,
+  "chain": false,
+  "extraSendsAfterResult": null,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1327,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我先查看有哪些可用的 peer 会话。",
+        "tool_calls": [
+          {
+            "id": "call_00_pntd7ZkDL5VUzL5QGsEN4699",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我先查看有哪些可用的 peer 会话。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_pntd7ZkDL5VUzL5QGsEN4699",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1327,
+        "completion_tokens": 29,
+        "native": {
+          "input_tokens": 175,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 29,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_pntd7ZkDL5VUzL5QGsEN4699",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-fdCoRd | — | — | 77784 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-fdCoRd | — | — | 77784 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1492,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 可用。现在开始第一轮：请 B 针对这三个固定问题提出建议。",
+        "tool_calls": [
+          {
+            "id": "call_00_hZhnHjrKFNPtwBg3Rqih3884",
+            "type": "function",
+            "function": {
+              "name": "peer_request",
+              "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"第一轮审阅请求。待审代码/场景存在三个固定问题：1) 缺少空值检查；2) 超时无提示；3) 重复提交。请针对每个问题给出你的审阅建议（问题定位 + 修正方向），简明列出即可。我会据此整理修正方案，第二轮再发给你复核。\"}]}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 可用。现在开始第一轮：请 B 针对这三个固定问题提出建议。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_hZhnHjrKFNPtwBg3Rqih3884",
+            "name": "peer_request",
+            "input": {
+              "requests": [
+                {
+                  "to": "b",
+                  "text": "第一轮审阅请求。待审代码/场景存在三个固定问题：1) 缺少空值检查；2) 超时无提示；3) 重复提交。请针对每个问题给出你的审阅建议（问题定位 + 修正方向），简明列出即可。我会据此整理修正方案，第二轮再发给你复核。"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1492,
+        "completion_tokens": 137,
+        "native": {
+          "input_tokens": 212,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1280,
+          "output_tokens": 137,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "第一轮审阅请求。待审代码/场景存在三个固定问题：1) 缺少空值检查；2) 超时无提示；3) 重复提交。请针对每个问题给出你的审阅建议（问题定位 + 修正方向），简明列出即可。我会据此整理修正方案，第二轮再发给你复核。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "514d78e5-5012-4484-919b-996814142a83",
+        "kind": "request",
+        "pending": [
+          {
+            "requestId": "514d78e5-5012-4484-919b-996814142a83",
+            "peer": "a",
+            "state": "working"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_hZhnHjrKFNPtwBg3Rqih3884",
+        "type": "function",
+        "function": {
+          "name": "peer_request",
+          "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"第一轮审阅请求。待审代码/场景存在三个固定问题：1) 缺少空值检查；2) 超时无提示；3) 重复提交。请针对每个问题给出你的审阅建议（问题定位 + 修正方向），简明列出即可。我会据此整理修正方案，第二轮再发给你复核。\"}]}"
+        }
+      },
+      "parameters": {
+        "requests": [
+          {
+            "to": "b",
+            "text": "第一轮审阅请求。待审代码/场景存在三个固定问题：1) 缺少空值检查；2) 超时无提示；3) 重复提交。请针对每个问题给出你的审阅建议（问题定位 + 修正方向），简明列出即可。我会据此整理修正方案，第二轮再发给你复核。"
+          }
+        ]
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requests\":[{\"ok\":true,\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"peer\":\"b\",\"state\":\"pending\"}],\"instruction\":\"任务已交接；等待结果，不催问、不另发确认。\"}",
+        "handoff": {
+          "action": "peer_request",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "b",
+      "input": "[peer 任务] 来自 @a\n第一轮审阅请求。待审代码/场景存在三个固定问题：1) 缺少空值检查；2) 超时无提示；3) 重复提交。请针对每个问题给出你的审阅建议（问题定位 + 修正方向），简明列出即可。我会据此整理修正方案，第二轮再发给你复核。\n\n[协作状态] {\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"kind\":\"request\",\"pending\":[{\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"peer\":\"a\",\"state\":\"working\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1532,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_o3CCiU0jYbmWjxN0NSTH1228",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"kind\":\"result\",\"text\":\"第一轮审阅建议（三条，各含定位+修正方向）：\\n\\n1) 空值检查\\n- 定位：入参/外部返回（接口响应、DB 查询结果、配置项）在解引用或取属性前无判空；典型是 `resp.data.items.map(...)`、`user.name` 这类链式访问。\\n- 修正：入口处统一做参数校验（必填项缺失即早返回明确错误码/提示，而非继续执行）；对可空的外部数据用可选链+默认值兜底；集合类先判空再遍历；区分\\\"空值\\\"与\\\"空集合/空字符串\\\"的语义，避免用 falsy 判断误伤 0 和 \\\"\\\"。\\n\\n2) 超时无提示\\n- 定位：请求/任务发起后无超时上限，或超时后仅静默失败、界面停在 loading，用户无法区分\\\"慢\\\"和\\\"挂\\\"。\\n- 修正：为每个外部调用设显式超时（略大于下游 P99），超时即中断并抛出可识别错误；UI 侧给出明确文案（如\\\"请求超时，请重试\\\"）并恢复可操作状态（解除 loading、恢复按钮）；超时与业务失败分开上报，便于排查。\\n\\n3) 重复提交\\n- 定位：提交按钮无防抖/无禁用，或幂等键缺失，导致连点、网络重试、返回后重进都能产生重复记录。\\n- 修正：前端提交瞬间置 pending 并禁用按钮（含 loading 态），请求结束（成功/失败/超时）再恢复；后端以幂等键（业务唯一键或客户端生成的 requestId）做去重，重复请求返回首次结果而非新建；对\\\"提交成功但响应丢失\\\"的重试场景，靠幂等键保证只生效一次。\\n\\n补充：三条建议在实现上可共用一套\\\"请求包装层\\\"（校验→超时→幂等/去重→统一错误提示），避免散落各处。等你第二轮方案。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_o3CCiU0jYbmWjxN0NSTH1228",
+            "name": "peer_reply",
+            "input": {
+              "requestId": "514d78e5-5012-4484-919b-996814142a83",
+              "kind": "result",
+              "text": "第一轮审阅建议（三条，各含定位+修正方向）：\n\n1) 空值检查\n- 定位：入参/外部返回（接口响应、DB 查询结果、配置项）在解引用或取属性前无判空；典型是 `resp.data.items.map(...)`、`user.name` 这类链式访问。\n- 修正：入口处统一做参数校验（必填项缺失即早返回明确错误码/提示，而非继续执行）；对可空的外部数据用可选链+默认值兜底；集合类先判空再遍历；区分\"空值\"与\"空集合/空字符串\"的语义，避免用 falsy 判断误伤 0 和 \"\"。\n\n2) 超时无提示\n- 定位：请求/任务发起后无超时上限，或超时后仅静默失败、界面停在 loading，用户无法区分\"慢\"和\"挂\"。\n- 修正：为每个外部调用设显式超时（略大于下游 P99），超时即中断并抛出可识别错误；UI 侧给出明确文案（如\"请求超时，请重试\"）并恢复可操作状态（解除 loading、恢复按钮）；超时与业务失败分开上报，便于排查。\n\n3) 重复提交\n- 定位：提交按钮无防抖/无禁用，或幂等键缺失，导致连点、网络重试、返回后重进都能产生重复记录。\n- 修正：前端提交瞬间置 pending 并禁用按钮（含 loading 态），请求结束（成功/失败/超时）再恢复；后端以幂等键（业务唯一键或客户端生成的 requestId）做去重，重复请求返回首次结果而非新建；对\"提交成功但响应丢失\"的重试场景，靠幂等键保证只生效一次。\n\n补充：三条建议在实现上可共用一套\"请求包装层\"（校验→超时→幂等/去重→统一错误提示），避免散落各处。等你第二轮方案。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1532,
+        "completion_tokens": 521,
+        "native": {
+          "input_tokens": 380,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 521,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "第一轮审阅建议（三条，各含定位+修正方向）：\n\n1) 空值检查\n- 定位：入参/外部返回（接口响应、DB 查询结果、配置项）在解引用或取属性前无判空；典型是 `resp.data.items.map(...)`、`user.name` 这类链式访问。\n- 修正：入口处统一做参数校验（必填项缺失即早返回明确错误码/提示，而非继续执行）；对可空的外部数据用可选链+默认值兜底；集合类先判空再遍历；区分\"空值\"与\"空集合/空字符串\"的语义，避免用 falsy 判断误伤 0 和 \"\"。\n\n2) 超时无提示\n- 定位：请求/任务发起后无超时上限，或超时后仅静默失败、界面停在 loading，用户无法区分\"慢\"和\"挂\"。\n- 修正：为每个外部调用设显式超时（略大于下游 P99），超时即中断并抛出可识别错误；UI 侧给出明确文案（如\"请求超时，请重试\"）并恢复可操作状态（解除 loading、恢复按钮）；超时与业务失败分开上报，便于排查。\n\n3) 重复提交\n- 定位：提交按钮无防抖/无禁用，或幂等键缺失，导致连点、网络重试、返回后重进都能产生重复记录。\n- 修正：前端提交瞬间置 pending 并禁用按钮（含 loading 态），请求结束（成功/失败/超时）再恢复；后端以幂等键（业务唯一键或客户端生成的 requestId）做去重，重复请求返回首次结果而非新建；对\"提交成功但响应丢失\"的重试场景，靠幂等键保证只生效一次。\n\n补充：三条建议在实现上可共用一套\"请求包装层\"（校验→超时→幂等/去重→统一错误提示），避免散落各处。等你第二轮方案。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "514d78e5-5012-4484-919b-996814142a83",
+        "kind": "result",
+        "pending": [
+          {
+            "requestId": "514d78e5-5012-4484-919b-996814142a83",
+            "peer": "b",
+            "state": "queued-result"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_o3CCiU0jYbmWjxN0NSTH1228",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"kind\":\"result\",\"text\":\"第一轮审阅建议（三条，各含定位+修正方向）：\\n\\n1) 空值检查\\n- 定位：入参/外部返回（接口响应、DB 查询结果、配置项）在解引用或取属性前无判空；典型是 `resp.data.items.map(...)`、`user.name` 这类链式访问。\\n- 修正：入口处统一做参数校验（必填项缺失即早返回明确错误码/提示，而非继续执行）；对可空的外部数据用可选链+默认值兜底；集合类先判空再遍历；区分\\\"空值\\\"与\\\"空集合/空字符串\\\"的语义，避免用 falsy 判断误伤 0 和 \\\"\\\"。\\n\\n2) 超时无提示\\n- 定位：请求/任务发起后无超时上限，或超时后仅静默失败、界面停在 loading，用户无法区分\\\"慢\\\"和\\\"挂\\\"。\\n- 修正：为每个外部调用设显式超时（略大于下游 P99），超时即中断并抛出可识别错误；UI 侧给出明确文案（如\\\"请求超时，请重试\\\"）并恢复可操作状态（解除 loading、恢复按钮）；超时与业务失败分开上报，便于排查。\\n\\n3) 重复提交\\n- 定位：提交按钮无防抖/无禁用，或幂等键缺失，导致连点、网络重试、返回后重进都能产生重复记录。\\n- 修正：前端提交瞬间置 pending 并禁用按钮（含 loading 态），请求结束（成功/失败/超时）再恢复；后端以幂等键（业务唯一键或客户端生成的 requestId）做去重，重复请求返回首次结果而非新建；对\\\"提交成功但响应丢失\\\"的重试场景，靠幂等键保证只生效一次。\\n\\n补充：三条建议在实现上可共用一套\\\"请求包装层\\\"（校验→超时→幂等/去重→统一错误提示），避免散落各处。等你第二轮方案。\"}"
+        }
+      },
+      "parameters": {
+        "requestId": "514d78e5-5012-4484-919b-996814142a83",
+        "kind": "result",
+        "text": "第一轮审阅建议（三条，各含定位+修正方向）：\n\n1) 空值检查\n- 定位：入参/外部返回（接口响应、DB 查询结果、配置项）在解引用或取属性前无判空；典型是 `resp.data.items.map(...)`、`user.name` 这类链式访问。\n- 修正：入口处统一做参数校验（必填项缺失即早返回明确错误码/提示，而非继续执行）；对可空的外部数据用可选链+默认值兜底；集合类先判空再遍历；区分\"空值\"与\"空集合/空字符串\"的语义，避免用 falsy 判断误伤 0 和 \"\"。\n\n2) 超时无提示\n- 定位：请求/任务发起后无超时上限，或超时后仅静默失败、界面停在 loading，用户无法区分\"慢\"和\"挂\"。\n- 修正：为每个外部调用设显式超时（略大于下游 P99），超时即中断并抛出可识别错误；UI 侧给出明确文案（如\"请求超时，请重试\"）并恢复可操作状态（解除 loading、恢复按钮）；超时与业务失败分开上报，便于排查。\n\n3) 重复提交\n- 定位：提交按钮无防抖/无禁用，或幂等键缺失，导致连点、网络重试、返回后重进都能产生重复记录。\n- 修正：前端提交瞬间置 pending 并禁用按钮（含 loading 态），请求结束（成功/失败/超时）再恢复；后端以幂等键（业务唯一键或客户端生成的 requestId）做去重，重复请求返回首次结果而非新建；对\"提交成功但响应丢失\"的重试场景，靠幂等键保证只生效一次。\n\n补充：三条建议在实现上可共用一套\"请求包装层\"（校验→超时→幂等/去重→统一错误提示），避免散落各处。等你第二轮方案。"
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"peer\":\"a\",\"state\":\"complete\",\"instruction\":\"已交接；不另发确认或重复结果。\"}",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "concluded": true
+    },
+    {
+      "agent": "a",
+      "input": "[peer 结果] 来自 @b\n第一轮审阅建议（三条，各含定位+修正方向）：\n\n1) 空值检查\n- 定位：入参/外部返回（接口响应、DB 查询结果、配置项）在解引用或取属性前无判空；典型是 `resp.data.items.map(...)`、`user.name` 这类链式访问。\n- 修正：入口处统一做参数校验（必填项缺失即早返回明确错误码/提示，而非继续执行）；对可空的外部数据用可选链+默认值兜底；集合类先判空再遍历；区分\"空值\"与\"空集合/空字符串\"的语义，避免用 falsy 判断误伤 0 和 \"\"。\n\n2) 超时无提示\n- 定位：请求/任务发起后无超时上限，或超时后仅静默失败、界面停在 loading，用户无法区分\"慢\"和\"挂\"。\n- 修正：为每个外部调用设显式超时（略大于下游 P99），超时即中断并抛出可识别错误；UI 侧给出明确文案（如\"请求超时，请重试\"）并恢复可操作状态（解除 loading、恢复按钮）；超时与业务失败分开上报，便于排查。\n\n3) 重复提交\n- 定位：提交按钮无防抖/无禁用，或幂等键缺失，导致连点、网络重试、返回后重进都能产生重复记录。\n- 修正：前端提交瞬间置 pending 并禁用按钮（含 loading 态），请求结束（成功/失败/超时）再恢复；后端以幂等键（业务唯一键或客户端生成的 requestId）做去重，重复请求返回首次结果而非新建；对\"提交成功但响应丢失\"的重试场景，靠幂等键保证只生效一次。\n\n补充：三条建议在实现上可共用一套\"请求包装层\"（校验→超时→幂等/去重→统一错误提示），避免散落各处。等你第二轮方案。\n\n[协作状态] {\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"kind\":\"result\",\"pending\":[{\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"peer\":\"b\",\"state\":\"queued-result\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 2298,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "第一轮建议已收到。现在整理修正方案，进入第二轮复核。",
+        "tool_calls": [
+          {
+            "id": "call_00_dgiJyd5bSqwLyZBIF7PC4052",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"kind\":\"result\",\"text\":\"已采纳，进入第二轮复核。\",\"wait\":false}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "第一轮建议已收到。现在整理修正方案，进入第二轮复核。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_dgiJyd5bSqwLyZBIF7PC4052",
+            "name": "peer_reply",
+            "input": {
+              "requestId": "514d78e5-5012-4484-919b-996814142a83",
+              "kind": "result",
+              "text": "已采纳，进入第二轮复核。",
+              "wait": false
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 2298,
+        "completion_tokens": 125,
+        "native": {
+          "input_tokens": 762,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1536,
+          "output_tokens": 125,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_dgiJyd5bSqwLyZBIF7PC4052",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"requestId\":\"514d78e5-5012-4484-919b-996814142a83\",\"kind\":\"result\",\"text\":\"已采纳，进入第二轮复核。\",\"wait\":false}"
+        }
+      },
+      "parameters": {
+        "requestId": "514d78e5-5012-4484-919b-996814142a83",
+        "kind": "result",
+        "text": "已采纳，进入第二轮复核。",
+        "wait": false
+      },
+      "result": {
+        "ok": false,
+        "text": "请求未完成：invalid-reply-state。不要自动重发；保留已有任务。",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": false,
+          "ok": false
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 2452,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_Fx9nEZ95MFIoENFn5YMO5803",
+            "type": "function",
+            "function": {
+              "name": "peer_request",
+              "arguments": "{\"requests\":[{\"text\":\"第二轮：请复核以下修正方案（基于你第一轮建议整理），逐条给出“通过/需调整”及理由，并指出遗漏或冲突。\\n\\n【统一请求包装层】所有外部调用走同一层：参数校验 → 超时控制 → 幂等去重 → 统一错误提示。\\n\\n1) 空值检查\\n- 入口校验：必填参数缺失即早返回明确错误码与提示，不继续执行。\\n- 外部数据（接口响应/DB 结果/配置）解引用前用可选链+默认值兜底；集合先判空再遍历。\\n- 语义区分：不用 falsy 判断，显式区分 null/undefined 与 0、\\\"\\\"、空集合。\\n\\n2) 超时无提示\\n- 每个外部调用设显式超时（略大于下游 P99），超时即中断并抛可识别错误类型。\\n- UI 侧：超时后解除 loading、恢复按钮可操作，展示“请求超时，请重试”。\\n- 超时与业务失败分开上报（错误码/埋点区分），便于排查。\\n\\n3) 重复提交\\n- 前端：提交瞬间置 pending 并禁用按钮（含 loading 态），成功/失败/超时任一结束都恢复。\\n- 后端：以幂等键（业务唯一键或客户端生成 requestId）去重，重复请求返回首次结果而非新建。\\n- 覆盖“提交成功但响应丢失”的重试场景，靠幂等键保证只生效一次。\\n\\n请重点看：超时与幂等键的交互（超时后重试是否会被误去重）、以及 pending 状态在超时分支的恢复是否完整。\",\"to\":\"b\"}]}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_Fx9nEZ95MFIoENFn5YMO5803",
+            "name": "peer_request",
+            "input": {
+              "requests": [
+                {
+                  "text": "第二轮：请复核以下修正方案（基于你第一轮建议整理），逐条给出“通过/需调整”及理由，并指出遗漏或冲突。\n\n【统一请求包装层】所有外部调用走同一层：参数校验 → 超时控制 → 幂等去重 → 统一错误提示。\n\n1) 空值检查\n- 入口校验：必填参数缺失即早返回明确错误码与提示，不继续执行。\n- 外部数据（接口响应/DB 结果/配置）解引用前用可选链+默认值兜底；集合先判空再遍历。\n- 语义区分：不用 falsy 判断，显式区分 null/undefined 与 0、\"\"、空集合。\n\n2) 超时无提示\n- 每个外部调用设显式超时（略大于下游 P99），超时即中断并抛可识别错误类型。\n- UI 侧：超时后解除 loading、恢复按钮可操作，展示“请求超时，请重试”。\n- 超时与业务失败分开上报（错误码/埋点区分），便于排查。\n\n3) 重复提交\n- 前端：提交瞬间置 pending 并禁用按钮（含 loading 态），成功/失败/超时任一结束都恢复。\n- 后端：以幂等键（业务唯一键或客户端生成 requestId）去重，重复请求返回首次结果而非新建。\n- 覆盖“提交成功但响应丢失”的重试场景，靠幂等键保证只生效一次。\n\n请重点看：超时与幂等键的交互（超时后重试是否会被误去重）、以及 pending 状态在超时分支的恢复是否完整。",
+                  "to": "b"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 2452,
+        "completion_tokens": 437,
+        "native": {
+          "input_tokens": 148,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 2304,
+          "output_tokens": 437,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "第二轮：请复核以下修正方案（基于你第一轮建议整理），逐条给出“通过/需调整”及理由，并指出遗漏或冲突。\n\n【统一请求包装层】所有外部调用走同一层：参数校验 → 超时控制 → 幂等去重 → 统一错误提示。\n\n1) 空值检查\n- 入口校验：必填参数缺失即早返回明确错误码与提示，不继续执行。\n- 外部数据（接口响应/DB 结果/配置）解引用前用可选链+默认值兜底；集合先判空再遍历。\n- 语义区分：不用 falsy 判断，显式区分 null/undefined 与 0、\"\"、空集合。\n\n2) 超时无提示\n- 每个外部调用设显式超时（略大于下游 P99），超时即中断并抛可识别错误类型。\n- UI 侧：超时后解除 loading、恢复按钮可操作，展示“请求超时，请重试”。\n- 超时与业务失败分开上报（错误码/埋点区分），便于排查。\n\n3) 重复提交\n- 前端：提交瞬间置 pending 并禁用按钮（含 loading 态），成功/失败/超时任一结束都恢复。\n- 后端：以幂等键（业务唯一键或客户端生成 requestId）去重，重复请求返回首次结果而非新建。\n- 覆盖“提交成功但响应丢失”的重试场景，靠幂等键保证只生效一次。\n\n请重点看：超时与幂等键的交互（超时后重试是否会被误去重）、以及 pending 状态在超时分支的恢复是否完整。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "65284057-33bc-4dcb-ac41-a236a707de83",
+        "kind": "request",
+        "pending": [
+          {
+            "requestId": "65284057-33bc-4dcb-ac41-a236a707de83",
+            "peer": "a",
+            "state": "working"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_Fx9nEZ95MFIoENFn5YMO5803",
+        "type": "function",
+        "function": {
+          "name": "peer_request",
+          "arguments": "{\"requests\":[{\"text\":\"第二轮：请复核以下修正方案（基于你第一轮建议整理），逐条给出“通过/需调整”及理由，并指出遗漏或冲突。\\n\\n【统一请求包装层】所有外部调用走同一层：参数校验 → 超时控制 → 幂等去重 → 统一错误提示。\\n\\n1) 空值检查\\n- 入口校验：必填参数缺失即早返回明确错误码与提示，不继续执行。\\n- 外部数据（接口响应/DB 结果/配置）解引用前用可选链+默认值兜底；集合先判空再遍历。\\n- 语义区分：不用 falsy 判断，显式区分 null/undefined 与 0、\\\"\\\"、空集合。\\n\\n2) 超时无提示\\n- 每个外部调用设显式超时（略大于下游 P99），超时即中断并抛可识别错误类型。\\n- UI 侧：超时后解除 loading、恢复按钮可操作，展示“请求超时，请重试”。\\n- 超时与业务失败分开上报（错误码/埋点区分），便于排查。\\n\\n3) 重复提交\\n- 前端：提交瞬间置 pending 并禁用按钮（含 loading 态），成功/失败/超时任一结束都恢复。\\n- 后端：以幂等键（业务唯一键或客户端生成 requestId）去重，重复请求返回首次结果而非新建。\\n- 覆盖“提交成功但响应丢失”的重试场景，靠幂等键保证只生效一次。\\n\\n请重点看：超时与幂等键的交互（超时后重试是否会被误去重）、以及 pending 状态在超时分支的恢复是否完整。\",\"to\":\"b\"}]}"
+        }
+      },
+      "parameters": {
+        "requests": [
+          {
+            "text": "第二轮：请复核以下修正方案（基于你第一轮建议整理），逐条给出“通过/需调整”及理由，并指出遗漏或冲突。\n\n【统一请求包装层】所有外部调用走同一层：参数校验 → 超时控制 → 幂等去重 → 统一错误提示。\n\n1) 空值检查\n- 入口校验：必填参数缺失即早返回明确错误码与提示，不继续执行。\n- 外部数据（接口响应/DB 结果/配置）解引用前用可选链+默认值兜底；集合先判空再遍历。\n- 语义区分：不用 falsy 判断，显式区分 null/undefined 与 0、\"\"、空集合。\n\n2) 超时无提示\n- 每个外部调用设显式超时（略大于下游 P99），超时即中断并抛可识别错误类型。\n- UI 侧：超时后解除 loading、恢复按钮可操作，展示“请求超时，请重试”。\n- 超时与业务失败分开上报（错误码/埋点区分），便于排查。\n\n3) 重复提交\n- 前端：提交瞬间置 pending 并禁用按钮（含 loading 态），成功/失败/超时任一结束都恢复。\n- 后端：以幂等键（业务唯一键或客户端生成 requestId）去重，重复请求返回首次结果而非新建。\n- 覆盖“提交成功但响应丢失”的重试场景，靠幂等键保证只生效一次。\n\n请重点看：超时与幂等键的交互（超时后重试是否会被误去重）、以及 pending 状态在超时分支的恢复是否完整。",
+            "to": "b"
+          }
+        ]
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requests\":[{\"ok\":true,\"requestId\":\"65284057-33bc-4dcb-ac41-a236a707de83\",\"peer\":\"b\",\"state\":\"pending\"}],\"instruction\":\"任务已交接；等待结果，不催问、不另发确认。\"}",
+        "handoff": {
+          "action": "peer_request",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "b",
+      "input": "[peer 任务] 来自 @a\n第二轮：请复核以下修正方案（基于你第一轮建议整理），逐条给出“通过/需调整”及理由，并指出遗漏或冲突。\n\n【统一请求包装层】所有外部调用走同一层：参数校验 → 超时控制 → 幂等去重 → 统一错误提示。\n\n1) 空值检查\n- 入口校验：必填参数缺失即早返回明确错误码与提示，不继续执行。\n- 外部数据（接口响应/DB 结果/配置）解引用前用可选链+默认值兜底；集合先判空再遍历。\n- 语义区分：不用 falsy 判断，显式区分 null/undefined 与 0、\"\"、空集合。\n\n2) 超时无提示\n- 每个外部调用设显式超时（略大于下游 P99），超时即中断并抛可识别错误类型。\n- UI 侧：超时后解除 loading、恢复按钮可操作，展示“请求超时，请重试”。\n- 超时与业务失败分开上报（错误码/埋点区分），便于排查。\n\n3) 重复提交\n- 前端：提交瞬间置 pending 并禁用按钮（含 loading 态），成功/失败/超时任一结束都恢复。\n- 后端：以幂等键（业务唯一键或客户端生成 requestId）去重，重复请求返回首次结果而非新建。\n- 覆盖“提交成功但响应丢失”的重试场景，靠幂等键保证只生效一次。\n\n请重点看：超时与幂等键的交互（超时后重试是否会被误去重）、以及 pending 状态在超时分支的恢复是否完整。\n\n[协作状态] {\"requestId\":\"65284057-33bc-4dcb-ac41-a236a707de83\",\"kind\":\"request\",\"pending\":[{\"requestId\":\"65284057-33bc-4dcb-ac41-a236a707de83\",\"peer\":\"a\",\"state\":\"working\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    }
+  ]
+}

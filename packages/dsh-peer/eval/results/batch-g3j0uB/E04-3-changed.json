@@ -1,0 +1,429 @@
+{
+  "case": "E04",
+  "run": 3,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 6610,
+    "output": 417,
+    "total": 7027
+  },
+  "usageComplete": true,
+  "attempts": 4,
+  "turns": 9,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_18kW6rxFMwl0OP6JyUOH0695",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"任务：请计算 10 个零件的总价。单价我这边掌握，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_18kW6rxFMwl0OP6JyUOH0695",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "任务：请计算 10 个零件的总价。单价我这边掌握，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 430,
+        "completion_tokens": 86,
+        "native": {
+          "input_tokens": 174,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 86,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_18kW6rxFMwl0OP6JyUOH0695",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"任务：请计算 10 个零件的总价。单价我这边掌握，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。\"}"
+        }
+      },
+      "args": {
+        "to": "b",
+        "text": "任务：请计算 10 个零件的总价。单价我这边掌握，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "b",
+        "session": "session-bbbb",
+        "sameProcess": true,
+        "display": {
+          "version": 1,
+          "id": "87ea82ead4141474270842ce",
+          "target": {
+            "name": "b",
+            "session": "session-bbbb"
+          },
+          "text": "任务：请计算 10 个零件的总价。单价我这边掌握，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。",
+          "outcome": "queued"
+        },
+        "text": "已发给 b（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。"
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已把任务派给 B，等 B 来问单价。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已把任务派给 B，等 B 来问单价。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 559,
+        "completion_tokens": 14,
+        "native": {
+          "input_tokens": 175,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 14,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_9KgZG09MWdDOJXgT1tZo9194",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"请提供零件单价（每个多少钱），我拿到后立即计算 10 个零件的总价并回报。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_9KgZG09MWdDOJXgT1tZo9194",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "请提供零件单价（每个多少钱），我拿到后立即计算 10 个零件的总价并回报。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 562,
+        "completion_tokens": 75,
+        "native": {
+          "input_tokens": 306,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 75,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_9KgZG09MWdDOJXgT1tZo9194",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"请提供零件单价（每个多少钱），我拿到后立即计算 10 个零件的总价并回报。\"}"
+        }
+      },
+      "args": {
+        "to": "a",
+        "text": "请提供零件单价（每个多少钱），我拿到后立即计算 10 个零件的总价并回报。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "a",
+        "session": "session-aaaa",
+        "sameProcess": true,
+        "display": {
+          "version": 1,
+          "id": "8c4f9323e16bd71ceedf2990",
+          "target": {
+            "name": "a",
+            "session": "session-aaaa"
+          },
+          "text": "请提供零件单价（每个多少钱），我拿到后立即计算 10 个零件的总价并回报。",
+          "outcome": "queued"
+        },
+        "text": "已发给 a（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。"
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "我已向 a 询问单价，等收到单价后再计算 10 个零件的总价并回报。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我已向 a 询问单价，等收到单价后再计算 10 个零件的总价并回报。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 680,
+        "completion_tokens": 22,
+        "native": {
+          "input_tokens": 168,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 512,
+          "output_tokens": 22,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_gZqWzCbeYy0gxw9NG5Qi1659",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"text\":\"单价：每个 3 元。请计算 10 个零件的总价并回报。\",\"to\":\"b\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_gZqWzCbeYy0gxw9NG5Qi1659",
+            "name": "peer_send",
+            "input": {
+              "text": "单价：每个 3 元。请计算 10 个零件的总价并回报。",
+              "to": "b"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 725,
+        "completion_tokens": 72,
+        "native": {
+          "input_tokens": 213,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 512,
+          "output_tokens": 72,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_gZqWzCbeYy0gxw9NG5Qi1659",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"text\":\"单价：每个 3 元。请计算 10 个零件的总价并回报。\",\"to\":\"b\"}"
+        }
+      },
+      "args": {
+        "text": "单价：每个 3 元。请计算 10 个零件的总价并回报。",
+        "to": "b"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "b",
+        "session": "session-bbbb",
+        "sameProcess": true,
+        "display": {
+          "version": 1,
+          "id": "21fa65ee8e43b126a658d4f0",
+          "target": {
+            "name": "b",
+            "session": "session-bbbb"
+          },
+          "text": "单价：每个 3 元。请计算 10 个零件的总价并回报。",
+          "outcome": "queued"
+        },
+        "text": "已发给 b（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。"
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已告知 B 单价为每个 3 元，等其回报总价。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已告知 B 单价为每个 3 元，等其回报总价。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 840,
+        "completion_tokens": 18,
+        "native": {
+          "input_tokens": 200,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 18,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_6ndJHPxDVVnLcuwoJ36w6927",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"text\":\"总价：10 × 3 元 = 30 元。\",\"to\":\"a\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_6ndJHPxDVVnLcuwoJ36w6927",
+            "name": "peer_send",
+            "input": {
+              "text": "总价：10 × 3 元 = 30 元。",
+              "to": "a"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 851,
+        "completion_tokens": 67,
+        "native": {
+          "input_tokens": 211,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 67,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_6ndJHPxDVVnLcuwoJ36w6927",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"text\":\"总价：10 × 3 元 = 30 元。\",\"to\":\"a\"}"
+        }
+      },
+      "args": {
+        "text": "总价：10 × 3 元 = 30 元。",
+        "to": "a"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "a",
+        "session": "session-aaaa",
+        "sameProcess": true,
+        "display": {
+          "version": 1,
+          "id": "514bb72ab5dd10862e54e393",
+          "target": {
+            "name": "a",
+            "session": "session-aaaa"
+          },
+          "text": "总价：10 × 3 元 = 30 元。",
+          "outcome": "queued"
+        },
+        "text": "已发给 a（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。"
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "已按单价 3 元/个计算：10 个零件总价 = 30 元，并已回报给 a。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已按单价 3 元/个计算：10 个零件总价 = 30 元，并已回报给 a。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 961,
+        "completion_tokens": 29,
+        "native": {
+          "input_tokens": 193,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 768,
+          "output_tokens": 29,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 已回报结果：10 个零件，单价 3 元/个，总价 = 10 × 3 = **30 元**。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 已回报结果：10 个零件，单价 3 元/个，总价 = 10 × 3 = **30 元**。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1002,
+        "completion_tokens": 34,
+        "native": {
+          "input_tokens": 234,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 768,
+          "output_tokens": 34,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

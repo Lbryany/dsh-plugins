@@ -1,0 +1,589 @@
+{
+  "case": "E04",
+  "run": 3,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 10049,
+    "output": 457,
+    "total": 10506
+  },
+  "usageComplete": true,
+  "attempts": 4,
+  "turns": 9,
+  "reason": "token-cap",
+  "pass": false,
+  "rejected": 0,
+  "chain": false,
+  "extraSendsAfterResult": null,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 789,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我先查看有哪些可用的 peer。",
+        "tool_calls": [
+          {
+            "id": "call_00_ymoaQDTicVsEEOVju3004900",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我先查看有哪些可用的 peer。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_ymoaQDTicVsEEOVju3004900",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 789,
+        "completion_tokens": 27,
+        "native": {
+          "input_tokens": 149,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 27,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_ymoaQDTicVsEEOVju3004900",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-Tb7nEE | — | — | 80621 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-Tb7nEE | — | — | 80621 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 954,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_uZqCYHXI8x3mJOZcumcl2684",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"任务：请计算 10 个零件的总价。注意：单价由我提供，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_uZqCYHXI8x3mJOZcumcl2684",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "任务：请计算 10 个零件的总价。注意：单价由我提供，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 954,
+        "completion_tokens": 88,
+        "native": {
+          "input_tokens": 186,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 768,
+          "output_tokens": 88,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "任务：请计算 10 个零件的总价。注意：单价由我提供，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_uZqCYHXI8x3mJOZcumcl2684",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"任务：请计算 10 个零件的总价。注意：单价由我提供，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。\"}"
+        }
+      },
+      "parameters": {
+        "to": "b",
+        "text": "任务：请计算 10 个零件的总价。注意：单价由我提供，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 b（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "7dc2fbe87260b94cbbcc0283",
+          "target": {
+            "name": "b",
+            "session": "session-bbbb"
+          },
+          "text": "任务：请计算 10 个零件的总价。注意：单价由我提供，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1085,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已把任务派给 B，并明确要求 B 先向我询问单价。等 B 来问单价后，我再提供 3 元，并等 B 回报总价。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已把任务派给 B，并明确要求 B 先向我询问单价。等 B 来问单价后，我再提供 3 元，并等 B 回报总价。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1085,
+        "completion_tokens": 40,
+        "native": {
+          "input_tokens": 189,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 896,
+          "output_tokens": 40,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "b",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-Tb7nEE）\n任务：请计算 10 个零件的总价。注意：单价由我提供，你需要先向我询问单价，拿到单价后再计算，并把总价回报给我。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"a\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 923,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "我先向 A 询问单价。",
+        "tool_calls": [
+          {
+            "id": "call_00_eKVW17aMmK6IIqqWXVT04891",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"收到任务：计算 10 个零件的总价。请提供单价（每个零件多少钱），我拿到后立即计算并回报总价。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我先向 A 询问单价。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_eKVW17aMmK6IIqqWXVT04891",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "收到任务：计算 10 个零件的总价。请提供单价（每个零件多少钱），我拿到后立即计算并回报总价。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 88,
+        "native": {
+          "input_tokens": 283,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 88,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "收到任务：计算 10 个零件的总价。请提供单价（每个零件多少钱），我拿到后立即计算并回报总价。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_eKVW17aMmK6IIqqWXVT04891",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"收到任务：计算 10 个零件的总价。请提供单价（每个零件多少钱），我拿到后立即计算并回报总价。\"}"
+        }
+      },
+      "parameters": {
+        "to": "a",
+        "text": "收到任务：计算 10 个零件的总价。请提供单价（每个零件多少钱），我拿到后立即计算并回报总价。"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 a（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "6e94adc75df8d28a4746caef",
+          "target": {
+            "name": "a",
+            "session": "session-aaaa"
+          },
+          "text": "收到任务：计算 10 个零件的总价。请提供单价（每个零件多少钱），我拿到后立即计算并回报总价。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1054,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "已向 A 询问单价，等待回复后再计算 10 个零件的总价并回报。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已向 A 询问单价，等待回复后再计算 10 个零件的总价并回报。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1054,
+        "completion_tokens": 21,
+        "native": {
+          "input_tokens": 158,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 896,
+          "output_tokens": 21,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-Tb7nEE）\n收到任务：计算 10 个零件的总价。请提供单价（每个零件多少钱），我拿到后立即计算并回报总价。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"b\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1284,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_4gUAJXE6EFOk4W5mdLrV2543",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"text\":\"单价：每个零件 3 元。请计算 10 个零件的总价并回报。\",\"to\":\"b\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_4gUAJXE6EFOk4W5mdLrV2543",
+            "name": "peer_send",
+            "input": {
+              "text": "单价：每个零件 3 元。请计算 10 个零件的总价并回报。",
+              "to": "b"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1284,
+        "completion_tokens": 73,
+        "native": {
+          "input_tokens": 260,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1024,
+          "output_tokens": 73,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "单价：每个零件 3 元。请计算 10 个零件的总价并回报。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_4gUAJXE6EFOk4W5mdLrV2543",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"text\":\"单价：每个零件 3 元。请计算 10 个零件的总价并回报。\",\"to\":\"b\"}"
+        }
+      },
+      "parameters": {
+        "text": "单价：每个零件 3 元。请计算 10 个零件的总价并回报。",
+        "to": "b"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 b（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "443bf993078136222381848a",
+          "target": {
+            "name": "b",
+            "session": "session-bbbb"
+          },
+          "text": "单价：每个零件 3 元。请计算 10 个零件的总价并回报。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1400,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 已按流程询问单价，我已回复单价为每个 3 元，现在等 B 回报总价。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 已按流程询问单价，我已回复单价为每个 3 元，现在等 B 回报总价。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1400,
+        "completion_tokens": 26,
+        "native": {
+          "input_tokens": 248,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 26,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "b",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-Tb7nEE）\n单价：每个零件 3 元。请计算 10 个零件的总价并回报。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"a\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1225,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_Un6LghX6I9B6JHiDnGUo5640",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"text\":\"总价：10 × 3 元 = 30 元。\",\"to\":\"a\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_Un6LghX6I9B6JHiDnGUo5640",
+            "name": "peer_send",
+            "input": {
+              "text": "总价：10 × 3 元 = 30 元。",
+              "to": "a"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1225,
+        "completion_tokens": 67,
+        "native": {
+          "input_tokens": 201,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1024,
+          "output_tokens": 67,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "总价：10 × 3 元 = 30 元。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_Un6LghX6I9B6JHiDnGUo5640",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"text\":\"总价：10 × 3 元 = 30 元。\",\"to\":\"a\"}"
+        }
+      },
+      "parameters": {
+        "text": "总价：10 × 3 元 = 30 元。",
+        "to": "a"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 a（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "0510d026e627ac63735695a3",
+          "target": {
+            "name": "a",
+            "session": "session-aaaa"
+          },
+          "text": "总价：10 × 3 元 = 30 元。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1335,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "已按单价 3 元/个计算：10 × 3 = 30 元，并已回报给 A。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已按单价 3 元/个计算：10 × 3 = 30 元，并已回报给 A。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1335,
+        "completion_tokens": 27,
+        "native": {
+          "input_tokens": 183,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 27,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-Tb7nEE）\n总价：10 × 3 元 = 30 元。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"b\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    }
+  ]
+}

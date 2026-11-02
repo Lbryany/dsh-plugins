@@ -1,0 +1,225 @@
+{
+  "case": "E01",
+  "run": 4,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 2684,
+    "output": 263,
+    "total": 2947
+  },
+  "usageComplete": true,
+  "attempts": 2,
+  "turns": 5,
+  "reason": "natural",
+  "pass": false,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 2,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "收到 B 的检查结果，确认 7 条记录全部通过、无后续问题。",
+        "tool_calls": [
+          {
+            "id": "call_00_Im6UWrYY9gIHnHA7MMIH7713",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"收到，谢谢。7 条记录全部通过、无后续问题，我这边确认无误，可以收尾了。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到 B 的检查结果，确认 7 条记录全部通过、无后续问题。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_Im6UWrYY9gIHnHA7MMIH7713",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "收到，谢谢。7 条记录全部通过、无后续问题，我这边确认无误，可以收尾了。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 414,
+        "completion_tokens": 96,
+        "native": {
+          "input_tokens": 158,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 96,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_Im6UWrYY9gIHnHA7MMIH7713",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"收到，谢谢。7 条记录全部通过、无后续问题，我这边确认无误，可以收尾了。\"}"
+        }
+      },
+      "args": {
+        "to": "b",
+        "text": "收到，谢谢。7 条记录全部通过、无后续问题，我这边确认无误，可以收尾了。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "b",
+        "session": "session-bbbb",
+        "sameProcess": true,
+        "text": "已发给 b（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已回复 B 确认收尾。数据检查环节完成：7 条记录全部通过，无遗留问题。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已回复 B 确认收尾。数据检查环节完成：7 条记录全部通过，无遗留问题。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 543,
+        "completion_tokens": 24,
+        "native": {
+          "input_tokens": 159,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 24,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "收到，确认收尾。",
+        "tool_calls": [
+          {
+            "id": "call_00_LJME8PgiS9GuZ2TiC2Ly4283",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"收到，确认收尾。7 条记录全部通过，无遗留问题，我这边也结束。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到，确认收尾。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_LJME8PgiS9GuZ2TiC2Ly4283",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "收到，确认收尾。7 条记录全部通过，无遗留问题，我这边也结束。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 474,
+        "completion_tokens": 79,
+        "native": {
+          "input_tokens": 218,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 79,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_LJME8PgiS9GuZ2TiC2Ly4283",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"收到，确认收尾。7 条记录全部通过，无遗留问题，我这边也结束。\"}"
+        }
+      },
+      "args": {
+        "to": "a",
+        "text": "收到，确认收尾。7 条记录全部通过，无遗留问题，我这边也结束。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "a",
+        "session": "session-aaaa",
+        "sameProcess": true,
+        "text": "已发给 a（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "已回复 a，双方确认收尾。任务结束：7 条记录全部通过，无遗留问题。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已回复 a，双方确认收尾。任务结束：7 条记录全部通过，无遗留问题。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 586,
+        "completion_tokens": 23,
+        "native": {
+          "input_tokens": 202,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 23,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 已确认收尾，双方都结束了，无需再回复。\n\n任务完成：数据检查 7 条记录全部通过，无遗留问题，A、B 双方均已确认结束。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 已确认收尾，双方都结束了，无需再回复。\n\n任务完成：数据检查 7 条记录全部通过，无遗留问题，A、B 双方均已确认结束。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 667,
+        "completion_tokens": 41,
+        "native": {
+          "input_tokens": 155,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 512,
+          "output_tokens": 41,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "baseline": {
+    "version": "0.1.0",
+    "files": {
+      "index.js": "637535f1d50de17c8175f9dd0ca6015919c1a2aead1fa9ab8d4d759bdffe2989",
+      "lib/core.js": "8efaae6bd2d24e6eaaeab2cf0a1d9c09f6fe9ed9718e85f9e7d995046186d0f1",
+      "lib/registry.js": "94fefa8c2819d160fd3c14cd743ad0631843e1fe00b55abae6a980c1fac40fc7",
+      "lib/transport.js": "d6d5ed10ed1b8fd290f109ab0cf2b3f97194d2aac522248b991d5da03f357570",
+      "package.json": "1c689094a6a3625d77c566d3d051eee519d190f295c3f496496aa4f0af42fb66"
+    }
+  },
+  "changed": {
+    "version": "0.1.1",
+    "files": {
+      "index.js": "0bac19e9afc627103dd37af7fdc075f307ec4a139951d7e3746dbad43c7976ac",
+      "lib/client.js": "50498be832cb21a784075013498c4c069529175d365bb13b8c79716daa924632",
+      "lib/core.js": "881992cb4014a4366e92402cb6d3f811d8c9904cf13721f66962bdbc320c7957",
+      "lib/guard.js": "89e83edb2a296f0362a9fb4ad215a6528f18be2f9895d4bfce7a4a016adf3fb6",
+      "lib/message.js": "c7f86389f4d3178a42382a806e82bbb9e996e05f91e2ee755301572a6163243d",
+      "lib/registry.js": "94fefa8c2819d160fd3c14cd743ad0631843e1fe00b55abae6a980c1fac40fc7",
+      "lib/status-route.js": "c55e8f17324bae3cd2b67678a75bafd3bcc1b98e7f4d75f7606f01126f7068be",
+      "lib/transport.js": "01d1f316cd16808b27ec402e69ec0c02d565306bc7c8b51385683c20a9dc5130",
+      "package.json": "632aeeef375bfab0172e28ef421afeccaae039e4f75cbeff7421d66af12b7048"
+    }
+  }
+}

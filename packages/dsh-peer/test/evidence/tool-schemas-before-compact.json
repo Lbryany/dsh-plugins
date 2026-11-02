@@ -1,0 +1,151 @@
+[
+  {
+    "name": "peer_list",
+    "description": "发现本机活跃 peer 名字与状态；目标名字未知时调用。默认最多 20 个，all 查看全部。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "all": {
+          "type": "boolean",
+          "description": "true 列出全部；默认最多 20 个"
+        }
+      }
+    }
+  },
+  {
+    "name": "peer_send",
+    "description": "旧版异步消息，不结束本轮；任务优先 peer_request/peer_reply。仅发新增任务、问题、实质进展或一次结果；纯确认、感谢、告别不发送。保护错误后停止自动发送，不等待重试或换地址。这是同一台机器上 dsh 会话之间的通道；对方是另一个 agent，不是用户。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "peer 名字或唯一 sessionId 前缀（至少4位）"
+        },
+        "text": {
+          "type": "string",
+          "description": "原样正文"
+        },
+        "steer": {
+          "type": "boolean",
+          "description": "默认下一轮；仅用户要求立刻插话时 true"
+        }
+      },
+      "required": [
+        "to",
+        "text"
+      ]
+    }
+  },
+  {
+    "name": "peer_rename",
+    "description": "用户要求时修改本会话 peer 名字：小写字母或数字开头，只含小写字母、数字、-、_，最多40字符；撞名自动加后缀。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "新名字"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+  },
+  {
+    "name": "peer_request",
+    "description": "分配任务：单目标用 to 和 text；多目标一次用 requests（最多8个）。两种写法互斥，目标始终必填。目标未完成不重发；默认交接后结束本轮。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "单目标 peer 名字，和 text 一起使用"
+        },
+        "text": {
+          "type": "string",
+          "description": "单目标任务；短要点，只给本轮问题、必要参数与期望结果"
+        },
+        "requests": {
+          "type": "array",
+          "description": "多目标批量，与顶层 to/text 互斥",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "to": {
+                "type": "string",
+                "description": "目标 peer 名字，每项必填"
+              },
+              "text": {
+                "type": "string",
+                "description": "短要点：本轮问题、必要参数、期望结果"
+              }
+            },
+            "required": [
+              "to",
+              "text"
+            ]
+          }
+        },
+        "wait": {
+          "type": "boolean",
+          "description": "默认 true：交接后结束本轮；还有本地工作时 false。"
+        }
+      }
+    }
+  },
+  {
+    "name": "peer_reply",
+    "description": "仅回复活动任务：执行方用 question 澄清、result 交付；请求方仅用 answer 回答并带 questionId。收到 result 后禁止回复此 ID，下一轮改用 peer_request。只写必要的新增结论，不扩写背景；默认交接结束本轮。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "question",
+            "answer",
+            "result"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "description": "默认短要点，每点一两句；保留任务必要证据和细节，不复述背景或无关扩展"
+        },
+        "questionId": {
+          "type": "string"
+        },
+        "wait": {
+          "type": "boolean",
+          "description": "默认 true：交接后结束本轮；还有本地工作时 false。"
+        }
+      },
+      "required": [
+        "requestId",
+        "kind",
+        "text"
+      ]
+    }
+  },
+  {
+    "name": "peer_wait",
+    "description": "让出本轮以等待已有任务或消费已排队消息；不发送、不轮询。已有本地待办则继续工作；结果齐全后向用户汇总。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "requestIds": {
+          "type": "array",
+          "description": "省略选择全部未完成任务；空数组不等待",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+]

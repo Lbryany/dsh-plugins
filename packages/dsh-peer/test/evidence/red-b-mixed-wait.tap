@@ -1,0 +1,34 @@
+✔ B08 uncertain acknowledgement retains slot and reply phase (1.484334ms)
+✔ B09 failed admission fully restores pending state (0.462ms)
+✔ B09 empty waits, queued result, restart and unsupported capability (0.118375ms)
+✔ B09 capacity never evicts active work; expiry and mixed-version peers are explicit (6.482417ms)
+✔ B08 malformed acknowledgements retain uncertainty without throwing (0.097875ms)
+✔ B11 queued work can yield, consumed local work cannot (0.122417ms)
+✖ B11 mixed queued result and local work cannot tell caller to yield (0.332458ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.207542
+
+✖ failing tests:
+
+test at test/exchange-failure.test.mjs:62:1
+✖ B11 mixed queued result and local work cannot tell caller to yield (0.332458ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /让出本轮/. Input:
+  
+  '{"requests":[{"requestId":"f0181cfa-75c9-4715-a7a0-fda95c82b41f","peer":"b","state":"queued-result"},{"requestId":"b3b5d80e-b49d-4d82-a640-9adf03076b57","peer":"b","state":"working"}],"instruction":"让出本轮，由宿主消费已排队消息；任务尚未全部完成。"}'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/exchange-failure.test.mjs:67:80)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"requests":[{"requestId":"f0181cfa-75c9-4715-a7a0-fda95c82b41f","peer":"b","state":"queued-result"},{"requestId":"b3b5d80e-b49d-4d82-a640-9adf03076b57","peer":"b","state":"working"}],"instruction":"让出本轮，由宿主消费已排队消息；任务尚未全部完成。"}',
+    expected: /让出本轮/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }

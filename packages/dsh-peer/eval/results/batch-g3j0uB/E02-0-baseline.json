@@ -1,0 +1,45 @@
+{
+  "case": "E02",
+  "run": 0,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 401,
+    "output": 16,
+    "total": 417
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "A 和 B 的任务已完成，没有后续工作，因此无需回复。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "A 和 B 的任务已完成，没有后续工作，因此无需回复。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 401,
+        "completion_tokens": 16,
+        "native": {
+          "input_tokens": 401,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 16,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

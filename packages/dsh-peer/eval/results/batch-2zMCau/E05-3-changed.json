@@ -1,0 +1,465 @@
+{
+  "case": "E05",
+  "run": 3,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 10118,
+    "output": 1850,
+    "total": 11968
+  },
+  "usageComplete": true,
+  "attempts": 3,
+  "turns": 5,
+  "reason": "output-cap",
+  "pass": false,
+  "rejected": 0,
+  "chain": false,
+  "extraSendsAfterResult": null,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1327,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我先查看有哪些 peer 会话可用。",
+        "tool_calls": [
+          {
+            "id": "call_00_mtTDU412KolRV43WakvX0466",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我先查看有哪些 peer 会话可用。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_mtTDU412KolRV43WakvX0466",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1327,
+        "completion_tokens": 28,
+        "native": {
+          "input_tokens": 175,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 28,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_mtTDU412KolRV43WakvX0466",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-ixm9cm | — | — | 77784 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-ixm9cm | — | — | 77784 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1493,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 可用。现在开始第一轮：请 B 针对这三个固定问题提出建议。",
+        "tool_calls": [
+          {
+            "id": "call_00_BfT5HGfdvNHCOWMmX3W12662",
+            "type": "function",
+            "function": {
+              "name": "peer_request",
+              "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"第一轮审阅请求。我们正在审阅一个提交/请求处理流程（例如表单提交或接口调用），需要你针对以下三个固定问题提出修正建议：\\n1) 缺少空值检查（null/undefined 未校验就使用）\\n2) 超时无提示（请求超时后用户无任何反馈）\\n3) 重复提交（用户可重复点击/重试导致重复请求）\\n\\n请对每个问题给出：具体风险点 + 可落地的修正建议（尽量给出代码层面的做法）。只需返回建议，不需要最终报告。\"}]}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 可用。现在开始第一轮：请 B 针对这三个固定问题提出建议。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_BfT5HGfdvNHCOWMmX3W12662",
+            "name": "peer_request",
+            "input": {
+              "requests": [
+                {
+                  "to": "b",
+                  "text": "第一轮审阅请求。我们正在审阅一个提交/请求处理流程（例如表单提交或接口调用），需要你针对以下三个固定问题提出修正建议：\n1) 缺少空值检查（null/undefined 未校验就使用）\n2) 超时无提示（请求超时后用户无任何反馈）\n3) 重复提交（用户可重复点击/重试导致重复请求）\n\n请对每个问题给出：具体风险点 + 可落地的修正建议（尽量给出代码层面的做法）。只需返回建议，不需要最终报告。"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1493,
+        "completion_tokens": 192,
+        "native": {
+          "input_tokens": 213,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1280,
+          "output_tokens": 192,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "第一轮审阅请求。我们正在审阅一个提交/请求处理流程（例如表单提交或接口调用），需要你针对以下三个固定问题提出修正建议：\n1) 缺少空值检查（null/undefined 未校验就使用）\n2) 超时无提示（请求超时后用户无任何反馈）\n3) 重复提交（用户可重复点击/重试导致重复请求）\n\n请对每个问题给出：具体风险点 + 可落地的修正建议（尽量给出代码层面的做法）。只需返回建议，不需要最终报告。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "e70c3c12-796e-4b8e-ab16-04a6d47208aa",
+        "kind": "request",
+        "pending": [
+          {
+            "requestId": "e70c3c12-796e-4b8e-ab16-04a6d47208aa",
+            "peer": "a",
+            "state": "working"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_BfT5HGfdvNHCOWMmX3W12662",
+        "type": "function",
+        "function": {
+          "name": "peer_request",
+          "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"第一轮审阅请求。我们正在审阅一个提交/请求处理流程（例如表单提交或接口调用），需要你针对以下三个固定问题提出修正建议：\\n1) 缺少空值检查（null/undefined 未校验就使用）\\n2) 超时无提示（请求超时后用户无任何反馈）\\n3) 重复提交（用户可重复点击/重试导致重复请求）\\n\\n请对每个问题给出：具体风险点 + 可落地的修正建议（尽量给出代码层面的做法）。只需返回建议，不需要最终报告。\"}]}"
+        }
+      },
+      "parameters": {
+        "requests": [
+          {
+            "to": "b",
+            "text": "第一轮审阅请求。我们正在审阅一个提交/请求处理流程（例如表单提交或接口调用），需要你针对以下三个固定问题提出修正建议：\n1) 缺少空值检查（null/undefined 未校验就使用）\n2) 超时无提示（请求超时后用户无任何反馈）\n3) 重复提交（用户可重复点击/重试导致重复请求）\n\n请对每个问题给出：具体风险点 + 可落地的修正建议（尽量给出代码层面的做法）。只需返回建议，不需要最终报告。"
+          }
+        ]
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requests\":[{\"ok\":true,\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"peer\":\"b\",\"state\":\"pending\"}],\"instruction\":\"任务已交接；等待结果，不催问、不另发确认。\"}",
+        "handoff": {
+          "action": "peer_request",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "b",
+      "input": "[peer 任务] 来自 @a\n第一轮审阅请求。我们正在审阅一个提交/请求处理流程（例如表单提交或接口调用），需要你针对以下三个固定问题提出修正建议：\n1) 缺少空值检查（null/undefined 未校验就使用）\n2) 超时无提示（请求超时后用户无任何反馈）\n3) 重复提交（用户可重复点击/重试导致重复请求）\n\n请对每个问题给出：具体风险点 + 可落地的修正建议（尽量给出代码层面的做法）。只需返回建议，不需要最终报告。\n\n[协作状态] {\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"kind\":\"request\",\"pending\":[{\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"peer\":\"a\",\"state\":\"working\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1586,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_PnEJjmCC5DAfas7aPEIF8308",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"kind\":\"result\",\"text\":\"第一轮建议（B）：\\n\\n1) 空值检查\\n风险点：响应体为 null/undefined 或字段缺失时直接取属性（如 res.data.user.name）抛 TypeError；空字符串/0 被误判为\\\"有值\\\"；数组字段为 null 时 .map 崩溃；后端返回 {code:0,data:null} 被当成成功。\\n建议：\\n- 入口统一守卫：`if (payload == null) throw new EmptyPayloadError()`，或 `const data = res?.data ?? {}`。\\n- 用可选链 + 默认值：`const name = res?.data?.user?.name ?? ''`；数组 `const list = res?.data?.items ?? []`。\\n- 区分\\\"缺失\\\"与\\\"空值\\\"：用 `Object.prototype.hasOwnProperty` 或 `'x' in obj` 判断字段存在，而不是 `if (obj.x)`。\\n- 提交前校验必填：`const missing = ['name','phone'].filter(k => form[k] == null || String(form[k]).trim() === '')`，非空则阻断并提示。\\n- 成功判定不要只看 code，同时校验 data 结构（schema 校验，如 zod/yup 的 safeParse），失败走统一错误分支。\\n\\n2) 超时无提示\\n风险点：fetch/axios 默认无超时，请求悬挂时按钮一直 loading、用户以为卡死；超时后 catch 里只 console.error，界面无反馈；超时与业务错误混在一起无法区分。\\n建议：\\n- 显式设置超时：axios `timeout: 10000`；fetch 用 `AbortSignal.timeout(10000)` 或 AbortController + setTimeout，并在 finally 里 clearTimeout。\\n- 区分错误类型：`if (err.name === 'AbortError' || err.code === 'ECONNABORTED')` 走\\\"请求超时，请稍后重试\\\"提示，其余走通用错误提示。\\n- 超时必须有可见反馈：toast/内联错误文案 + 恢复按钮可用状态（finally 中重置 loading）。\\n- 提供重试入口（带次数上限与退避），并提示\\\"已重试 N 次仍失败\\\"。\\n- 长任务改为轮询/异步任务 + 进度提示，避免单次请求硬等。\\n\\n3) 重复提交\\n风险点：连点/回车重复触发、网络慢时用户重试、超时后重试与首次请求并发，导致重复下单/重复扣款/重复写库。\\n建议：\\n- 前端即时锁：提交开始 `submitting = true` 并禁用按钮（`disabled={submitting}`），finally 中复位；用 ref 而非仅 state，避免同一 tick 内连点绕过。\\n- 幂等键：每次提交生成 `idempotencyKey`（uuid），随请求头发送，服务端按 key 去重；重试复用同一 key，新提交才换新 key。\\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL，不能只依赖前端。\\n- 防抖/节流：`if (inFlight) return;` 在函数入口直接返回，配合 AbortController 取消上一次未完成请求（若业务允许）。\\n- 提交成功后跳转/清空表单，避免用户回退再次提交。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_PnEJjmCC5DAfas7aPEIF8308",
+            "name": "peer_reply",
+            "input": {
+              "requestId": "e70c3c12-796e-4b8e-ab16-04a6d47208aa",
+              "kind": "result",
+              "text": "第一轮建议（B）：\n\n1) 空值检查\n风险点：响应体为 null/undefined 或字段缺失时直接取属性（如 res.data.user.name）抛 TypeError；空字符串/0 被误判为\"有值\"；数组字段为 null 时 .map 崩溃；后端返回 {code:0,data:null} 被当成成功。\n建议：\n- 入口统一守卫：`if (payload == null) throw new EmptyPayloadError()`，或 `const data = res?.data ?? {}`。\n- 用可选链 + 默认值：`const name = res?.data?.user?.name ?? ''`；数组 `const list = res?.data?.items ?? []`。\n- 区分\"缺失\"与\"空值\"：用 `Object.prototype.hasOwnProperty` 或 `'x' in obj` 判断字段存在，而不是 `if (obj.x)`。\n- 提交前校验必填：`const missing = ['name','phone'].filter(k => form[k] == null || String(form[k]).trim() === '')`，非空则阻断并提示。\n- 成功判定不要只看 code，同时校验 data 结构（schema 校验，如 zod/yup 的 safeParse），失败走统一错误分支。\n\n2) 超时无提示\n风险点：fetch/axios 默认无超时，请求悬挂时按钮一直 loading、用户以为卡死；超时后 catch 里只 console.error，界面无反馈；超时与业务错误混在一起无法区分。\n建议：\n- 显式设置超时：axios `timeout: 10000`；fetch 用 `AbortSignal.timeout(10000)` 或 AbortController + setTimeout，并在 finally 里 clearTimeout。\n- 区分错误类型：`if (err.name === 'AbortError' || err.code === 'ECONNABORTED')` 走\"请求超时，请稍后重试\"提示，其余走通用错误提示。\n- 超时必须有可见反馈：toast/内联错误文案 + 恢复按钮可用状态（finally 中重置 loading）。\n- 提供重试入口（带次数上限与退避），并提示\"已重试 N 次仍失败\"。\n- 长任务改为轮询/异步任务 + 进度提示，避免单次请求硬等。\n\n3) 重复提交\n风险点：连点/回车重复触发、网络慢时用户重试、超时后重试与首次请求并发，导致重复下单/重复扣款/重复写库。\n建议：\n- 前端即时锁：提交开始 `submitting = true` 并禁用按钮（`disabled={submitting}`），finally 中复位；用 ref 而非仅 state，避免同一 tick 内连点绕过。\n- 幂等键：每次提交生成 `idempotencyKey`（uuid），随请求头发送，服务端按 key 去重；重试复用同一 key，新提交才换新 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL，不能只依赖前端。\n- 防抖/节流：`if (inFlight) return;` 在函数入口直接返回，配合 AbortController 取消上一次未完成请求（若业务允许）。\n- 提交成功后跳转/清空表单，避免用户回退再次提交。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1586,
+        "completion_tokens": 819,
+        "native": {
+          "input_tokens": 434,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 819,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "第一轮建议（B）：\n\n1) 空值检查\n风险点：响应体为 null/undefined 或字段缺失时直接取属性（如 res.data.user.name）抛 TypeError；空字符串/0 被误判为\"有值\"；数组字段为 null 时 .map 崩溃；后端返回 {code:0,data:null} 被当成成功。\n建议：\n- 入口统一守卫：`if (payload == null) throw new EmptyPayloadError()`，或 `const data = res?.data ?? {}`。\n- 用可选链 + 默认值：`const name = res?.data?.user?.name ?? ''`；数组 `const list = res?.data?.items ?? []`。\n- 区分\"缺失\"与\"空值\"：用 `Object.prototype.hasOwnProperty` 或 `'x' in obj` 判断字段存在，而不是 `if (obj.x)`。\n- 提交前校验必填：`const missing = ['name','phone'].filter(k => form[k] == null || String(form[k]).trim() === '')`，非空则阻断并提示。\n- 成功判定不要只看 code，同时校验 data 结构（schema 校验，如 zod/yup 的 safeParse），失败走统一错误分支。\n\n2) 超时无提示\n风险点：fetch/axios 默认无超时，请求悬挂时按钮一直 loading、用户以为卡死；超时后 catch 里只 console.error，界面无反馈；超时与业务错误混在一起无法区分。\n建议：\n- 显式设置超时：axios `timeout: 10000`；fetch 用 `AbortSignal.timeout(10000)` 或 AbortController + setTimeout，并在 finally 里 clearTimeout。\n- 区分错误类型：`if (err.name === 'AbortError' || err.code === 'ECONNABORTED')` 走\"请求超时，请稍后重试\"提示，其余走通用错误提示。\n- 超时必须有可见反馈：toast/内联错误文案 + 恢复按钮可用状态（finally 中重置 loading）。\n- 提供重试入口（带次数上限与退避），并提示\"已重试 N 次仍失败\"。\n- 长任务改为轮询/异步任务 + 进度提示，避免单次请求硬等。\n\n3) 重复提交\n风险点：连点/回车重复触发、网络慢时用户重试、超时后重试与首次请求并发，导致重复下单/重复扣款/重复写库。\n建议：\n- 前端即时锁：提交开始 `submitting = true` 并禁用按钮（`disabled={submitting}`），finally 中复位；用 ref 而非仅 state，避免同一 tick 内连点绕过。\n- 幂等键：每次提交生成 `idempotencyKey`（uuid），随请求头发送，服务端按 key 去重；重试复用同一 key，新提交才换新 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL，不能只依赖前端。\n- 防抖/节流：`if (inFlight) return;` 在函数入口直接返回，配合 AbortController 取消上一次未完成请求（若业务允许）。\n- 提交成功后跳转/清空表单，避免用户回退再次提交。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "e70c3c12-796e-4b8e-ab16-04a6d47208aa",
+        "kind": "result",
+        "pending": [
+          {
+            "requestId": "e70c3c12-796e-4b8e-ab16-04a6d47208aa",
+            "peer": "b",
+            "state": "queued-result"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_PnEJjmCC5DAfas7aPEIF8308",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"kind\":\"result\",\"text\":\"第一轮建议（B）：\\n\\n1) 空值检查\\n风险点：响应体为 null/undefined 或字段缺失时直接取属性（如 res.data.user.name）抛 TypeError；空字符串/0 被误判为\\\"有值\\\"；数组字段为 null 时 .map 崩溃；后端返回 {code:0,data:null} 被当成成功。\\n建议：\\n- 入口统一守卫：`if (payload == null) throw new EmptyPayloadError()`，或 `const data = res?.data ?? {}`。\\n- 用可选链 + 默认值：`const name = res?.data?.user?.name ?? ''`；数组 `const list = res?.data?.items ?? []`。\\n- 区分\\\"缺失\\\"与\\\"空值\\\"：用 `Object.prototype.hasOwnProperty` 或 `'x' in obj` 判断字段存在，而不是 `if (obj.x)`。\\n- 提交前校验必填：`const missing = ['name','phone'].filter(k => form[k] == null || String(form[k]).trim() === '')`，非空则阻断并提示。\\n- 成功判定不要只看 code，同时校验 data 结构（schema 校验，如 zod/yup 的 safeParse），失败走统一错误分支。\\n\\n2) 超时无提示\\n风险点：fetch/axios 默认无超时，请求悬挂时按钮一直 loading、用户以为卡死；超时后 catch 里只 console.error，界面无反馈；超时与业务错误混在一起无法区分。\\n建议：\\n- 显式设置超时：axios `timeout: 10000`；fetch 用 `AbortSignal.timeout(10000)` 或 AbortController + setTimeout，并在 finally 里 clearTimeout。\\n- 区分错误类型：`if (err.name === 'AbortError' || err.code === 'ECONNABORTED')` 走\\\"请求超时，请稍后重试\\\"提示，其余走通用错误提示。\\n- 超时必须有可见反馈：toast/内联错误文案 + 恢复按钮可用状态（finally 中重置 loading）。\\n- 提供重试入口（带次数上限与退避），并提示\\\"已重试 N 次仍失败\\\"。\\n- 长任务改为轮询/异步任务 + 进度提示，避免单次请求硬等。\\n\\n3) 重复提交\\n风险点：连点/回车重复触发、网络慢时用户重试、超时后重试与首次请求并发，导致重复下单/重复扣款/重复写库。\\n建议：\\n- 前端即时锁：提交开始 `submitting = true` 并禁用按钮（`disabled={submitting}`），finally 中复位；用 ref 而非仅 state，避免同一 tick 内连点绕过。\\n- 幂等键：每次提交生成 `idempotencyKey`（uuid），随请求头发送，服务端按 key 去重；重试复用同一 key，新提交才换新 key。\\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL，不能只依赖前端。\\n- 防抖/节流：`if (inFlight) return;` 在函数入口直接返回，配合 AbortController 取消上一次未完成请求（若业务允许）。\\n- 提交成功后跳转/清空表单，避免用户回退再次提交。\"}"
+        }
+      },
+      "parameters": {
+        "requestId": "e70c3c12-796e-4b8e-ab16-04a6d47208aa",
+        "kind": "result",
+        "text": "第一轮建议（B）：\n\n1) 空值检查\n风险点：响应体为 null/undefined 或字段缺失时直接取属性（如 res.data.user.name）抛 TypeError；空字符串/0 被误判为\"有值\"；数组字段为 null 时 .map 崩溃；后端返回 {code:0,data:null} 被当成成功。\n建议：\n- 入口统一守卫：`if (payload == null) throw new EmptyPayloadError()`，或 `const data = res?.data ?? {}`。\n- 用可选链 + 默认值：`const name = res?.data?.user?.name ?? ''`；数组 `const list = res?.data?.items ?? []`。\n- 区分\"缺失\"与\"空值\"：用 `Object.prototype.hasOwnProperty` 或 `'x' in obj` 判断字段存在，而不是 `if (obj.x)`。\n- 提交前校验必填：`const missing = ['name','phone'].filter(k => form[k] == null || String(form[k]).trim() === '')`，非空则阻断并提示。\n- 成功判定不要只看 code，同时校验 data 结构（schema 校验，如 zod/yup 的 safeParse），失败走统一错误分支。\n\n2) 超时无提示\n风险点：fetch/axios 默认无超时，请求悬挂时按钮一直 loading、用户以为卡死；超时后 catch 里只 console.error，界面无反馈；超时与业务错误混在一起无法区分。\n建议：\n- 显式设置超时：axios `timeout: 10000`；fetch 用 `AbortSignal.timeout(10000)` 或 AbortController + setTimeout，并在 finally 里 clearTimeout。\n- 区分错误类型：`if (err.name === 'AbortError' || err.code === 'ECONNABORTED')` 走\"请求超时，请稍后重试\"提示，其余走通用错误提示。\n- 超时必须有可见反馈：toast/内联错误文案 + 恢复按钮可用状态（finally 中重置 loading）。\n- 提供重试入口（带次数上限与退避），并提示\"已重试 N 次仍失败\"。\n- 长任务改为轮询/异步任务 + 进度提示，避免单次请求硬等。\n\n3) 重复提交\n风险点：连点/回车重复触发、网络慢时用户重试、超时后重试与首次请求并发，导致重复下单/重复扣款/重复写库。\n建议：\n- 前端即时锁：提交开始 `submitting = true` 并禁用按钮（`disabled={submitting}`），finally 中复位；用 ref 而非仅 state，避免同一 tick 内连点绕过。\n- 幂等键：每次提交生成 `idempotencyKey`（uuid），随请求头发送，服务端按 key 去重；重试复用同一 key，新提交才换新 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL，不能只依赖前端。\n- 防抖/节流：`if (inFlight) return;` 在函数入口直接返回，配合 AbortController 取消上一次未完成请求（若业务允许）。\n- 提交成功后跳转/清空表单，避免用户回退再次提交。"
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"peer\":\"a\",\"state\":\"complete\",\"instruction\":\"已交接；不另发确认或重复结果。\"}",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "concluded": true
+    },
+    {
+      "agent": "a",
+      "input": "[peer 结果] 来自 @b\n第一轮建议（B）：\n\n1) 空值检查\n风险点：响应体为 null/undefined 或字段缺失时直接取属性（如 res.data.user.name）抛 TypeError；空字符串/0 被误判为\"有值\"；数组字段为 null 时 .map 崩溃；后端返回 {code:0,data:null} 被当成成功。\n建议：\n- 入口统一守卫：`if (payload == null) throw new EmptyPayloadError()`，或 `const data = res?.data ?? {}`。\n- 用可选链 + 默认值：`const name = res?.data?.user?.name ?? ''`；数组 `const list = res?.data?.items ?? []`。\n- 区分\"缺失\"与\"空值\"：用 `Object.prototype.hasOwnProperty` 或 `'x' in obj` 判断字段存在，而不是 `if (obj.x)`。\n- 提交前校验必填：`const missing = ['name','phone'].filter(k => form[k] == null || String(form[k]).trim() === '')`，非空则阻断并提示。\n- 成功判定不要只看 code，同时校验 data 结构（schema 校验，如 zod/yup 的 safeParse），失败走统一错误分支。\n\n2) 超时无提示\n风险点：fetch/axios 默认无超时，请求悬挂时按钮一直 loading、用户以为卡死；超时后 catch 里只 console.error，界面无反馈；超时与业务错误混在一起无法区分。\n建议：\n- 显式设置超时：axios `timeout: 10000`；fetch 用 `AbortSignal.timeout(10000)` 或 AbortController + setTimeout，并在 finally 里 clearTimeout。\n- 区分错误类型：`if (err.name === 'AbortError' || err.code === 'ECONNABORTED')` 走\"请求超时，请稍后重试\"提示，其余走通用错误提示。\n- 超时必须有可见反馈：toast/内联错误文案 + 恢复按钮可用状态（finally 中重置 loading）。\n- 提供重试入口（带次数上限与退避），并提示\"已重试 N 次仍失败\"。\n- 长任务改为轮询/异步任务 + 进度提示，避免单次请求硬等。\n\n3) 重复提交\n风险点：连点/回车重复触发、网络慢时用户重试、超时后重试与首次请求并发，导致重复下单/重复扣款/重复写库。\n建议：\n- 前端即时锁：提交开始 `submitting = true` 并禁用按钮（`disabled={submitting}`），finally 中复位；用 ref 而非仅 state，避免同一 tick 内连点绕过。\n- 幂等键：每次提交生成 `idempotencyKey`（uuid），随请求头发送，服务端按 key 去重；重试复用同一 key，新提交才换新 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL，不能只依赖前端。\n- 防抖/节流：`if (inFlight) return;` 在函数入口直接返回，配合 AbortController 取消上一次未完成请求（若业务允许）。\n- 提交成功后跳转/清空表单，避免用户回退再次提交。\n\n[协作状态] {\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"kind\":\"result\",\"pending\":[{\"requestId\":\"e70c3c12-796e-4b8e-ab16-04a6d47208aa\",\"peer\":\"b\",\"state\":\"queued-result\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 2660,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "第一轮建议已收到。现在进入第二轮：把修正方案发给 B 复核。",
+        "tool_calls": [
+          {
+            "id": "call_00_v2a2cnbpXIGv84nhPkJg2982",
+            "type": "function",
+            "function": {
+              "name": "peer_request",
+              "arguments": "{\"requests\":[{\"text\":\"第二轮：复核修正方案。基于你第一轮建议，我整理出如下修正方案，请逐项复核是否可行、有无遗漏或风险，并给出明确结论（通过/需修改+具体修改点）。\\n\\n【问题1 空值检查】\\n- 入口统一守卫：payload == null 时抛 EmptyPayloadError，统一错误分支处理。\\n- 读取一律可选链+默认值：res?.data?.user?.name ?? ''；数组 res?.data?.items ?? []。\\n- 字段存在性用 'x' in obj / hasOwnProperty 判断，不用 if(obj.x)。\\n- 提交前必填校验：filter 出 null/undefined/trim 后为空的字段，非空则阻断并提示。\\n- 成功判定不只依赖 code，额外用 zod safeParse 校验 data 结构。\\n\\n【问题2 超时提示】\\n- 显式超时：axios timeout:10000；fetch 用 AbortSignal.timeout(10000)。\\n- 区分错误类型：AbortError / ECONNABORTED → “请求超时，请稍后重试”；其余走通用错误。\\n- 超时必须有可见反馈（toast/内联文案），finally 中重置 loading 恢复按钮。\\n- 重试入口带次数上限+退避，提示“已重试 N 次仍失败”。\\n\\n【问题3 重复提交】\\n- 前端即时锁：submitting 用 ref 置位 + 按钮 disabled，finally 复位；函数入口 if(inFlight) return。\\n- 幂等键：每次新提交生成 uuid 作 idempotencyKey 随请求头发送，重试复用同一 key。\\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL。\\n- 成功后跳转/清空表单。\\n\\n请指出：三个问题之间是否存在相互影响（如超时重试与幂等键、空值校验与错误分支），以及是否有必须补充的项。\",\"to\":\"b\"}]}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "第一轮建议已收到。现在进入第二轮：把修正方案发给 B 复核。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_v2a2cnbpXIGv84nhPkJg2982",
+            "name": "peer_request",
+            "input": {
+              "requests": [
+                {
+                  "text": "第二轮：复核修正方案。基于你第一轮建议，我整理出如下修正方案，请逐项复核是否可行、有无遗漏或风险，并给出明确结论（通过/需修改+具体修改点）。\n\n【问题1 空值检查】\n- 入口统一守卫：payload == null 时抛 EmptyPayloadError，统一错误分支处理。\n- 读取一律可选链+默认值：res?.data?.user?.name ?? ''；数组 res?.data?.items ?? []。\n- 字段存在性用 'x' in obj / hasOwnProperty 判断，不用 if(obj.x)。\n- 提交前必填校验：filter 出 null/undefined/trim 后为空的字段，非空则阻断并提示。\n- 成功判定不只依赖 code，额外用 zod safeParse 校验 data 结构。\n\n【问题2 超时提示】\n- 显式超时：axios timeout:10000；fetch 用 AbortSignal.timeout(10000)。\n- 区分错误类型：AbortError / ECONNABORTED → “请求超时，请稍后重试”；其余走通用错误。\n- 超时必须有可见反馈（toast/内联文案），finally 中重置 loading 恢复按钮。\n- 重试入口带次数上限+退避，提示“已重试 N 次仍失败”。\n\n【问题3 重复提交】\n- 前端即时锁：submitting 用 ref 置位 + 按钮 disabled，finally 复位；函数入口 if(inFlight) return。\n- 幂等键：每次新提交生成 uuid 作 idempotencyKey 随请求头发送，重试复用同一 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL。\n- 成功后跳转/清空表单。\n\n请指出：三个问题之间是否存在相互影响（如超时重试与幂等键、空值校验与错误分支），以及是否有必须补充的项。",
+                  "to": "b"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 2660,
+        "completion_tokens": 524,
+        "native": {
+          "input_tokens": 996,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1664,
+          "output_tokens": 524,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "第二轮：复核修正方案。基于你第一轮建议，我整理出如下修正方案，请逐项复核是否可行、有无遗漏或风险，并给出明确结论（通过/需修改+具体修改点）。\n\n【问题1 空值检查】\n- 入口统一守卫：payload == null 时抛 EmptyPayloadError，统一错误分支处理。\n- 读取一律可选链+默认值：res?.data?.user?.name ?? ''；数组 res?.data?.items ?? []。\n- 字段存在性用 'x' in obj / hasOwnProperty 判断，不用 if(obj.x)。\n- 提交前必填校验：filter 出 null/undefined/trim 后为空的字段，非空则阻断并提示。\n- 成功判定不只依赖 code，额外用 zod safeParse 校验 data 结构。\n\n【问题2 超时提示】\n- 显式超时：axios timeout:10000；fetch 用 AbortSignal.timeout(10000)。\n- 区分错误类型：AbortError / ECONNABORTED → “请求超时，请稍后重试”；其余走通用错误。\n- 超时必须有可见反馈（toast/内联文案），finally 中重置 loading 恢复按钮。\n- 重试入口带次数上限+退避，提示“已重试 N 次仍失败”。\n\n【问题3 重复提交】\n- 前端即时锁：submitting 用 ref 置位 + 按钮 disabled，finally 复位；函数入口 if(inFlight) return。\n- 幂等键：每次新提交生成 uuid 作 idempotencyKey 随请求头发送，重试复用同一 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL。\n- 成功后跳转/清空表单。\n\n请指出：三个问题之间是否存在相互影响（如超时重试与幂等键、空值校验与错误分支），以及是否有必须补充的项。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "6eece74d-ddb5-45f5-a993-758917f49f16",
+        "kind": "request",
+        "pending": [
+          {
+            "requestId": "6eece74d-ddb5-45f5-a993-758917f49f16",
+            "peer": "a",
+            "state": "working"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_v2a2cnbpXIGv84nhPkJg2982",
+        "type": "function",
+        "function": {
+          "name": "peer_request",
+          "arguments": "{\"requests\":[{\"text\":\"第二轮：复核修正方案。基于你第一轮建议，我整理出如下修正方案，请逐项复核是否可行、有无遗漏或风险，并给出明确结论（通过/需修改+具体修改点）。\\n\\n【问题1 空值检查】\\n- 入口统一守卫：payload == null 时抛 EmptyPayloadError，统一错误分支处理。\\n- 读取一律可选链+默认值：res?.data?.user?.name ?? ''；数组 res?.data?.items ?? []。\\n- 字段存在性用 'x' in obj / hasOwnProperty 判断，不用 if(obj.x)。\\n- 提交前必填校验：filter 出 null/undefined/trim 后为空的字段，非空则阻断并提示。\\n- 成功判定不只依赖 code，额外用 zod safeParse 校验 data 结构。\\n\\n【问题2 超时提示】\\n- 显式超时：axios timeout:10000；fetch 用 AbortSignal.timeout(10000)。\\n- 区分错误类型：AbortError / ECONNABORTED → “请求超时，请稍后重试”；其余走通用错误。\\n- 超时必须有可见反馈（toast/内联文案），finally 中重置 loading 恢复按钮。\\n- 重试入口带次数上限+退避，提示“已重试 N 次仍失败”。\\n\\n【问题3 重复提交】\\n- 前端即时锁：submitting 用 ref 置位 + 按钮 disabled，finally 复位；函数入口 if(inFlight) return。\\n- 幂等键：每次新提交生成 uuid 作 idempotencyKey 随请求头发送，重试复用同一 key。\\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL。\\n- 成功后跳转/清空表单。\\n\\n请指出：三个问题之间是否存在相互影响（如超时重试与幂等键、空值校验与错误分支），以及是否有必须补充的项。\",\"to\":\"b\"}]}"
+        }
+      },
+      "parameters": {
+        "requests": [
+          {
+            "text": "第二轮：复核修正方案。基于你第一轮建议，我整理出如下修正方案，请逐项复核是否可行、有无遗漏或风险，并给出明确结论（通过/需修改+具体修改点）。\n\n【问题1 空值检查】\n- 入口统一守卫：payload == null 时抛 EmptyPayloadError，统一错误分支处理。\n- 读取一律可选链+默认值：res?.data?.user?.name ?? ''；数组 res?.data?.items ?? []。\n- 字段存在性用 'x' in obj / hasOwnProperty 判断，不用 if(obj.x)。\n- 提交前必填校验：filter 出 null/undefined/trim 后为空的字段，非空则阻断并提示。\n- 成功判定不只依赖 code，额外用 zod safeParse 校验 data 结构。\n\n【问题2 超时提示】\n- 显式超时：axios timeout:10000；fetch 用 AbortSignal.timeout(10000)。\n- 区分错误类型：AbortError / ECONNABORTED → “请求超时，请稍后重试”；其余走通用错误。\n- 超时必须有可见反馈（toast/内联文案），finally 中重置 loading 恢复按钮。\n- 重试入口带次数上限+退避，提示“已重试 N 次仍失败”。\n\n【问题3 重复提交】\n- 前端即时锁：submitting 用 ref 置位 + 按钮 disabled，finally 复位；函数入口 if(inFlight) return。\n- 幂等键：每次新提交生成 uuid 作 idempotencyKey 随请求头发送，重试复用同一 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL。\n- 成功后跳转/清空表单。\n\n请指出：三个问题之间是否存在相互影响（如超时重试与幂等键、空值校验与错误分支），以及是否有必须补充的项。",
+            "to": "b"
+          }
+        ]
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requests\":[{\"ok\":true,\"requestId\":\"6eece74d-ddb5-45f5-a993-758917f49f16\",\"peer\":\"b\",\"state\":\"pending\"}],\"instruction\":\"任务已交接；等待结果，不催问、不另发确认。\"}",
+        "handoff": {
+          "action": "peer_request",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "b",
+      "input": "[peer 任务] 来自 @a\n第二轮：复核修正方案。基于你第一轮建议，我整理出如下修正方案，请逐项复核是否可行、有无遗漏或风险，并给出明确结论（通过/需修改+具体修改点）。\n\n【问题1 空值检查】\n- 入口统一守卫：payload == null 时抛 EmptyPayloadError，统一错误分支处理。\n- 读取一律可选链+默认值：res?.data?.user?.name ?? ''；数组 res?.data?.items ?? []。\n- 字段存在性用 'x' in obj / hasOwnProperty 判断，不用 if(obj.x)。\n- 提交前必填校验：filter 出 null/undefined/trim 后为空的字段，非空则阻断并提示。\n- 成功判定不只依赖 code，额外用 zod safeParse 校验 data 结构。\n\n【问题2 超时提示】\n- 显式超时：axios timeout:10000；fetch 用 AbortSignal.timeout(10000)。\n- 区分错误类型：AbortError / ECONNABORTED → “请求超时，请稍后重试”；其余走通用错误。\n- 超时必须有可见反馈（toast/内联文案），finally 中重置 loading 恢复按钮。\n- 重试入口带次数上限+退避，提示“已重试 N 次仍失败”。\n\n【问题3 重复提交】\n- 前端即时锁：submitting 用 ref 置位 + 按钮 disabled，finally 复位；函数入口 if(inFlight) return。\n- 幂等键：每次新提交生成 uuid 作 idempotencyKey 随请求头发送，重试复用同一 key。\n- 服务端兜底：唯一约束/去重表 + 幂等键 TTL。\n- 成功后跳转/清空表单。\n\n请指出：三个问题之间是否存在相互影响（如超时重试与幂等键、空值校验与错误分支），以及是否有必须补充的项。\n\n[协作状态] {\"requestId\":\"6eece74d-ddb5-45f5-a993-758917f49f16\",\"kind\":\"request\",\"pending\":[{\"requestId\":\"6eece74d-ddb5-45f5-a993-758917f49f16\",\"peer\":\"a\",\"state\":\"working\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 3052,
+        "maxTokens": 287
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_x36gUiTfxW3f2VNmPpUs1949",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_x36gUiTfxW3f2VNmPpUs1949",
+            "name": "peer_reply",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 3052,
+        "completion_tokens": 287,
+        "native": {
+          "input_tokens": 748,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 2304,
+          "output_tokens": 287,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "max_tokens"
+    }
+  ]
+}

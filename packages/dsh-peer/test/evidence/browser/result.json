@@ -1,0 +1,21 @@
+{
+  "version": "0.1.1",
+  "runtime": "0.2.1-rc.5",
+  "count": 6,
+  "errors": [],
+  "packedFiles": [
+    "LICENSE",
+    "README.md",
+    "README.zh.md",
+    "cordis.patch.yml",
+    "index.js",
+    "lib/client.js",
+    "lib/core.js",
+    "lib/guard.js",
+    "lib/message.js",
+    "lib/registry.js",
+    "lib/status-route.js",
+    "lib/transport.js",
+    "package.json"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-01T12:03:36.139Z",
+  "batch": "batch-SiC278",
+  "wrapperConfirmedRemoval": true,
+  "remainingCopiedProfiles": [],
+  "matchingEvaluationHostBrowserProcesses": [],
+  "processInspection": "Escalated read-only ps; only inspection shell and rg matched. Original user profile unchanged.",
+  "scope": "This evaluation and its isolated Host/browser checks"
+}

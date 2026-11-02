@@ -4,6 +4,9 @@ import { createUserMessage } from '@deepseek-ai/dsh-llm';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { createPeerCore } from './lib/core.js';
+import { PEER_POLICY } from './lib/policy.js';
+import { requestTools } from './lib/request-tools.js';
+import { protectionResponse } from './lib/status-route.js';
 import { defaultProcStartOf, resolvePeerDir } from './lib/registry.js';
 
 export const name = 'dsh-peer';
@@ -13,6 +16,20 @@ const TAIL = '这是同一台机器上 dsh 会话之间的通道；对方是另�
 const TEXT_OUTPUT = {
   schema: { type: 'object', additionalProperties: false, properties: { ok: { type: 'boolean', required: true }, text: { type: 'string', required: true } } },
   render: (_args, v) => [{ type: 'text', text: v.text }],
+};
+
+const SEND_OUTPUT = {
+  schema: { type: 'object', additionalProperties: false, properties: {
+    ok: { type: 'boolean', required: true }, text: { type: 'string', required: true },
+    display: { type: 'object', additionalProperties: false, properties: {
+      version: { type: 'number', required: true }, id: { type: 'string', required: true },
+      target: { type: 'object', additionalProperties: false, properties: { name: { type: 'string', required: true }, session: { type: 'string', required: true } }, required: true },
+      text: { type: 'string', required: true }, outcome: { type: 'string', required: true },
+      reason: { type: 'string' }, retryAfterMs: { type: 'number' },
+    } },
+  } },
+  render: (_args, v) => [{ type: 'text', text: v.text }],
+  presentationMeta: (_args, v) => v.display ? { peer: v.display } : null,
 };
 
 // --profile <p> 或 --profile=<p>；没有就 null（只是信息字段）
@@ -28,7 +45,7 @@ const sessionIdOf = (session) => (session && ((session.header && session.header.
 
 export function apply(ctx, config = {}) {
   const pid = process.pid;
-  const dir = resolvePeerDir();
+  const dir = config.dir || resolvePeerDir();
   let titles = null; // sessionTitle 服务（可选）
   const titleOf = (agent) => { try { return (titles && titles.get(agent.session)?.title) || undefined; } catch { return undefined; } };
 
@@ -40,6 +57,9 @@ export function apply(ctx, config = {}) {
     argv1: process.argv[1] || null,
     fixedName: (process.env.DSH_PEER_NAME || config.name || '').trim() || null,
     agents: ctx.agents,
+    protection: config.protection,
+    requests: config.requests,
+    namesFile: config.namesFile,
     makeMessage: (text, source) => createUserMessage({ content: [{ type: 'text', text }], source }),
     log: (line) => console.error(line), // 写 stderr：headless --json 的 stdout 只放 NDJSON 事件
   });
@@ -74,7 +94,7 @@ export function apply(ctx, config = {}) {
   ctx.on('agent/status', ({ agent, status }) => { core.setStatus(agent.id, status); });
   ctx.on('session/event', (session, event) => {
     // 空草稿的第一条用户消息：此刻才登记（固定名也在此刻分配）
-    if (event && event.type === 'user/message') { const id = sessionIdOf(session); if (id && core.isPending(id)) core.noteUserMessage(id); }
+    if (event && event.type === 'user/message') { const id = sessionIdOf(session); if (id && core.isPending(id)) core.noteUserMessage(id); if (id) core.consume(id, event.data?.source); }
     if (event && event.type === 'session/title' && event.data && event.data.title) core.setTitle(sessionIdOf(session), event.data.title);
   });
 
@@ -87,45 +107,77 @@ export function apply(ctx, config = {}) {
 
   ctx.tools.register(defineTool({
     name: 'peer_list',
-    description: `列出本机其他正在运行的 dsh 会话（含本进程的其他会话）。用户问"还有哪些 dsh / agent 在跑"、或要给别的会话发消息前先查名字时调用。正在运行的排在前面，其余按最近活跃排序，缺省最多列 20 个。${TAIL}`,
-    parameters: { all: { type: 'boolean', description: '缺省 false：最多列 20 个其他会话。为 true 时列出全部' } },
+    description: '发现 peer 名字/状态。all 查看全部，details 查看目录等完整信息。',
+    parameters: { all: { type: 'boolean' }, details: { type: 'boolean' } },
     output: TEXT_OUTPUT,
     isConcurrencySafe: () => true,
-    async execute(args, exec) { return { ok: true, text: core.listText(callerOf(exec && exec.agent), { all: args.all === true }) }; },
+    async execute(args, exec) {
+      const from = callerOf(exec?.agent), options = { all: args.all === true };
+      if (args.details) return { ok: true, text: core.listText(from, options) };
+      const view = core.listView(from, options);
+      return { ok: true, text: view.entries.map(e => `${e.name}${e.self ? ' (self)' : ''}: ${e.status}`).join('\n') + (view.hidden ? `\n另有 ${view.hidden} 个，all:true 查看。` : '') };
+    },
   }));
 
   ctx.tools.register(defineTool({
     name: 'peer_send',
-    description: `给本机另一个 dsh 会话发一条消息（异步，不等回复）。对方回复时会以"[peer 消息]"开头的消息出现在本对话。名字不确定时先调 peer_list。${TAIL}`,
+    description: `旧端兼容，不结束本轮。任务优先 peer_request/reply；只发新增任务、问题或一次结果。纯确认、感谢、告别不发送；保护错误后停止，不重试或换地址。${TAIL}`,
     parameters: {
-      to: { type: 'string', required: true, description: '对方的 peer 名字（peer_list 的"名字"列），或 sessionId 前缀（至少 4 位）' },
-      text: { type: 'string', required: true, description: '要发的内容，原样投进对方会话' },
-      steer: { type: 'boolean', description: '缺省 false：排到对方下一轮。只有对方正在运行、且用户要求立刻插话时才填 true（插进对方当前这一轮）' },
+      to: { type: 'string', required: true, description: '名字或ID前缀(≥4位)' },
+      text: { type: 'string', required: true },
+      steer: { type: 'boolean', description: '仅用户要求插话时 true' },
     },
-    output: TEXT_OUTPUT,
+    output: SEND_OUTPUT,
     isConcurrencySafe: () => true,
     async execute(args, exec) {
       const r = await core.send({ to: args.to, text: args.text, steer: args.steer === true, from: callerOf(exec && exec.agent) });
-      return { ok: r.ok, text: r.text };
+      return { ok: r.ok, text: r.text, ...(r.display ? { display: JSON.parse(JSON.stringify(r.display)) } : {}) };
     },
   }));
 
   ctx.tools.register(defineTool({
     name: 'peer_rename',
-    description: `改本会话在 peer 注册表里的名字（别的会话用这个名字给你发消息）。用户要求给本会话起名、改名时调用。名字只能用小写字母、数字、-、_，小写字母或数字开头，最长 40 个字符；撞名会自动加 -2、-3。${TAIL}`,
-    parameters: { name: { type: 'string', required: true, description: '新名字' } },
+    description: '仅用户要求时改本会话 peer 名字。小写字母、数字、-、_，最多40字符。',
+    parameters: { name: { type: 'string', required: true } },
     output: TEXT_OUTPUT,
     isConcurrencySafe: () => true,
     async execute(args, exec) { const r = core.rename(callerOf(exec && exec.agent), args.name); return { ok: r.ok, text: r.text }; },
   }));
+
+  for (const tool of requestTools(core, callerOf)) ctx.tools.register(tool);
+
+  ctx.inject(['systemPrompt'], c => {
+    if (config.promptPolicy === false) return;
+    c.effect(() => c.systemPrompt.section({ name: 'dsh-peer:policy',
+      order: c.systemPrompt.getSectionOrder('TEAM_POLICY'), text: PEER_POLICY, interpolate: false }), 'dsh-peer.policy');
+  });
+
+  // Exact Fetch routes are authenticated and restricted to the owner by the host.
+  // The handler additionally requires the receiving session to be registered and live.
+  ctx.inject(['connection'], c => {
+    const routes = c.get('connection')?.fetch;
+    if (typeof routes?.register !== 'function') return;
+    c.effect(() => routes.register({ path: '/api/dsh-peer/status', methods: ['GET'], requestBody: 'buffered',
+      fetch: request => protectionResponse(core, ctx.agents, request) }), 'dsh-peer.status');
+  });
 
   // 斜杠命令可选：headless 没有 commands 服务时静默跳过
   ctx.inject(['commands'], (c) => {
     c.effect(() => c.commands.register({
       name: 'peers',
       description: '列出本机正在运行的 dsh 会话（peer）',
-      handler: ({ agent }) => ({ kind: 'success', text: core.listText(callerOf(agent)) }),
+      handler: ({ agent }) => ({ kind: 'success', text: core.peersText(callerOf(agent)) }),
     }), 'dsh-peer.cmd.peers');
+    c.effect(() => c.commands.register({
+      name: 'peer-resume', description: '恢复本会话接收指定 peer 的消息；不重发、不启动模型',
+      input: { hint: '<名字或会话 ID>' },
+      handler: ({ agent, rawInput }) => {
+        const address = String(rawInput || '').trim().replace(/^@/, '');
+        if (!address) return { kind: 'error', text: '用法：/peer-resume <名字或会话 ID>' };
+        const r = core.resume(callerOf(agent), address);
+        return { kind: r.ok ? 'success' : 'error', text: r.text };
+      },
+    }), 'dsh-peer.cmd.peer-resume');
     c.effect(() => c.commands.register({
       name: 'peer-name',
       description: '给本会话起 peer 名字，别的会话用它给你发消息',

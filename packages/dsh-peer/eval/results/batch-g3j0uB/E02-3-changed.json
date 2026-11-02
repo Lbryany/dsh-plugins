@@ -1,0 +1,45 @@
+{
+  "case": "E02",
+  "run": 3,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 479,
+    "output": 3,
+    "total": 482
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "无需回复。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "无需回复。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 479,
+        "completion_tokens": 3,
+        "native": {
+          "input_tokens": 223,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 3,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

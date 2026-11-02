@@ -1,0 +1,131 @@
+{
+  "case": "E03",
+  "run": 3,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 1359,
+    "output": 84,
+    "total": 1443
+  },
+  "usageComplete": true,
+  "attempts": 1,
+  "turns": 3,
+  "reason": "natural",
+  "pass": false,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 1,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_WEPTF6mquomUojAtP7j47135",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"收到，42，谢谢！\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_WEPTF6mquomUojAtP7j47135",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "收到，42，谢谢！"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 413,
+        "completion_tokens": 59,
+        "native": {
+          "input_tokens": 157,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 59,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_WEPTF6mquomUojAtP7j47135",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"收到，42，谢谢！\"}"
+        }
+      },
+      "args": {
+        "to": "b",
+        "text": "收到，42，谢谢！"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "b",
+        "session": "session-bbbb",
+        "sameProcess": true,
+        "text": "已发给 b（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 回复了：6 × 7 = 42。我已确认并道谢。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 回复了：6 × 7 = 42。我已确认并道谢。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 505,
+        "completion_tokens": 19,
+        "native": {
+          "input_tokens": 249,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 19,
+          "service_tier": "standard"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "无需回复，任务已完成。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "无需回复，任务已完成。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 441,
+        "completion_tokens": 6,
+        "native": {
+          "input_tokens": 185,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 6,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "status": "interrupted-harness-rework",
+  "reason": "Missing provider stop_reason and duplicated transcript representation in conservative request budget estimate; partial current request may not have a response record. Prior results retained, no acceptance claim.",
+  "stoppedPids": [
+    73146
+  ],
+  "time": "2026-11-01T10:07:11.315889+00:00"
+}

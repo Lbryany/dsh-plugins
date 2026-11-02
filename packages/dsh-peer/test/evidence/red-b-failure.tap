@@ -1,0 +1,48 @@
+✖ B08 uncertain acknowledgement retains slot and reply phase (1.787333ms)
+✖ B09 failed admission fully restores pending state (0.209208ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 77.744208
+
+✖ failing tests:
+
+test at test/exchange-failure.test.mjs:12:1
+✖ B08 uncertain acknowledgement retains slot and reply phase (1.787333ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'timeout'
+  - 'request-pending'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/exchange-failure.test.mjs:14:70)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'timeout',
+    expected: 'request-pending',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/exchange-failure.test.mjs:20:1
+✖ B09 failed admission fully restores pending state (0.209208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/exchange-failure.test.mjs:23:47)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

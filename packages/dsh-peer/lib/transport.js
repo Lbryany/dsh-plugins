@@ -59,20 +59,21 @@ export function createTransport({ dir, pid, token: _token, onRequest, path = soc
     send(peerRecord, request) {
       return new Promise((resolve) => {
         let settled = false;
+        let wrote = false;
         let buf = '';
         const finish = (value) => { if (settled) return; settled = true; clearTimeout(timer); socket.destroy(); resolve(value); };
         const socket = createConnection(peerRecord.socket);
         const timer = setTimeout(() => finish({ ok: false, id: request.id, error: 'timeout' }), timeoutMs);
         socket.setEncoding('utf8');
-        socket.on('connect', () => socket.write(`${JSON.stringify(request)}\n`));
+        socket.on('connect', () => { wrote = true; socket.write(`${JSON.stringify(request)}\n`); });
         socket.on('data', (chunk) => {
           buf += chunk;
           const nl = buf.indexOf('\n');
           if (nl < 0) return;
           try { finish(JSON.parse(buf.slice(0, nl))); } catch { finish({ ok: false, id: request.id, error: 'bad-response' }); }
         });
-        socket.on('error', () => finish({ ok: false, id: request.id, error: 'unreachable' }));
-        socket.on('close', () => finish({ ok: false, id: request.id, error: 'unreachable' }));
+        socket.on('error', () => finish({ ok: false, id: request.id, error: 'unreachable', uncertain: wrote }));
+        socket.on('close', () => finish({ ok: false, id: request.id, error: 'unreachable', uncertain: wrote }));
       });
     },
   };

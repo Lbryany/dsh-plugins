@@ -1,0 +1,119 @@
+{
+  "mode": "core simulation; FIFO agent delivery, actual registered tool schemas/execution/envelope; real Host handoff semantics verified separately, same scenario system prompts; no full Host model scheduler",
+  "createdAt": "2026-11-01T11:40:54.947Z",
+  "protocol": "messages",
+  "thinking": "disabled",
+  "temperature": 0,
+  "budgetMethod": "provider input token count + 32-token reserve, actual usage includes cached input",
+  "perRequestMaxOutput": 1000,
+  "credentialSource": "user-authorized isolated projects-thread profile copy",
+  "spec": {
+    "model": "deepseek-flash",
+    "runsPerCasePerVersion": 5,
+    "limits": {
+      "tokens": 12000,
+      "sendAttempts": 24,
+      "seconds": 180
+    },
+    "thresholds": {
+      "E01-E03": "at least 14/15 without extra acknowledgement",
+      "E04-E06": "15/15 task complete, no protection rejection",
+      "budgetExhaustion": 0
+    },
+    "cases": [
+      {
+        "id": "E01",
+        "a": "你是 A。B 负责检查数据，现在等待 B 的结果。",
+        "b": "你是 B，数据检查已完成，固定结果为 7 条记录全部通过。已向 A 发过一次结果，无新问题。",
+        "initial": "数据检查完成：7 条记录全部通过，没有后续问题。",
+        "expected": [],
+        "quiet": true
+      },
+      {
+        "id": "E02",
+        "a": "你是 A，和 B 的任务已完成，没有后续工作。",
+        "b": "你是 B，任务已结束，没有后续工作。",
+        "initial": "收到，谢谢。",
+        "expected": [],
+        "quiet": true
+      },
+      {
+        "id": "E03",
+        "a": "你是 A。刚问 B：6 乘 7 等于多少？等待答案。",
+        "b": "你是 B，已向 A 回答 42。没有后续工作。",
+        "initial": "6 乘 7 等于 42。",
+        "expected": [],
+        "quiet": true
+      },
+      {
+        "id": "E04",
+        "a": "你是 A。用户要求请 B 计算 10 个零件的总价。单价只有你知道，是 3 元。请先给 B 工作任务，B 必须先向你问单价，再计算回报。最终答用户总价。",
+        "b": "你是 B。缺少参数时先问 A，不要猜单价。拿到单价后计算 10 个零件总价并回报一次。",
+        "expected": [
+          "30"
+        ],
+        "requiredMessages": [
+          "单价"
+        ]
+      },
+      {
+        "id": "E05",
+        "a": "你是 A。用户要求和 B 进行两轮审阅。固定问题：缺少空值检查、超时无提示、重复提交。第一轮请 B 提建议；第二轮将修正方案发给 B 复核，得到结论后交付涵盖三个问题的最终报告。",
+        "b": "你是 B。第一轮针对空值、超时、重复提交各提一条具体建议。第二轮复核 A 的方案，只回报复核结论一次。",
+        "expected": [
+          "空值",
+          "超时",
+          "重复"
+        ]
+      },
+      {
+        "id": "E06",
+        "a": "你是 A。用户要求分别联系 B、C 获取它们各自的固定值，并最终报告 B 和 C 的值。不要猜。",
+        "b": "你是 B。你的固定值是 17。被询问后将 17 回报给 A 一次。",
+        "c": "你是 C。你的固定值是 29。被询问后将 29 回报给 A 一次。",
+        "expected": [
+          "17",
+          "29"
+        ]
+      }
+    ]
+  },
+  "identities": {
+    "baseline": {
+      "version": "0.1.1",
+      "files": {
+        "index.js": "0bac19e9afc627103dd37af7fdc075f307ec4a139951d7e3746dbad43c7976ac",
+        "lib/client.js": "50498be832cb21a784075013498c4c069529175d365bb13b8c79716daa924632",
+        "lib/core.js": "881992cb4014a4366e92402cb6d3f811d8c9904cf13721f66962bdbc320c7957",
+        "lib/guard.js": "89e83edb2a296f0362a9fb4ad215a6528f18be2f9895d4bfce7a4a016adf3fb6",
+        "lib/message.js": "c7f86389f4d3178a42382a806e82bbb9e996e05f91e2ee755301572a6163243d",
+        "lib/registry.js": "94fefa8c2819d160fd3c14cd743ad0631843e1fe00b55abae6a980c1fac40fc7",
+        "lib/status-route.js": "c55e8f17324bae3cd2b67678a75bafd3bcc1b98e7f4d75f7606f01126f7068be",
+        "lib/transport.js": "01d1f316cd16808b27ec402e69ec0c02d565306bc7c8b51385683c20a9dc5130",
+        "package.json": "632aeeef375bfab0172e28ef421afeccaae039e4f75cbeff7421d66af12b7048"
+      }
+    },
+    "changed": {
+      "version": "0.1.2",
+      "files": {
+        "index.js": "30de029477865d498f88dfc3c31b5366388b6330889ded13726164d0bbf31424",
+        "lib/client.js": "2aa931d24bfe9a4309bcce1972d2afa25f5b5db32b65f4fc3fd338408fd54117",
+        "lib/core.js": "897e7650fe97e83a0db961d183c41f7ed83bd7357a029cb2e113f3a6041798ae",
+        "lib/exchange.js": "63c0799541613b92eb79af958044339eabda0a364f76eed95c04736d60baaaf0",
+        "lib/guard.js": "8efa0091a28abb686f974fadbafebc3d975a91a1bf90ad1371dd70a25d3e11fb",
+        "lib/message.js": "867c4eee508f03c5d2b037148fc4ffb7af65bded29e237874697f0691898df5e",
+        "lib/registry.js": "94fefa8c2819d160fd3c14cd743ad0631843e1fe00b55abae6a980c1fac40fc7",
+        "lib/request-tools.js": "bcfb92db16c2bea1a4bafd474db0c1d91eadcaa92161d8ea84d99e01d44adc71",
+        "lib/status-route.js": "c55e8f17324bae3cd2b67678a75bafd3bcc1b98e7f4d75f7606f01126f7068be",
+        "lib/transport.js": "01d1f316cd16808b27ec402e69ec0c02d565306bc7c8b51385683c20a9dc5130",
+        "package.json": "443db9326cb3d82e4a60cbc3cfeb164e6eee28d56678b7ec0079d2febe25c51f"
+      }
+    }
+  },
+  "harness": {
+    "run.mjs": "c4c955e300db1a3798effa3fb0039a7bd5457033cb3de72c01fa7fece076cb37",
+    "provider.mjs": "6e5cb42823d56feb9a4ab5516d9c51179d76b91d0bed84473f6f259132874508",
+    "contract.mjs": "6d5f81dbd37e5ed2daf14557b94e1dc8c9d117cacf039e1b4b27fb4c3a4eb0ee",
+    "from-profile.mjs": "43a7834f1c6e8575dbc198f2ee2650ea58f6f2482d483ce087b738c084d1f41d"
+  }
+}

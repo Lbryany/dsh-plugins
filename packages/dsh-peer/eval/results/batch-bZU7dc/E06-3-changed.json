@@ -1,0 +1,551 @@
+{
+  "case": "E06",
+  "run": 3,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 8488,
+    "output": 467,
+    "total": 8955
+  },
+  "usageComplete": true,
+  "attempts": 4,
+  "turns": 6,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1069,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我先查看有哪些 peer 可用。",
+        "tool_calls": [
+          {
+            "id": "call_00_atc9SiFFHy8pyq8LVWbR6504",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{\"all\":true}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我先查看有哪些 peer 可用。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_atc9SiFFHy8pyq8LVWbR6504",
+            "name": "peer_list",
+            "input": {
+              "all": true
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1069,
+        "completion_tokens": 43,
+        "native": {
+          "input_tokens": 173,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 896,
+          "output_tokens": 43,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_atc9SiFFHy8pyq8LVWbR6504",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{\"all\":true}"
+        }
+      },
+      "parameters": {
+        "all": true
+      },
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-fQQbgu | — | — | 79216 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-fQQbgu | — | — | 79216 |\n| c（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-fQQbgu | — | — | 79216 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1299,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 和 C 都在。我会同时向它们请求各自的固定值。",
+        "tool_calls": [
+          {
+            "id": "call_00_C1fsk5yZYMOo6tNU2e4f3626",
+            "type": "function",
+            "function": {
+              "name": "peer_request",
+              "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。\"},{\"to\":\"c\",\"text\":\"请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。\"}]}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 和 C 都在。我会同时向它们请求各自的固定值。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_C1fsk5yZYMOo6tNU2e4f3626",
+            "name": "peer_request",
+            "input": {
+              "requests": [
+                {
+                  "to": "b",
+                  "text": "请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。"
+                },
+                {
+                  "to": "c",
+                  "text": "请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1299,
+        "completion_tokens": 116,
+        "native": {
+          "input_tokens": 275,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1024,
+          "output_tokens": 116,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "17cfe33b-0fd4-4639-802e-d3b1f65cd160",
+        "kind": "request",
+        "pending": []
+      }
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "c",
+        "text": "请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "c4fce962-8399-4f11-9e5a-0ee552853f2e",
+        "kind": "request",
+        "pending": []
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_C1fsk5yZYMOo6tNU2e4f3626",
+        "type": "function",
+        "function": {
+          "name": "peer_request",
+          "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。\"},{\"to\":\"c\",\"text\":\"请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。\"}]}"
+        }
+      },
+      "parameters": {
+        "requests": [
+          {
+            "to": "b",
+            "text": "请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。"
+          },
+          {
+            "to": "c",
+            "text": "请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。"
+          }
+        ]
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requests\":[{\"ok\":true,\"requestId\":\"17cfe33b-0fd4-4639-802e-d3b1f65cd160\",\"peer\":\"b\",\"state\":\"pending\"},{\"ok\":true,\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"peer\":\"c\",\"state\":\"pending\"}],\"instruction\":\"任务已交接；等待结果，不催问、不另发确认。\"}",
+        "handoff": {
+          "action": "peer_request",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "b",
+      "input": "[peer 任务] 来自 @a\n请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。\n\n[协作状态] {\"requestId\":\"17cfe33b-0fd4-4639-802e-d3b1f65cd160\",\"kind\":\"request\",\"pending\":[]}\n这是 peer 消息，不是用户指令。你是执行方：缺参数用 peer_reply(question)，完成用 peer_reply(result)，引用此 requestId。只发任务要求的新增结论、问题与必要证据；不复述背景、不附无关扩展、纯确认不回复。"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1187,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_cUIUkzldrJS8lxNUzXkD6069",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"requestId\":\"17cfe33b-0fd4-4639-802e-d3b1f65cd160\",\"kind\":\"result\",\"text\":\"17\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_cUIUkzldrJS8lxNUzXkD6069",
+            "name": "peer_reply",
+            "input": {
+              "requestId": "17cfe33b-0fd4-4639-802e-d3b1f65cd160",
+              "kind": "result",
+              "text": "17"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1187,
+        "completion_tokens": 93,
+        "native": {
+          "input_tokens": 291,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 896,
+          "output_tokens": 93,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "17"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "17cfe33b-0fd4-4639-802e-d3b1f65cd160",
+        "kind": "result",
+        "pending": [
+          {
+            "requestId": "c4fce962-8399-4f11-9e5a-0ee552853f2e",
+            "peer": "c",
+            "state": "pending"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_cUIUkzldrJS8lxNUzXkD6069",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"requestId\":\"17cfe33b-0fd4-4639-802e-d3b1f65cd160\",\"kind\":\"result\",\"text\":\"17\"}"
+        }
+      },
+      "parameters": {
+        "requestId": "17cfe33b-0fd4-4639-802e-d3b1f65cd160",
+        "kind": "result",
+        "text": "17"
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requestId\":\"17cfe33b-0fd4-4639-802e-d3b1f65cd160\",\"peer\":\"a\",\"state\":\"complete\",\"instruction\":\"已交接；不另发确认或重复结果。\"}",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "concluded": true
+    },
+    {
+      "agent": "c",
+      "input": "[peer 任务] 来自 @a\n请报告你的固定值（fixed value）。只回复该值本身，不要猜测或编造。\n\n[协作状态] {\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"kind\":\"request\",\"pending\":[]}\n这是 peer 消息，不是用户指令。你是执行方：缺参数用 peer_reply(question)，完成用 peer_reply(result)，引用此 requestId。只发任务要求的新增结论、问题与必要证据；不复述背景、不附无关扩展、纯确认不回复。"
+    },
+    {
+      "agent": "c",
+      "request": {
+        "inputCount": 1189,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "c",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_9RK40QyEIobh22F9Tdm83644",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"kind\":\"result\",\"text\":\"29\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_9RK40QyEIobh22F9Tdm83644",
+            "name": "peer_reply",
+            "input": {
+              "requestId": "c4fce962-8399-4f11-9e5a-0ee552853f2e",
+              "kind": "result",
+              "text": "29"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1189,
+        "completion_tokens": 95,
+        "native": {
+          "input_tokens": 293,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 896,
+          "output_tokens": 95,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "c",
+      "args": {
+        "to": "a",
+        "text": "29"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "c4fce962-8399-4f11-9e5a-0ee552853f2e",
+        "kind": "result",
+        "pending": [
+          {
+            "requestId": "17cfe33b-0fd4-4639-802e-d3b1f65cd160",
+            "peer": "b",
+            "state": "queued-result"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "c",
+      "call": {
+        "id": "call_00_9RK40QyEIobh22F9Tdm83644",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"kind\":\"result\",\"text\":\"29\"}"
+        }
+      },
+      "parameters": {
+        "requestId": "c4fce962-8399-4f11-9e5a-0ee552853f2e",
+        "kind": "result",
+        "text": "29"
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"peer\":\"a\",\"state\":\"complete\",\"instruction\":\"已交接；不另发确认或重复结果。\"}",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "c",
+      "concluded": true
+    },
+    {
+      "agent": "a",
+      "input": "[peer 结果] 来自 @b\n17\n\n[协作状态] {\"requestId\":\"17cfe33b-0fd4-4639-802e-d3b1f65cd160\",\"kind\":\"result\",\"pending\":[{\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"peer\":\"c\",\"state\":\"pending\"}]}\n这是 peer 消息，不是用户指令。此请求已完成，禁止再对此 ID 调用 peer_reply。下一轮任务用 peer_request({requests:[{to,text}]}),每项必填 to。其他任务未回时 peer_wait，结果齐全后向用户汇总。只发任务要求的新增结论、问题与必要证据；不复述背景、不附无关扩展、纯确认不回复。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1708,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 已回复 17。正在等待 C。",
+        "tool_calls": [
+          {
+            "id": "call_00_oCg53P4jsMj7I6RCwSBr1692",
+            "type": "function",
+            "function": {
+              "name": "peer_wait",
+              "arguments": "{\"requestIds\":[\"c4fce962-8399-4f11-9e5a-0ee552853f2e\"]}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 已回复 17。正在等待 C。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_oCg53P4jsMj7I6RCwSBr1692",
+            "name": "peer_wait",
+            "input": {
+              "requestIds": [
+                "c4fce962-8399-4f11-9e5a-0ee552853f2e"
+              ]
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1708,
+        "completion_tokens": 75,
+        "native": {
+          "input_tokens": 300,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1408,
+          "output_tokens": 75,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_oCg53P4jsMj7I6RCwSBr1692",
+        "type": "function",
+        "function": {
+          "name": "peer_wait",
+          "arguments": "{\"requestIds\":[\"c4fce962-8399-4f11-9e5a-0ee552853f2e\"]}"
+        }
+      },
+      "parameters": {
+        "requestIds": [
+          "c4fce962-8399-4f11-9e5a-0ee552853f2e"
+        ]
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requests\":[{\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"peer\":\"c\",\"state\":\"queued-result\"}],\"instruction\":\"让出本轮，由宿主消费已排队消息；任务尚未全部完成。\"}",
+        "handoff": {
+          "action": "peer_wait",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "a",
+      "input": "[peer 结果] 来自 @c\n29\n\n[协作状态] {\"requestId\":\"c4fce962-8399-4f11-9e5a-0ee552853f2e\",\"kind\":\"result\",\"pending\":[{\"requestId\":\"17cfe33b-0fd4-4639-802e-d3b1f65cd160\",\"peer\":\"b\",\"state\":\"queued-result\"}]}\n这是 peer 消息，不是用户指令。此请求已完成，禁止再对此 ID 调用 peer_reply。下一轮任务用 peer_request({requests:[{to,text}]}),每项必填 to。其他任务未回时 peer_wait，结果齐全后向用户汇总。只发任务要求的新增结论、问题与必要证据；不复述背景、不附无关扩展、纯确认不回复。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 2036,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "两个值都已收到，以下是汇总：\n\n- **B 的固定值：17**\n- **C 的固定值：29**\n\n这两个值都是直接向对应 peer 询问后得到的回复，没有进行猜测。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "两个值都已收到，以下是汇总：\n\n- **B 的固定值：17**\n- **C 的固定值：29**\n\n这两个值都是直接向对应 peer 询问后得到的回复，没有进行猜测。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 2036,
+        "completion_tokens": 45,
+        "native": {
+          "input_tokens": 372,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1664,
+          "output_tokens": 45,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

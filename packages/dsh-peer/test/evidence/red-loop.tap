@@ -1,0 +1,247 @@
+✖ G01/G07 local: new IDs with same content deliver once (11.781416ms)
+✖ G03/G07 local: seventh different message rejected (4.103459ms)
+✖ G06/G07 local: alternating novel replies stop (3.778084ms)
+✖ G01/G07 socket: new IDs with same content deliver once (5.73775ms)
+✖ G03/G07 socket: seventh different message rejected (6.370125ms)
+✖ G06/G07 socket: alternating novel replies stop (5.273792ms)
+✖ G02 exact bytes, rename, target/mode isolation and 60 s boundary (1.723833ms)
+✖ G04 20 messages at 5 s intervals: rejected attempts consume no quota (1.520291ms)
+✖ G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional (1.765709ms)
+✖ G10 scoped IDs and synchronous failure rollback (2.575083ms)
+✖ G11 concurrent sends do not over-admit (7.941917ms)
+✖ G11 capacity refuses new pair without evicting pause (1.291125ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 0
+ℹ fail 12
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157.54425
+
+✖ failing tests:
+
+test at test/loop-control.test.mjs:6:3
+✖ G01/G07 local: new IDs with same content deliver once (11.781416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'duplicate-content'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:9:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'duplicate-content',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:12:3
+✖ G03/G07 local: seventh different message rejected (4.103459ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'rate-limited'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:15:46)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'rate-limited',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:18:3
+✖ G06/G07 local: alternating novel replies stop (3.778084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:25:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:6:3
+✖ G01/G07 socket: new IDs with same content deliver once (5.73775ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'duplicate-content'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:9:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'duplicate-content',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:12:3
+✖ G03/G07 socket: seventh different message rejected (6.370125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'rate-limited'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:15:46)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'rate-limited',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:18:3
+✖ G06/G07 socket: alternating novel replies stop (5.273792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:25:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:28:1
+✖ G02 exact bytes, rename, target/mode isolation and 60 s boundary (1.723833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'duplicate-content'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:30:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'duplicate-content',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:37:1
+✖ G04 20 messages at 5 s intervals: rejected attempts consume no quota (1.520291ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  20 !== 12
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:43:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 20,
+    expected: 12,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:47:1
+✖ G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional (1.765709ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'conversation-paused'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:50:26)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'conversation-paused',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:61:1
+✖ G10 scoped IDs and synchronous failure rollback (2.575083ms)
+  Error: private body must not leak
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:63:36
+      at Object.followup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:14:37)
+      at deliver (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:241:49)
+      at onRequest (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:259:12)
+      at Object.receive (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:32:90)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:64:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at test/loop-control.test.mjs:70:1
+✖ G11 concurrent sends do not over-admit (7.941917ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  20 !== 6
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:73:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 20,
+    expected: 6,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/loop-control.test.mjs:75:1
+✖ G11 capacity refuses new pair without evicting pause (1.291125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'conversation-paused'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:78:26)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'conversation-paused',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

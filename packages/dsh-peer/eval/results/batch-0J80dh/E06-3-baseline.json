@@ -1,0 +1,651 @@
+{
+  "case": "E06",
+  "run": 3,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 9945,
+    "output": 489,
+    "total": 10434
+  },
+  "usageComplete": true,
+  "attempts": 4,
+  "turns": 9,
+  "reason": "token-cap",
+  "pass": false,
+  "rejected": 0,
+  "chain": false,
+  "extraSendsAfterResult": null,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 768,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我先看看有哪些会话在运行，以便找到 B 和 C。",
+        "tool_calls": [
+          {
+            "id": "call_00_AvShb7ZXhPggOcEnK0Lw3270",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我先看看有哪些会话在运行，以便找到 B 和 C。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_AvShb7ZXhPggOcEnK0Lw3270",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 768,
+        "completion_tokens": 34,
+        "native": {
+          "input_tokens": 256,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 512,
+          "output_tokens": 34,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_AvShb7ZXhPggOcEnK0Lw3270",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |\n| c（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 992,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 和 C 都在。我会同时向它们询问各自的固定值。",
+        "tool_calls": [
+          {
+            "id": "call_00_nwDa2SGFNdH3VJ4BS2Ac5115",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。\"}"
+            }
+          },
+          {
+            "id": "call_01_3THIAcnqS6DU6sdfoBdw3661",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"c\",\"text\":\"你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 和 C 都在。我会同时向它们询问各自的固定值。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_nwDa2SGFNdH3VJ4BS2Ac5115",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "call_01_3THIAcnqS6DU6sdfoBdw3661",
+            "name": "peer_send",
+            "input": {
+              "to": "c",
+              "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 992,
+        "completion_tokens": 160,
+        "native": {
+          "input_tokens": 352,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 160,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_nwDa2SGFNdH3VJ4BS2Ac5115",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。\"}"
+        }
+      },
+      "parameters": {
+        "to": "b",
+        "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 b（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "7a7fb55e8f3150fc1f8d1e42",
+          "target": {
+            "name": "b",
+            "session": "session-bbbb"
+          },
+          "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "c",
+        "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_01_3THIAcnqS6DU6sdfoBdw3661",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"c\",\"text\":\"你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。\"}"
+        }
+      },
+      "parameters": {
+        "to": "c",
+        "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 c（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "151ed6338cbc896eb5b059eb",
+          "target": {
+            "name": "c",
+            "session": "session-cccc"
+          },
+          "text": "你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1234,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "消息已发出，等待 B 和 C 回复。",
+        "tool_calls": [
+          {
+            "id": "call_00_UuzgHHMMs84BOXiKUS4w7663",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "消息已发出，等待 B 和 C 回复。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_UuzgHHMMs84BOXiKUS4w7663",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1234,
+        "completion_tokens": 32,
+        "native": {
+          "input_tokens": 210,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1024,
+          "output_tokens": 32,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_UuzgHHMMs84BOXiKUS4w7663",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |\n| c（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1456,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我已向 B 和 C 分别发出询问，请它们报告各自的固定值。目前两个会话都处于空闲状态，我还没有收到它们的回复内容。\n\n**当前状态：**\n- 已联系 B ✅（消息已投递，等待回复）\n- 已联系 C ✅（消息已投递，等待回复）\n\n我无法凭空得知它们的固定值，也不会猜测。等 B 和 C 的回复到达后，我会把两者的值如实报告给你。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我已向 B 和 C 分别发出询问，请它们报告各自的固定值。目前两个会话都处于空闲状态，我还没有收到它们的回复内容。\n\n**当前状态：**\n- 已联系 B ✅（消息已投递，等待回复）\n- 已联系 C ✅（消息已投递，等待回复）\n\n我无法凭空得知它们的固定值，也不会猜测。等 B 和 C 的回复到达后，我会把两者的值如实报告给你。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1456,
+        "completion_tokens": 98,
+        "native": {
+          "input_tokens": 304,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 98,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "b",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2）\n你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"a\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 904,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_IDRW0KAzHZh4G2sBf0ok9511",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"17\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_IDRW0KAzHZh4G2sBf0ok9511",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "17"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 904,
+        "completion_tokens": 54,
+        "native": {
+          "input_tokens": 264,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 54,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "17"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_IDRW0KAzHZh4G2sBf0ok9511",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"17\"}"
+        }
+      },
+      "parameters": {
+        "to": "a",
+        "text": "17"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 a（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "e434126636cc7a2ca9090b59",
+          "target": {
+            "name": "a",
+            "session": "session-aaaa"
+          },
+          "text": "17",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1001,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "已回复 A：我的固定值是 17。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已回复 A：我的固定值是 17。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1001,
+        "completion_tokens": 10,
+        "native": {
+          "input_tokens": 233,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 768,
+          "output_tokens": 10,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "c",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2）\n你好，我是 A。请告诉我你的固定值（fixed value）是多少？只回复该数值即可，不要猜测。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"a\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "c",
+      "request": {
+        "inputCount": 904,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "c",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_K4XwEIfsF0mLNNK7W0P54676",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"29\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_K4XwEIfsF0mLNNK7W0P54676",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "29"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 904,
+        "completion_tokens": 54,
+        "native": {
+          "input_tokens": 264,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 54,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "c",
+      "args": {
+        "to": "a",
+        "text": "29"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "c",
+      "call": {
+        "id": "call_00_K4XwEIfsF0mLNNK7W0P54676",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"29\"}"
+        }
+      },
+      "parameters": {
+        "to": "a",
+        "text": "29"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 a（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "48f149173f9f6cb255a079a9",
+          "target": {
+            "name": "a",
+            "session": "session-aaaa"
+          },
+          "text": "29",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "c",
+      "request": {
+        "inputCount": 1001,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "c",
+      "message": {
+        "role": "assistant",
+        "content": "已把固定值 29 回报给 A。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已把固定值 29 回报给 A。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1001,
+        "completion_tokens": 11,
+        "native": {
+          "input_tokens": 233,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 768,
+          "output_tokens": 11,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2）\n17\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"b\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1685,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 已回复：**17**。现在等 C 的回复。",
+        "tool_calls": [
+          {
+            "id": "call_00_YRT8Zm3QYcKsF86YEkLn0898",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 已回复：**17**。现在等 C 的回复。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_YRT8Zm3QYcKsF86YEkLn0898",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1685,
+        "completion_tokens": 36,
+        "native": {
+          "input_tokens": 149,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1536,
+          "output_tokens": 36,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_YRT8Zm3QYcKsF86YEkLn0898",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |\n| c（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-XkBcN2 | — | — | 82986 |"
+      }
+    }
+  ]
+}

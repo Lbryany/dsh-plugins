@@ -1,0 +1,5 @@
+TimeoutError: Waiting for selector `[data-peer-message]` failed
+    at CSSQueryHandler.waitFor (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/puppeteer-core/lib/puppeteer/common/QueryHandler.js:211:46)
+    at async CdpFrame.waitForSelector (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:546:21)
+    at async CdpPage.waitForSelector (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1482:20)
+    at async file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/scripts/browser-check.mjs:62:4

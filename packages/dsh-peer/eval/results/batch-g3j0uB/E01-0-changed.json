@@ -1,0 +1,45 @@
+{
+  "case": "E01",
+  "run": 0,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 492,
+    "output": 27,
+    "total": 519
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "收到 B 的检查结果：7 条记录全部通过，没有后续问题。这是纯确认性消息，无需回复。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到 B 的检查结果：7 条记录全部通过，没有后续问题。这是纯确认性消息，无需回复。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 492,
+        "completion_tokens": 27,
+        "native": {
+          "input_tokens": 492,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 27,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

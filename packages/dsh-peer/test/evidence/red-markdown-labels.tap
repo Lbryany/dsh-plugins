@@ -1,0 +1,30 @@
+✔ UI01 exclusive source selection: append and steering, never text impersonation (0.388ms)
+✔ UI04/UI05 first line only in title, Unicode ranges, raw fallback and fence context (7.376375ms)
+✔ UI02 structured status, no success guess from legacy text (0.344542ms)
+✔ UI03 receiving host command access and truthful failures (0.321ms)
+✔ UI03 disclosure is local; resume double click invokes once and failure never fakes success (25.610625ms)
+✖ UI05 host Markdown contract includes code and footnote labels (0.619084ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 5
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 193.374584
+
+✖ failing tests:
+
+test at test/client.test.mjs:70:1
+✖ UI05 host Markdown contract includes code and footnote labels (0.619084ms)
+  TypeError [Error]: Cannot read properties of undefined (reading 'code')
+      at actualContract (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/client.test.mjs:71:58)
+      at renderWithHooks (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5662:16)
+      at renderIndeterminateComponent (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5736:15)
+      at renderElement (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5961:7)
+      at renderNodeDestructiveImpl (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6119:11)
+      at renderNodeDestructive (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6091:14)
+      at renderIndeterminateComponent (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5790:7)
+      at renderElement (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5961:7)
+      at renderNodeDestructiveImpl (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6119:11)
+      at renderNodeDestructive (/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6091:14)

@@ -1,0 +1,47 @@
+✔ UI01 exclusive source selection: append and steering, never text impersonation (0.447083ms)
+✔ UI04/UI05 first line only in title, Unicode ranges, raw fallback and fence context (7.599375ms)
+✔ UI02 structured status, no success guess from legacy text (0.366291ms)
+✔ UI03 receiving host command access and truthful failures (0.332625ms)
+✔ UI03 disclosure is local; resume double click invokes once and failure never fakes success (25.674125ms)
+✔ P1 登记与发现 + 文件权限 (6.869791ms)
+✔ P2 跨进程投递 followup / steer (5.571ms)
+✔ P3 同进程直投不走 socket (2.916958ms)
+✔ P4 token 不对 → bad-token (3.618625ms)
+✔ P5 残留清理：死 pid 与 procStart 不一致 (2.593959ms)
+✔ P6 命名：缺省 / 固定名 / 撞名 / 非法 / names.json / @ / self (7.222ms)
+✔ P7 去重：同一 id 第二次 duplicate (2.977625ms)
+✔ P8 to 解析 / 状态 / 标题 / 注销 / not-live / stop (4.741292ms)
+✔ P9 subagent 过滤与合并写 (74.242542ms)
+✔ P10 草稿不登记 / 首条消息后登记 / 固定名 / 排序与截断 (2.187083ms)
+✔ G11 reentrant reservations and rollback remain bounded (1.425625ms)
+✔ G11 fingerprint capacity and reclamation at expiry (0.148375ms)
+✔ G12 monotonic rollback and reset (0.124084ms)
+✔ user-configured protection off and invalid config (0.371292ms)
+[dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+[dsh-peer] conversation-paused {"from":"session-aaaa-root","to":"session-bbbb-target","count":1}
+[dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+[dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+[dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+✔ G09/UI03 root identity, commands only, no recovery wakeup, output meta (6.854667ms)
+✔ G01/G07 local: new IDs with same content deliver once (11.503375ms)
+✔ G03/G07 local: seventh different message rejected (2.628375ms)
+✔ G06/G07 local: alternating novel replies stop (3.170417ms)
+✔ G01/G07 socket: new IDs with same content deliver once (6.206083ms)
+✔ G03/G07 socket: seventh different message rejected (3.656584ms)
+✔ G06/G07 socket: alternating novel replies stop (5.815ms)
+✔ G02 exact bytes, rename, target/mode isolation and 60 s boundary (2.270167ms)
+✔ G04 20 messages at 5 s intervals: rejected attempts consume no quota (2.515042ms)
+✔ G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional (2.347042ms)
+✔ G10 scoped IDs and synchronous failure rollback (1.155125ms)
+✔ G11 concurrent sends do not over-admit (3.471416ms)
+✔ G11 capacity refuses new pair without evicting pause (1.2935ms)
+✔ UI01/UI04 receive metadata identifies exact original Unicode body (10.561917ms)
+✔ UI02 tool result carries structured outcome; uncertainty is not failure (5.759958ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 295.114625

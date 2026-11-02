@@ -1,0 +1,167 @@
+{
+  "case": "E03",
+  "run": 4,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 1378,
+    "output": 103,
+    "total": 1481
+  },
+  "usageComplete": true,
+  "attempts": 1,
+  "turns": 3,
+  "reason": "natural",
+  "pass": false,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 1,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b\n6 乘 7 等于 42。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"b\"。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 413,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "收到 B 的回复了，42 是对的。我回一句确认。",
+        "tool_calls": [
+          {
+            "id": "call_00_EXjE9STzVOCigoyptTY90555",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"收到，42 没错，谢谢！\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到 B 的回复了，42 是对的。我回一句确认。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_EXjE9STzVOCigoyptTY90555",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "收到，42 没错，谢谢！"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 413,
+        "completion_tokens": 76,
+        "native": {
+          "input_tokens": 157,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 76,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_EXjE9STzVOCigoyptTY90555",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"收到，42 没错，谢谢！\"}"
+        }
+      },
+      "args": {
+        "to": "b",
+        "text": "收到，42 没错，谢谢！"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "b",
+        "session": "session-bbbb",
+        "sameProcess": true,
+        "text": "已发给 b（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 522,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已确认：6 × 7 = 42，B 的答案正确，我已回复致谢。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已确认：6 × 7 = 42，B 的答案正确，我已回复致谢。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 522,
+        "completion_tokens": 22,
+        "native": {
+          "input_tokens": 138,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 22,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "b",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-pJUti9）\n收到，42 没错，谢谢！\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"a\"。）"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 443,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "收到，不客气。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到，不客气。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 443,
+        "completion_tokens": 5,
+        "native": {
+          "input_tokens": 187,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 5,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

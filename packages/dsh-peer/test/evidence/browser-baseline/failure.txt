@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert.ok((await page.evaluate(()=>document.body.innerText)).includes('reviewer'))
+
+    at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/scripts/browser-check.mjs:67:11

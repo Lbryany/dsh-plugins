@@ -1,0 +1,42 @@
+✔ G01/G07 local: new IDs with same content deliver once (7.934083ms)
+✔ G03/G07 local: seventh different message rejected (1.463541ms)
+✔ G06/G07 local: alternating novel replies stop (1.635959ms)
+✔ G01/G07 socket: new IDs with same content deliver once (4.033041ms)
+✔ G03/G07 socket: seventh different message rejected (2.522833ms)
+✔ G06/G07 socket: alternating novel replies stop (4.750083ms)
+✔ G02 exact bytes, rename, target/mode isolation and 60 s boundary (1.816625ms)
+✖ G04 20 messages at 5 s intervals: rejected attempts consume no quota (2.514709ms)
+✔ G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional (2.23275ms)
+✔ G10 scoped IDs and synchronous failure rollback (1.018125ms)
+✔ G11 concurrent sends do not over-admit (4.231ms)
+✔ G11 capacity refuses new pair without evicting pause (1.27775ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 117.499541
+
+✖ failing tests:
+
+test at test/loop-control.test.mjs:37:1
+✖ G04 20 messages at 5 s intervals: rejected attempts consume no quota (2.514709ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'conversation-paused'
+  - 'rate-limited'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:41:52)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'conversation-paused',
+    expected: 'rate-limited',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

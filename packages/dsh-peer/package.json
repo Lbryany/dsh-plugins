@@ -1,6 +1,6 @@
 {
   "name": "@lbryany/dsh-peer",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Discovery and messaging between dsh sessions on the same machine",
   "keywords": [
     "dsh-plugin",
@@ -13,7 +13,8 @@
   "exports": {
     ".": "./index.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./client": "./lib/client.js"
   },
   "files": [
     "index.js",
@@ -25,15 +26,15 @@
   ],
   "engines": {
     "node": "^22.19.0 || >=24.0.0",
-    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+    "dsh": ">=0.2.1-rc.5 <0.3.0-0"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "~4.0.5",
-    "@deepseek-ai/dsh-agent": ">=0.2.1-rc.2 <0.3.0-0",
-    "@deepseek-ai/dsh-commands": ">=0.2.1-rc.2 <0.3.0-0",
-    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.2 <0.3.0-0",
-    "@deepseek-ai/dsh-session-title": ">=0.2.1-rc.2 <0.3.0-0",
-    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.2 <0.3.0-0"
+    "@deepseek-ai/dsh-agent": ">=0.2.1-rc.5 <0.3.0-0",
+    "@deepseek-ai/dsh-commands": ">=0.2.1-rc.5 <0.3.0-0",
+    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.5 <0.3.0-0",
+    "@deepseek-ai/dsh-session-title": ">=0.2.1-rc.5 <0.3.0-0",
+    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.5 <0.3.0-0"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {
@@ -58,12 +59,18 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
     }
   },
   "scripts": {
     "link-dsh": "node scripts/link-dsh.mjs",
     "test": "node --test test/*.test.mjs",
-    "check": "node --test test/*.test.mjs"
+    "check": "npm run build && node --test test/*.test.mjs",
+    "build": "node scripts/build-client.mjs",
+    "scenarios": "node scripts/scenarios.mjs",
+    "test:browser": "node scripts/browser-check.mjs"
   },
   "license": "MIT",
   "repository": {
@@ -74,5 +81,11 @@
   "bugs": {
     "url": "https://github.com/Lbryany/dsh-plugins/issues"
   },
-  "homepage": "https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-peer#readme"
+  "homepage": "https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-peer#readme",
+  "devDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "jsdom": "^25.0.1",
+    "puppeteer-core": "^25.11.0"
+  }
 }

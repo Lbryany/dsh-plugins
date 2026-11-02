@@ -1,0 +1,1142 @@
+[
+  {
+    "case": "E01",
+    "run": 0,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 851,
+      "output": 42,
+      "total": 893
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 0,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1384,
+      "output": 30,
+      "total": 1414
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 1,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1384,
+      "output": 37,
+      "total": 1421
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 1,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 851,
+      "output": 40,
+      "total": 891
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 2,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 851,
+      "output": 42,
+      "total": 893
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 2,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1384,
+      "output": 22,
+      "total": 1406
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 3,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1384,
+      "output": 22,
+      "total": 1406
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 3,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 851,
+      "output": 67,
+      "total": 918
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 4,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 851,
+      "output": 41,
+      "total": 892
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E01",
+    "run": 4,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1384,
+      "output": 41,
+      "total": 1425
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 0,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 838,
+      "output": 7,
+      "total": 845
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 0,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1371,
+      "output": 6,
+      "total": 1377
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 1,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1371,
+      "output": 6,
+      "total": 1377
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 1,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 838,
+      "output": 7,
+      "total": 845
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 2,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 838,
+      "output": 7,
+      "total": 845
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 2,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1371,
+      "output": 6,
+      "total": 1377
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 3,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1371,
+      "output": 6,
+      "total": 1377
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 3,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 838,
+      "output": 7,
+      "total": 845
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 4,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 838,
+      "output": 7,
+      "total": 845
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E02",
+    "run": 4,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1371,
+      "output": 7,
+      "total": 1378
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 0,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 850,
+      "output": 24,
+      "total": 874
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 0,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1383,
+      "output": 5,
+      "total": 1388
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 1,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1383,
+      "output": 25,
+      "total": 1408
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 1,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 850,
+      "output": 25,
+      "total": 875
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 2,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 850,
+      "output": 25,
+      "total": 875
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 2,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1383,
+      "output": 25,
+      "total": 1408
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 3,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1383,
+      "output": 25,
+      "total": 1408
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 3,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 850,
+      "output": 25,
+      "total": 875
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 4,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 850,
+      "output": 25,
+      "total": 875
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E03",
+    "run": 4,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 1383,
+      "output": 25,
+      "total": 1408
+    },
+    "usageComplete": true,
+    "attempts": 0,
+    "turns": 1,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E04",
+    "run": 0,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10140,
+      "output": 460,
+      "total": 10600
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E04",
+    "run": 0,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10478,
+      "output": 492,
+      "total": 10970
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E04",
+    "run": 1,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10471,
+      "output": 484,
+      "total": 10955
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E04",
+    "run": 1,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10191,
+      "output": 516,
+      "total": 10707
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E04",
+    "run": 2,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10501,
+      "output": 556,
+      "total": 11057
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E04",
+    "run": 2,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10403,
+      "output": 482,
+      "total": 10885
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E04",
+    "run": 3,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10406,
+      "output": 485,
+      "total": 10891
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E04",
+    "run": 3,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10128,
+      "output": 475,
+      "total": 10603
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E04",
+    "run": 4,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10167,
+      "output": 477,
+      "total": 10644
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E04",
+    "run": 4,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10438,
+      "output": 487,
+      "total": 10925
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E05",
+    "run": 0,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10059,
+      "output": 1561,
+      "total": 11620
+    },
+    "usageComplete": true,
+    "attempts": 3,
+    "turns": 7,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 0,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9715,
+      "output": 1802,
+      "total": 11517
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 5,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 1,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 1,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9281,
+      "output": 1360,
+      "total": 10641
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 5,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 1,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 1,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9074,
+      "output": 1730,
+      "total": 10804
+    },
+    "usageComplete": true,
+    "attempts": 3,
+    "turns": 7,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 2,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9034,
+      "output": 1516,
+      "total": 10550
+    },
+    "usageComplete": true,
+    "attempts": 3,
+    "turns": 7,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 2,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9101,
+      "output": 1249,
+      "total": 10350
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 5,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 1,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 3,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10118,
+      "output": 1850,
+      "total": 11968
+    },
+    "usageComplete": true,
+    "attempts": 3,
+    "turns": 5,
+    "reason": "output-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 3,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 7729,
+      "output": 1728,
+      "total": 9457
+    },
+    "usageComplete": true,
+    "attempts": 3,
+    "turns": 6,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 4,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9594,
+      "output": 1266,
+      "total": 10860
+    },
+    "usageComplete": true,
+    "attempts": 3,
+    "turns": 7,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E05",
+    "run": 4,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 10020,
+      "output": 1694,
+      "total": 11714
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 5,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 1,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 0,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9869,
+      "output": 521,
+      "total": 10390
+    },
+    "usageComplete": true,
+    "attempts": 5,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 0,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9834,
+      "output": 468,
+      "total": 10302
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 1,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9872,
+      "output": 481,
+      "total": 10353
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 1,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9913,
+      "output": 455,
+      "total": 10368
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 2,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9747,
+      "output": 406,
+      "total": 10153
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "natural",
+    "pass": true,
+    "rejected": 0,
+    "chain": true,
+    "extraSendsAfterResult": 0
+  },
+  {
+    "case": "E06",
+    "run": 2,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9807,
+      "output": 462,
+      "total": 10269
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 3,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9867,
+      "output": 473,
+      "total": 10340
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 3,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9874,
+      "output": 482,
+      "total": 10356
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 4,
+    "variant": "baseline",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9850,
+      "output": 429,
+      "total": 10279
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 9,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  },
+  {
+    "case": "E06",
+    "run": 4,
+    "variant": "changed",
+    "model": "deepseek-flash",
+    "usage": {
+      "input": 9847,
+      "output": 475,
+      "total": 10322
+    },
+    "usageComplete": true,
+    "attempts": 4,
+    "turns": 6,
+    "reason": "token-cap",
+    "pass": false,
+    "rejected": 0,
+    "chain": false,
+    "extraSendsAfterResult": null
+  }
+]

@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { writeFileSync } from 'node:fs';
+import { setup, ids } from '../test/helpers.mjs';
+const results=[];
+async function scenario(id,covers,run,options={}){const cleanup=[];try{const h=await setup({after:f=>cleanup.push(f)},options);await run(h);results.push({id,covers,accepted:h.got.length,pausedEvents:h.logs.filter(x=>x.includes('conversation-paused')).length,status:'passed'});}finally{cleanup.reverse().forEach(f=>f());}}
+await scenario('S01',['F-peer-A-01'],async h=>{await h.send('收到');assert.equal((await h.send('收到')).error,'duplicate-content');assert.equal(h.got.length,1);},{socket:true});
+await scenario('S02',['F-peer-A-02'],async h=>{for(let i=0;i<6;i++)await h.send('new '+i);assert.equal((await h.send('new 6')).error,'rate-limited');assert.equal(h.got.length,6);});
+await scenario('S03',['F-peer-A-02','F-peer-A-03'],async h=>{for(let i=0;i<13;i++){h.time(i*41000);const r=await h.send('step '+i);assert.equal(r.ok,i<12);}h.time(1e9);assert.equal((await h.send('later')).error,'conversation-paused');assert.equal(h.b.resume(ids.b,'aaaa').ok,true);assert.equal(h.got.length,12);assert.equal((await h.send('new task')).ok,true);},{socket:true});
+await scenario('S04',['F-peer-A-01','F-peer-A-04'],async h=>{const r=await Promise.all(Array.from({length:20},(_,i)=>h.send('parallel '+i)));assert.equal(r.filter(x=>x.ok).length,6);assert.equal((await h.send('independent',{from:ids.c})).ok,true);},{socket:true});
+await scenario('S05',['F-peer-A-03'],async h=>{const raw=h.raw();assert.equal(h.receive(raw).ok,true);assert.equal(h.receive({...raw,id:'old-client-2'}).error,'duplicate-content');h.a.transport.send=async(_rec,req)=>{assert.equal(req.v,1);assert.equal(req.type,'send');return {ok:true,id:req.id,delivered:'queued'};};const r=await h.send('legacy receiver');assert.equal(r.ok,true);assert.equal(r.display.outcome,'queued');},{socket:true});
+await scenario('S06',['F-peer-A-04'],async h=>{h.hooks.set(ids.b,()=>{throw Error('fixture failure');});assert.equal((await h.send('retry')).error,'delivery-failed');h.hooks.clear();assert.equal((await h.send('retry')).ok,true);const raw=h.raw({text:'idempotent'});assert.equal(h.receive(raw).ok,true);assert.equal(h.receive(raw).delivered,'duplicate');assert.equal(h.got.length,2);});
+writeFileSync(new URL('../test/evidence/scenarios.json',import.meta.url),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify(results,null,2));

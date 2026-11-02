@@ -1,0 +1,31 @@
+✔ UI01 exclusive source selection: append and steering, never text impersonation (0.387375ms)
+✔ UI04/UI05 first line only in title, Unicode ranges, raw fallback and fence context (7.695167ms)
+✔ UI02 structured status, no success guess from legacy text (0.370292ms)
+✔ UI03 receiving host command access and truthful failures (0.2025ms)
+✔ UI03 disclosure is local; resume double click invokes once and failure never fakes success (26.029709ms)
+✔ UI05 host Markdown contract includes code and footnote labels (0.254875ms)
+✔ UI03 client declares the command service required by card actions (0.027625ms)
+✖ UI06 malformed structured metadata falls back to full text without crashing (0.099667ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 197.502292
+
+✖ failing tests:
+
+test at test/client.test.mjs:78:1
+✖ UI06 malformed structured metadata falls back to full text without crashing (0.099667ms)
+  TypeError [Error]: exchange.pending.map is not a function
+      at exchangeText (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/message.js:20:64)
+      at Object.messageData (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/src/client.js:12:101)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/client.test.mjs:81:17)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

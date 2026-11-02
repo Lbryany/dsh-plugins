@@ -1,0 +1,142 @@
+[
+  {
+    "name": "peer_list",
+    "description": "发现 peer 名字/状态。all 查看全部，details 查看目录等完整信息。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "all": {
+          "type": "boolean"
+        },
+        "details": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "name": "peer_send",
+    "description": "旧端兼容，不结束本轮。任务优先 peer_request/reply；只发新增任务、问题或一次结果。纯确认、感谢、告别不发送；保护错误后停止，不重试或换地址。这是同一台机器上 dsh 会话之间的通道；对方是另一个 agent，不是用户。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "名字或ID前缀(≥4位)"
+        },
+        "text": {
+          "type": "string"
+        },
+        "steer": {
+          "type": "boolean",
+          "description": "仅用户要求插话时 true"
+        }
+      },
+      "required": [
+        "to",
+        "text"
+      ]
+    }
+  },
+  {
+    "name": "peer_rename",
+    "description": "仅用户要求时改本会话 peer 名字。小写字母、数字、-、_，最多40字符。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+  },
+  {
+    "name": "peer_request",
+    "description": "单目标用 to/text，多目标一次用 requests，互斥且目标必填。忠实用户范围，不增加产物，正文简短增量。成功默认结束本轮；wait:false 继续本地工作。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "to": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "to",
+              "text"
+            ]
+          }
+        },
+        "wait": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "name": "peer_reply",
+    "description": "沿 requestId 回复：执行方 question/result，请求方 answer（带 questionId）。已完成不回复。正文只写新增结论与必要证据。默认结束本轮，wait:false 继续。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "question",
+            "answer",
+            "result"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "questionId": {
+          "type": "string"
+        },
+        "wait": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "requestId",
+        "kind",
+        "text"
+      ]
+    }
+  },
+  {
+    "name": "peer_wait",
+    "description": "让出本轮等待已有任务/排队消息，不发送。省略 IDs 等全部；有本地待办则继续处理。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "requestIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+]

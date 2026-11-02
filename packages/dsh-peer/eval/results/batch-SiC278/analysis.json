@@ -1,0 +1,43 @@
+{
+  "baseline": {
+    "runs": 30,
+    "passed": 15,
+    "byCase": {
+      "E01": 5,
+      "E02": 5,
+      "E03": 5,
+      "E04": 0,
+      "E05": 0,
+      "E06": 0
+    },
+    "rejected": 0,
+    "reasons": {
+      "natural": 15,
+      "token-cap": 15
+    },
+    "maxTokens": 11749,
+    "totalTokens": 173017,
+    "maxAttempts": 4,
+    "extraSends": 0
+  },
+  "changed": {
+    "runs": 30,
+    "passed": 30,
+    "byCase": {
+      "E01": 5,
+      "E02": 5,
+      "E03": 5,
+      "E04": 5,
+      "E05": 5,
+      "E06": 5
+    },
+    "rejected": 0,
+    "reasons": {
+      "natural": 30
+    },
+    "maxTokens": 11146,
+    "totalTokens": 155363,
+    "maxAttempts": 4,
+    "extraSends": 0
+  }
+}

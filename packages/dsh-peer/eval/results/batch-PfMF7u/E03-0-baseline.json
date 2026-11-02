@@ -1,0 +1,57 @@
+{
+  "case": "E03",
+  "run": 0,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 413,
+    "output": 14,
+    "total": 427
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b\n6 乘 7 等于 42。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"b\"。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 413,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "收到，B 回复 6×7=42，正确。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "收到，B 回复 6×7=42，正确。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 413,
+        "completion_tokens": 14,
+        "native": {
+          "input_tokens": 157,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 14,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

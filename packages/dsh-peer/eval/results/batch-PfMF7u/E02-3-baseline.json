@@ -1,0 +1,57 @@
+{
+  "case": "E02",
+  "run": 3,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 401,
+    "output": 15,
+    "total": 416
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b\n收到，谢谢。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"b\"。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 401,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "A 和 B 的任务已完成，没有后续工作，无需回复。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "A 和 B 的任务已完成，没有后续工作，无需回复。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 401,
+        "completion_tokens": 15,
+        "native": {
+          "input_tokens": 145,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 15,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

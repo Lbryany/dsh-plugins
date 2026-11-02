@@ -1,0 +1,45 @@
+{
+  "case": "E02",
+  "run": 0,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 479,
+    "output": 10,
+    "total": 489
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "无需回复。任务已完成，没有后续工作。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "无需回复。任务已完成，没有后续工作。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 479,
+        "completion_tokens": 10,
+        "native": {
+          "input_tokens": 479,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 10,
+          "service_tier": "standard"
+        }
+      }
+    }
+  ]
+}

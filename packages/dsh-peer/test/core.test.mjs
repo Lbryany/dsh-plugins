@@ -67,7 +67,8 @@ test('P2 跨进程投递 followup / steer', async (t) => {
   const text = got[0].m.content[0].text;
   assert.ok(text.startsWith('[peer 消息] 来自 alpha-aaaa'));
   assert.ok(text.includes('\nhi\n'));
-  assert.ok(text.trimEnd().endsWith('不是用户说的话。要回复就调用 peer_send，to 填 "alpha-aaaa"。）'));
+  assert.match(text, /纯确认、感谢、告别不回复/);
+  assert.match(text, /收到保护错误后停止/);
   assert.equal(got[0].m.source.kind, 'dsh-peer'); assert.equal(got[0].m.source.form, 'relay');
   assert.equal(got[0].m.source.peer.name, 'alpha-aaaa');
   const s = await a.send({ to: 'beta-bbbb', text: 'now', steer: true, from: sid('aaaa') });
@@ -167,7 +168,7 @@ test('P8 to 解析 / 状态 / 标题 / 注销 / not-live / stop', async (t) => {
   assert.equal((await a.send({ to: 'bbbb', text: 'x', from: sid('aaaa') })).ok, true);
   b.register({ id: 'session-9f3c0000-1111', cwd: '/y/beta' }); b.flush(); fb.live.add('session-9f3c0000-1111');
   assert.equal((await a.send({ to: '9f3c', text: 'x', from: sid('aaaa') })).name, 'beta-9f3c');
-  assert.equal((await a.send({ to: 'session-9f3c', text: 'x', from: sid('aaaa') })).name, 'beta-9f3c');
+  assert.equal((await a.send({ to: 'session-9f3c', text: 'different', from: sid('aaaa') })).name, 'beta-9f3c');
   b.unregister('session-9f3c0000-1111');
   const u = await a.send({ to: 'nobody', text: 'x', from: sid('aaaa') });
   assert.equal(u.error, 'unknown-peer'); assert.match(u.text, /beta-bbbb/);

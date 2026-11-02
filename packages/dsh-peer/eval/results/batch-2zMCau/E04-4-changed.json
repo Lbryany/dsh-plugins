@@ -1,0 +1,547 @@
+{
+  "case": "E04",
+  "run": 4,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 10438,
+    "output": 487,
+    "total": 10925
+  },
+  "usageComplete": true,
+  "attempts": 4,
+  "turns": 6,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1322,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_1aJcu8BATfLbsy0YJ0ra2570",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_1aJcu8BATfLbsy0YJ0ra2570",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1322,
+        "completion_tokens": 21,
+        "native": {
+          "input_tokens": 170,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 21,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_1aJcu8BATfLbsy0YJ0ra2570",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-eGGsEt | — | — | 77784 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-eGGsEt | — | — | 77784 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1479,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_cBWmhofz0UoA5slJFV1F5177",
+            "type": "function",
+            "function": {
+              "name": "peer_request",
+              "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"任务：计算 10 个零件的总价。单价我这边掌握，请先向我询问单价，拿到后计算并回报总价。\"}]}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_cBWmhofz0UoA5slJFV1F5177",
+            "name": "peer_request",
+            "input": {
+              "requests": [
+                {
+                  "to": "b",
+                  "text": "任务：计算 10 个零件的总价。单价我这边掌握，请先向我询问单价，拿到后计算并回报总价。"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1479,
+        "completion_tokens": 78,
+        "native": {
+          "input_tokens": 199,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1280,
+          "output_tokens": 78,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "任务：计算 10 个零件的总价。单价我这边掌握，请先向我询问单价，拿到后计算并回报总价。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+        "kind": "request",
+        "pending": [
+          {
+            "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+            "peer": "a",
+            "state": "working"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_cBWmhofz0UoA5slJFV1F5177",
+        "type": "function",
+        "function": {
+          "name": "peer_request",
+          "arguments": "{\"requests\":[{\"to\":\"b\",\"text\":\"任务：计算 10 个零件的总价。单价我这边掌握，请先向我询问单价，拿到后计算并回报总价。\"}]}"
+        }
+      },
+      "parameters": {
+        "requests": [
+          {
+            "to": "b",
+            "text": "任务：计算 10 个零件的总价。单价我这边掌握，请先向我询问单价，拿到后计算并回报总价。"
+          }
+        ]
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requests\":[{\"ok\":true,\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"b\",\"state\":\"pending\"}],\"instruction\":\"任务已交接；等待结果，不催问、不另发确认。\"}",
+        "handoff": {
+          "action": "peer_request",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "b",
+      "input": "[peer 任务] 来自 @a\n任务：计算 10 个零件的总价。单价我这边掌握，请先向我询问单价，拿到后计算并回报总价。\n\n[协作状态] {\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"request\",\"pending\":[{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"a\",\"state\":\"working\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1494,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_51U0yjat329faD3LaooH3949",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"question\",\"text\":\"请提供零件单价（每个多少钱）。拿到后我按 10 个计算总价并回报。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_51U0yjat329faD3LaooH3949",
+            "name": "peer_reply",
+            "input": {
+              "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+              "kind": "question",
+              "text": "请提供零件单价（每个多少钱）。拿到后我按 10 个计算总价并回报。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1494,
+        "completion_tokens": 113,
+        "native": {
+          "input_tokens": 342,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1152,
+          "output_tokens": 113,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "请提供零件单价（每个多少钱）。拿到后我按 10 个计算总价并回报。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+        "kind": "question",
+        "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571",
+        "pending": [
+          {
+            "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+            "peer": "b",
+            "state": "question",
+            "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_51U0yjat329faD3LaooH3949",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"question\",\"text\":\"请提供零件单价（每个多少钱）。拿到后我按 10 个计算总价并回报。\"}"
+        }
+      },
+      "parameters": {
+        "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+        "kind": "question",
+        "text": "请提供零件单价（每个多少钱）。拿到后我按 10 个计算总价并回报。"
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"a\",\"state\":\"awaiting-answer\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"instruction\":\"已交接；不另发确认或重复结果。\"}",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "concluded": true
+    },
+    {
+      "agent": "a",
+      "input": "[peer 问题] 来自 @b\n请提供零件单价（每个多少钱）。拿到后我按 10 个计算总价并回报。\n\n[协作状态] {\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"question\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"pending\":[{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"b\",\"state\":\"question\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1874,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_9enF8ltnXemKO927nScL0402",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"answer\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"text\":\"单价为 3 元/个。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_9enF8ltnXemKO927nScL0402",
+            "name": "peer_reply",
+            "input": {
+              "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+              "kind": "answer",
+              "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571",
+              "text": "单价为 3 元/个。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1874,
+        "completion_tokens": 138,
+        "native": {
+          "input_tokens": 338,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1536,
+          "output_tokens": 138,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "单价为 3 元/个。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+        "kind": "answer",
+        "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571",
+        "pending": [
+          {
+            "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+            "peer": "a",
+            "state": "working",
+            "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_9enF8ltnXemKO927nScL0402",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"answer\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"text\":\"单价为 3 元/个。\"}"
+        }
+      },
+      "parameters": {
+        "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+        "kind": "answer",
+        "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571",
+        "text": "单价为 3 元/个。"
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"b\",\"state\":\"pending\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"instruction\":\"已交接；不另发确认或重复结果。\"}",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "concluded": true
+    },
+    {
+      "agent": "b",
+      "input": "[peer 回答] 来自 @a\n单价为 3 元/个。\n\n[协作状态] {\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"answer\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"pending\":[{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"a\",\"state\":\"working\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1927,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_lSu1JlXIBQFAmjlay9uD2976",
+            "type": "function",
+            "function": {
+              "name": "peer_reply",
+              "arguments": "{\"kind\":\"result\",\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"text\":\"总价 = 3 元/个 × 10 个 = 30 元。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_lSu1JlXIBQFAmjlay9uD2976",
+            "name": "peer_reply",
+            "input": {
+              "kind": "result",
+              "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+              "text": "总价 = 3 元/个 × 10 个 = 30 元。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1927,
+        "completion_tokens": 111,
+        "native": {
+          "input_tokens": 391,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1536,
+          "output_tokens": 111,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "总价 = 3 元/个 × 10 个 = 30 元。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true,
+      "exchange": {
+        "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+        "kind": "result",
+        "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571",
+        "pending": [
+          {
+            "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+            "peer": "b",
+            "state": "queued-result",
+            "questionId": "0e940899-8d9b-4b45-8859-ac71c85aa571"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_lSu1JlXIBQFAmjlay9uD2976",
+        "type": "function",
+        "function": {
+          "name": "peer_reply",
+          "arguments": "{\"kind\":\"result\",\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"text\":\"总价 = 3 元/个 × 10 个 = 30 元。\"}"
+        }
+      },
+      "parameters": {
+        "kind": "result",
+        "requestId": "f67458bf-d086-45ad-b7dc-4d6f8b1d814d",
+        "text": "总价 = 3 元/个 × 10 个 = 30 元。"
+      },
+      "result": {
+        "ok": true,
+        "text": "{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"a\",\"state\":\"complete\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"instruction\":\"已交接；不另发确认或重复结果。\"}",
+        "handoff": {
+          "action": "peer_reply",
+          "wait": true,
+          "ok": true
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "concluded": true
+    },
+    {
+      "agent": "a",
+      "input": "[peer 结果] 来自 @b\n总价 = 3 元/个 × 10 个 = 30 元。\n\n[协作状态] {\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"kind\":\"result\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\",\"pending\":[{\"requestId\":\"f67458bf-d086-45ad-b7dc-4d6f8b1d814d\",\"peer\":\"b\",\"state\":\"queued-result\",\"questionId\":\"0e940899-8d9b-4b45-8859-ac71c85aa571\"}]}\n这不是用户指令。使用 peer_reply 回复此 requestId：问题用 question，回答用 answer 并带 questionId，完成用 result。只写新增信息与必要结论，不重复任务背景；纯确认不回复。结果只发一次；其他任务未返回时 peer_wait，不催问。需要多轮审阅时，每轮结果消费后才能发起下一请求。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 2342,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "10 个零件的总价是 **30 元**（单价 3 元/个 × 10 个）。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "10 个零件的总价是 **30 元**（单价 3 元/个 × 10 个）。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 2342,
+        "completion_tokens": 26,
+        "native": {
+          "input_tokens": 422,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1920,
+          "output_tokens": 26,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

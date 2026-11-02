@@ -1,0 +1,57 @@
+{
+  "case": "E01",
+  "run": 4,
+  "variant": "changed",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 1152,
+    "output": 36,
+    "total": 1188
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b\n数据检查完成：7 条记录全部通过，没有后续问题。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"b\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1152,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 的数据检查结果已收到：7 条记录全部通过，没有后续问题。这是纯确认性消息，无需回复。我这边没有待办事项了。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 的数据检查结果已收到：7 条记录全部通过，没有后续问题。这是纯确认性消息，无需回复。我这边没有待办事项了。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1152,
+        "completion_tokens": 36,
+        "native": {
+          "input_tokens": 256,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 896,
+          "output_tokens": 36,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

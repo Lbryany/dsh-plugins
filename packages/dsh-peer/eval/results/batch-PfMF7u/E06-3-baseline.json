@@ -1,0 +1,671 @@
+{
+  "case": "E06",
+  "run": 3,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 8151,
+    "output": 627,
+    "total": 8778
+  },
+  "usageComplete": true,
+  "attempts": 6,
+  "turns": 12,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 2,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 381,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我会分别联系 B 和 C，询问它们各自的固定值。",
+        "tool_calls": [
+          {
+            "id": "call_00_BFJ8JWx7tzJDbsNzdh1K8855",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。\"}"
+            }
+          },
+          {
+            "id": "call_01_BqtLEJEENrCnB3wQJDtI5568",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"c\",\"text\":\"你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我会分别联系 B 和 C，询问它们各自的固定值。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_BFJ8JWx7tzJDbsNzdh1K8855",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "call_01_BqtLEJEENrCnB3wQJDtI5568",
+            "name": "peer_send",
+            "input": {
+              "to": "c",
+              "text": "你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 381,
+        "completion_tokens": 170,
+        "native": {
+          "input_tokens": 253,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 128,
+          "output_tokens": 170,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_BFJ8JWx7tzJDbsNzdh1K8855",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。\"}"
+        }
+      },
+      "args": {
+        "to": "b",
+        "text": "你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "b",
+        "session": "session-bbbb",
+        "sameProcess": true,
+        "text": "已发给 b（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_01_BqtLEJEENrCnB3wQJDtI5568",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"c\",\"text\":\"你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。\"}"
+        }
+      },
+      "args": {
+        "to": "c",
+        "text": "你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "c",
+        "session": "session-cccc",
+        "sameProcess": true,
+        "text": "已发给 c（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 613,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我已向 B 和 C 分别发出询问，正在等待它们的回复。收到回复后，我会把两者的固定值如实报告给你。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我已向 B 和 C 分别发出询问，正在等待它们的回复。收到回复后，我会把两者的固定值如实报告给你。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 613,
+        "completion_tokens": 29,
+        "native": {
+          "input_tokens": 229,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 29,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "b",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-FSCHaR）\n你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"a\"。）"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 471,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_WN9DTHD5K9P7w8YQlnRN6845",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"我的固定值是 17。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_WN9DTHD5K9P7w8YQlnRN6845",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "我的固定值是 17。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 471,
+        "completion_tokens": 58,
+        "native": {
+          "input_tokens": 215,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 58,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_WN9DTHD5K9P7w8YQlnRN6845",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"我的固定值是 17。\"}"
+        }
+      },
+      "args": {
+        "to": "a",
+        "text": "我的固定值是 17。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "a",
+        "session": "session-aaaa",
+        "sameProcess": true,
+        "text": "已发给 a（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 562,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "已回复 A：我的固定值是 17。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已回复 A：我的固定值是 17。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 562,
+        "completion_tokens": 10,
+        "native": {
+          "input_tokens": 178,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 10,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "c",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-FSCHaR）\n你好，我是 A。用户要求我收集你的固定值。请回复你的固定值是多少（不要猜测，只报告你实际持有的值）。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"a\"。）"
+    },
+    {
+      "agent": "c",
+      "request": {
+        "inputCount": 471,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "c",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_T0gTC3wqnQL31KlDQt7P3751",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"我的固定值是 29。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_T0gTC3wqnQL31KlDQt7P3751",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "我的固定值是 29。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 471,
+        "completion_tokens": 58,
+        "native": {
+          "input_tokens": 215,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 256,
+          "output_tokens": 58,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "c",
+      "call": {
+        "id": "call_00_T0gTC3wqnQL31KlDQt7P3751",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"我的固定值是 29。\"}"
+        }
+      },
+      "args": {
+        "to": "a",
+        "text": "我的固定值是 29。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "a",
+        "session": "session-aaaa",
+        "sameProcess": true,
+        "text": "已发给 a（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "c",
+      "request": {
+        "inputCount": 562,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "c",
+      "message": {
+        "role": "assistant",
+        "content": "已回复 A：我的固定值是 29。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已回复 A：我的固定值是 29。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 562,
+        "completion_tokens": 10,
+        "native": {
+          "input_tokens": 178,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 384,
+          "output_tokens": 10,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-FSCHaR）\n我的固定值是 17。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"b\"。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 726,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已收到 B 的回复：固定值为 17。仍在等待 C 的回复。",
+        "tool_calls": [
+          {
+            "id": "call_00_uWMP4GObBmvn9jYZf9k63327",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"c\",\"text\":\"补充提醒：我是 A，之前询问过你的固定值。请回复你实际持有的固定值（不要猜测）。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已收到 B 的回复：固定值为 17。仍在等待 C 的回复。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_uWMP4GObBmvn9jYZf9k63327",
+            "name": "peer_send",
+            "input": {
+              "to": "c",
+              "text": "补充提醒：我是 A，之前询问过你的固定值。请回复你实际持有的固定值（不要猜测）。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 726,
+        "completion_tokens": 95,
+        "native": {
+          "input_tokens": 214,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 512,
+          "output_tokens": 95,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_uWMP4GObBmvn9jYZf9k63327",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"c\",\"text\":\"补充提醒：我是 A，之前询问过你的固定值。请回复你实际持有的固定值（不要猜测）。\"}"
+        }
+      },
+      "args": {
+        "to": "c",
+        "text": "补充提醒：我是 A，之前询问过你的固定值。请回复你实际持有的固定值（不要猜测）。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "c",
+        "session": "session-cccc",
+        "sameProcess": true,
+        "text": "已发给 c（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 854,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已记录 B = 17，并再次提醒 C 回复。等 C 的回复到达后，我会一并报告。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已记录 B = 17，并再次提醒 C 回复。等 C 的回复到达后，我会一并报告。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 854,
+        "completion_tokens": 26,
+        "native": {
+          "input_tokens": 214,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 26,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 c（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-FSCHaR）\n我的固定值是 29。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"c\"。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 964,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "两个值都已收到，报告如下：\n\n- **B 的固定值：17**\n- **C 的固定值：29**\n\n这两个值分别由 B 和 C 自己报告，我没有做任何猜测。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "两个值都已收到，报告如下：\n\n- **B 的固定值：17**\n- **C 的固定值：29**\n\n这两个值分别由 B 和 C 自己报告，我没有做任何猜测。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 964,
+        "completion_tokens": 45,
+        "native": {
+          "input_tokens": 196,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 768,
+          "output_tokens": 45,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "c",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-FSCHaR）\n补充提醒：我是 A，之前询问过你的固定值。请回复你实际持有的固定值（不要猜测）。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"a\"。）"
+    },
+    {
+      "agent": "c",
+      "request": {
+        "inputCount": 674,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "c",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_2N31m2W3WhxF0y4Ryy2h7235",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"我的固定值是 29（实际持有的值，非猜测）。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_2N31m2W3WhxF0y4Ryy2h7235",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "我的固定值是 29（实际持有的值，非猜测）。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 674,
+        "completion_tokens": 66,
+        "native": {
+          "input_tokens": 162,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 512,
+          "output_tokens": 66,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "c",
+      "call": {
+        "id": "call_00_2N31m2W3WhxF0y4Ryy2h7235",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"我的固定值是 29（实际持有的值，非猜测）。\"}"
+        }
+      },
+      "args": {
+        "to": "a",
+        "text": "我的固定值是 29（实际持有的值，非猜测）。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued",
+        "name": "a",
+        "session": "session-aaaa",
+        "sameProcess": true,
+        "text": "已发给 a（排在它下一轮）。它回复时会以\"[peer 消息]\"出现在本对话。"
+      }
+    },
+    {
+      "agent": "c",
+      "request": {
+        "inputCount": 773,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "c",
+      "message": {
+        "role": "assistant",
+        "content": "已再次回复 A：固定值为 29。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已再次回复 A：固定值为 29。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 773,
+        "completion_tokens": 10,
+        "native": {
+          "input_tokens": 261,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 512,
+          "output_tokens": 10,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 c（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-FSCHaR）\n我的固定值是 29（实际持有的值，非猜测）。\n\n（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 \"c\"。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1100,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "C 再次确认了它的固定值，与之前一致。最终报告：\n\n- **B 的固定值：17**\n- **C 的固定值：29**\n\n两个值均由 B 和 C 各自报告，未经猜测。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "C 再次确认了它的固定值，与之前一致。最终报告：\n\n- **B 的固定值：17**\n- **C 的固定值：29**\n\n两个值均由 B 和 C 各自报告，未经猜测。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1100,
+        "completion_tokens": 50,
+        "native": {
+          "input_tokens": 204,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 896,
+          "output_tokens": 50,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

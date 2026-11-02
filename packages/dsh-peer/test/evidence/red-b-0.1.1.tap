@@ -1,0 +1,102 @@
+✖ B01/B02 batch, partial result and consumption (local) (3.234208ms)
+✖ B01/B02 batch, partial result and consumption (socket) (1.769333ms)
+✖ B03 clarification is scoped to one request and a matching question (1.123625ms)
+✖ B04 results are exactly once and bound to participants (1.028542ms)
+✖ B05 failed/partial admission cannot conclude; reservations roll back (1.005125ms)
+✖ B06 pending/expired requests and false waits do not fabricate completion (0.940041ms)
+✖ B07 request messages retain source and explicit state; legacy still delivers (0.930041ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 0
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.17975
+
+✖ failing tests:
+
+test at test/request-result.test.mjs:7:34
+✖ B01/B02 batch, partial result and consumption (local) (3.234208ms)
+  AssertionError [ERR_ASSERTION]: 0.1.1 has no tracked handoff
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:8:41)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/request-result.test.mjs:7:34
+✖ B01/B02 batch, partial result and consumption (socket) (1.769333ms)
+  AssertionError [ERR_ASSERTION]: 0.1.1 has no tracked handoff
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:8:41)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/request-result.test.mjs:21:1
+✖ B03 clarification is scoped to one request and a matching question (1.123625ms)
+  TypeError [Error]: f.a.request is not a function
+      at request (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:4:68)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:22:39)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at test/request-result.test.mjs:30:1
+✖ B04 results are exactly once and bound to participants (1.028542ms)
+  TypeError [Error]: f.a.request is not a function
+      at request (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:4:68)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:31:39)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at test/request-result.test.mjs:40:1
+✖ B05 failed/partial admission cannot conclude; reservations roll back (1.005125ms)
+  TypeError [Error]: f.a.request is not a function
+      at request (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:4:68)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:42:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at test/request-result.test.mjs:47:1
+✖ B06 pending/expired requests and false waits do not fabricate completion (0.940041ms)
+  TypeError [Error]: f.a.request is not a function
+      at request (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:4:68)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:48:39)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at test/request-result.test.mjs:54:1
+✖ B07 request messages retain source and explicit state; legacy still delivers (0.930041ms)
+  TypeError [Error]: f.a.request is not a function
+      at request (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:4:68)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/request-result.test.mjs:55:39)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

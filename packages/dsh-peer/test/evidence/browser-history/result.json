@@ -1,0 +1,38 @@
+{
+  "historyPaging": true,
+  "version": "0.1.2",
+  "integrity": "sha512-esOCb62jkSuNL5eXL8iS+/OxVE4nfhHJksw8lZHHPgTB52QOpNelt0yQR6fZGqmP/cMqyv6qg17QtfVpEj6Mfg==",
+  "checks": [
+    "source/title/body",
+    "send-result",
+    "owner-query",
+    "unauthenticated-query-denied",
+    "resume",
+    "markdown/code/footnotes",
+    "narrow/dark",
+    "reload",
+    "keyboard",
+    "no-console-errors"
+  ],
+  "runtime": "0.2.1-rc.5",
+  "count": 7,
+  "errors": [],
+  "packedFiles": [
+    "LICENSE",
+    "README.md",
+    "README.zh.md",
+    "cordis.patch.yml",
+    "index.js",
+    "lib/client.js",
+    "lib/core.js",
+    "lib/exchange.js",
+    "lib/guard.js",
+    "lib/message.js",
+    "lib/policy.js",
+    "lib/registry.js",
+    "lib/request-tools.js",
+    "lib/status-route.js",
+    "lib/transport.js",
+    "package.json"
+  ]
+}

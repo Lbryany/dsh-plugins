@@ -1,0 +1,32 @@
+{
+  "errors": [],
+  "diagnostics": [
+    "Error: cannot get property \"remote.commands\" without inject",
+    "slot entry crashed in 'conversation.chat.node': Error: cannot get property \"remote.commands\" without inject",
+    "Error: cannot get property \"remote.commands\" without inject",
+    "slot entry crashed in 'conversation.chat.node': Error: cannot get property \"remote.commands\" without inject",
+    "Error: cannot get property \"remote.commands\" without inject",
+    "slot entry crashed in 'conversation.chat.node': Error: cannot get property \"remote.commands\" without inject",
+    "Error: cannot get property \"remote.commands\" without inject",
+    "slot entry crashed in 'conversation.chat.node': Error: cannot get property \"remote.commands\" without inject",
+    "Error: cannot get property \"remote.commands\" without inject",
+    "slot entry crashed in 'conversation.chat.node': Error: cannot get property \"remote.commands\" without inject",
+    "Error: cannot get property \"remote.commands\" without inject",
+    "slot entry crashed in 'conversation.chat.node': Error: cannot get property \"remote.commands\" without inject"
+  ],
+  "styles": true,
+  "scripts": [
+    "",
+    "",
+    "http://127.0.0.1:55342/plugins/??@deepseek-ai/dsh-client-modules/client.js&rev=8c77b7d13ece",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "http://127.0.0.1:55342/assets/index-BXV-oxvX.js",
+    "",
+    ""
+  ]
+}

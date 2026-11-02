@@ -1,0 +1,227 @@
+{
+  "batch": "eval/results/batch-PfMF7u",
+  "model": "deepseek-flash",
+  "protocol": "messages",
+  "thinking": "disabled",
+  "temperature": 0,
+  "completed": 60,
+  "quietPass": 15,
+  "normalPass": 9,
+  "changedBudgetExhaustions": 5,
+  "protectionRejections": 1,
+  "maxActualTokens": 11792,
+  "maxSendAttempts": 6,
+  "passed": false,
+  "grouped": [
+    {
+      "case": "E01",
+      "baseline": {
+        "pass": 1,
+        "runs": 5,
+        "input": 6144,
+        "output": 707,
+        "total": 6851,
+        "sends": 4,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      },
+      "changed": {
+        "pass": 5,
+        "runs": 5,
+        "input": 2460,
+        "output": 246,
+        "total": 2706,
+        "sends": 0,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      }
+    },
+    {
+      "case": "E02",
+      "baseline": {
+        "pass": 5,
+        "runs": 5,
+        "input": 2005,
+        "output": 75,
+        "total": 2080,
+        "sends": 0,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      },
+      "changed": {
+        "pass": 5,
+        "runs": 5,
+        "input": 2395,
+        "output": 15,
+        "total": 2410,
+        "sends": 0,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      }
+    },
+    {
+      "case": "E03",
+      "baseline": {
+        "pass": 4,
+        "runs": 5,
+        "input": 3030,
+        "output": 147,
+        "total": 3177,
+        "sends": 1,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      },
+      "changed": {
+        "pass": 5,
+        "runs": 5,
+        "input": 2455,
+        "output": 125,
+        "total": 2580,
+        "sends": 0,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      }
+    },
+    {
+      "case": "E04",
+      "baseline": {
+        "pass": 5,
+        "runs": 5,
+        "input": 29676,
+        "output": 2328,
+        "total": 32004,
+        "sends": 20,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      },
+      "changed": {
+        "pass": 5,
+        "runs": 5,
+        "input": 33310,
+        "output": 2187,
+        "total": 35497,
+        "sends": 20,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      }
+    },
+    {
+      "case": "E05",
+      "baseline": {
+        "pass": 0,
+        "runs": 5,
+        "input": 42107,
+        "output": 10345,
+        "total": 52452,
+        "sends": 20,
+        "rejections": 0,
+        "reasons": [
+          "token-cap",
+          "token-cap",
+          "token-cap",
+          "token-cap",
+          "token-cap"
+        ]
+      },
+      "changed": {
+        "pass": 0,
+        "runs": 5,
+        "input": 44490,
+        "output": 11110,
+        "total": 55600,
+        "sends": 20,
+        "rejections": 0,
+        "reasons": [
+          "token-cap",
+          "token-cap",
+          "token-cap",
+          "token-cap",
+          "token-cap"
+        ]
+      }
+    },
+    {
+      "case": "E06",
+      "baseline": {
+        "pass": 5,
+        "runs": 5,
+        "input": 37172,
+        "output": 2889,
+        "total": 40061,
+        "sends": 28,
+        "rejections": 0,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      },
+      "changed": {
+        "pass": 4,
+        "runs": 5,
+        "input": 39310,
+        "output": 2782,
+        "total": 42092,
+        "sends": 27,
+        "rejections": 1,
+        "reasons": [
+          "natural",
+          "natural",
+          "natural",
+          "natural",
+          "natural"
+        ]
+      }
+    }
+  ]
+}

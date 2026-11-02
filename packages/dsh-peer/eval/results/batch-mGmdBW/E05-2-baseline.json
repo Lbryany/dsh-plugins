@@ -1,0 +1,433 @@
+{
+  "case": "E05",
+  "run": 2,
+  "variant": "baseline",
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 8058,
+    "output": 1952,
+    "total": 10010
+  },
+  "usageComplete": true,
+  "attempts": 3,
+  "turns": 6,
+  "reason": "token-cap",
+  "pass": false,
+  "rejected": 0,
+  "chain": false,
+  "extraSendsAfterResult": null,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "开始完成用户任务。"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 794,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "我先查看有哪些可用的 peer 会话，以便找到 B。",
+        "tool_calls": [
+          {
+            "id": "call_00_8YIBbdDUv6mrrN49I2PI0932",
+            "type": "function",
+            "function": {
+              "name": "peer_list",
+              "arguments": "{}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "我先查看有哪些可用的 peer 会话，以便找到 B。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_8YIBbdDUv6mrrN49I2PI0932",
+            "name": "peer_list",
+            "input": {}
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 794,
+        "completion_tokens": 33,
+        "native": {
+          "input_tokens": 154,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 33,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_8YIBbdDUv6mrrN49I2PI0932",
+        "type": "function",
+        "function": {
+          "name": "peer_list",
+          "arguments": "{}"
+        }
+      },
+      "parameters": {},
+      "result": {
+        "ok": true,
+        "text": "| 名字 | 状态 | cwd | 标题 | profile | 进程 |\n|---|---|---|---|---|---|\n| a（本会话） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-sbltKC | — | — | 80621 |\n| b（同进程） | idle | /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-sbltKC | — | — | 80621 |"
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 963,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 可用。现在发送第一轮请求，请 B 就这三个固定问题提出建议。",
+        "tool_calls": [
+          {
+            "id": "call_00_B6oQMVLZSZbBtfCelU504763",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"b\",\"text\":\"【第一轮审阅请求 · 来自 A】\\n\\n用户要求我们就一份代码/功能做两轮审阅，固定三个问题：\\n1. 缺少空值检查（null/undefined 未校验）\\n2. 超时无提示（请求超时后用户无任何反馈）\\n3. 重复提交（按钮/表单可被重复触发）\\n\\n请你在第一轮给出你的建议：针对这三个问题，各自应该怎么改（具体到做法，比如空值检查放在哪一层、超时提示用什么形式、重复提交用什么机制防）。请直接回复建议清单，我汇总后进入第二轮复核。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 可用。现在发送第一轮请求，请 B 就这三个固定问题提出建议。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_B6oQMVLZSZbBtfCelU504763",
+            "name": "peer_send",
+            "input": {
+              "to": "b",
+              "text": "【第一轮审阅请求 · 来自 A】\n\n用户要求我们就一份代码/功能做两轮审阅，固定三个问题：\n1. 缺少空值检查（null/undefined 未校验）\n2. 超时无提示（请求超时后用户无任何反馈）\n3. 重复提交（按钮/表单可被重复触发）\n\n请你在第一轮给出你的建议：针对这三个问题，各自应该怎么改（具体到做法，比如空值检查放在哪一层、超时提示用什么形式、重复提交用什么机制防）。请直接回复建议清单，我汇总后进入第二轮复核。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 963,
+        "completion_tokens": 199,
+        "native": {
+          "input_tokens": 195,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 768,
+          "output_tokens": 199,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "【第一轮审阅请求 · 来自 A】\n\n用户要求我们就一份代码/功能做两轮审阅，固定三个问题：\n1. 缺少空值检查（null/undefined 未校验）\n2. 超时无提示（请求超时后用户无任何反馈）\n3. 重复提交（按钮/表单可被重复触发）\n\n请你在第一轮给出你的建议：针对这三个问题，各自应该怎么改（具体到做法，比如空值检查放在哪一层、超时提示用什么形式、重复提交用什么机制防）。请直接回复建议清单，我汇总后进入第二轮复核。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_B6oQMVLZSZbBtfCelU504763",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"b\",\"text\":\"【第一轮审阅请求 · 来自 A】\\n\\n用户要求我们就一份代码/功能做两轮审阅，固定三个问题：\\n1. 缺少空值检查（null/undefined 未校验）\\n2. 超时无提示（请求超时后用户无任何反馈）\\n3. 重复提交（按钮/表单可被重复触发）\\n\\n请你在第一轮给出你的建议：针对这三个问题，各自应该怎么改（具体到做法，比如空值检查放在哪一层、超时提示用什么形式、重复提交用什么机制防）。请直接回复建议清单，我汇总后进入第二轮复核。\"}"
+        }
+      },
+      "parameters": {
+        "to": "b",
+        "text": "【第一轮审阅请求 · 来自 A】\n\n用户要求我们就一份代码/功能做两轮审阅，固定三个问题：\n1. 缺少空值检查（null/undefined 未校验）\n2. 超时无提示（请求超时后用户无任何反馈）\n3. 重复提交（按钮/表单可被重复触发）\n\n请你在第一轮给出你的建议：针对这三个问题，各自应该怎么改（具体到做法，比如空值检查放在哪一层、超时提示用什么形式、重复提交用什么机制防）。请直接回复建议清单，我汇总后进入第二轮复核。"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 b（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "08681856772c7a1e37df2be4",
+          "target": {
+            "name": "b",
+            "session": "session-bbbb"
+          },
+          "text": "【第一轮审阅请求 · 来自 A】\n\n用户要求我们就一份代码/功能做两轮审阅，固定三个问题：\n1. 缺少空值检查（null/undefined 未校验）\n2. 超时无提示（请求超时后用户无任何反馈）\n3. 重复提交（按钮/表单可被重复触发）\n\n请你在第一轮给出你的建议：针对这三个问题，各自应该怎么改（具体到做法，比如空值检查放在哪一层、超时提示用什么形式、重复提交用什么机制防）。请直接回复建议清单，我汇总后进入第二轮复核。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 1205,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "已向 B 发出第一轮审阅请求，等待 B 返回建议。\n\n**当前进度：**\n- ✅ 已确认 B 在线（同进程会话 `b`）\n- ⏳ 第一轮：已请 B 就三个固定问题（缺少空值检查、超时无提示、重复提交）提出修改建议\n- ⬜ 第二轮：收到 B 的建议后，我会整理出修正方案发回 B 复核\n- ⬜ 交付：拿到 B 的复核结论后，输出涵盖三个问题的最终报告\n\nB 的回复到达后我会继续推进。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "已向 B 发出第一轮审阅请求，等待 B 返回建议。\n\n**当前进度：**\n- ✅ 已确认 B 在线（同进程会话 `b`）\n- ⏳ 第一轮：已请 B 就三个固定问题（缺少空值检查、超时无提示、重复提交）提出修改建议\n- ⬜ 第二轮：收到 B 的建议后，我会整理出修正方案发回 B 复核\n- ⬜ 交付：拿到 B 的复核结论后，输出涵盖三个问题的最终报告\n\nB 的回复到达后我会继续推进。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 128,
+        "native": {
+          "input_tokens": 181,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1024,
+          "output_tokens": 128,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "b",
+      "input": "[peer 消息] 来自 a（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-sbltKC）\n【第一轮审阅请求 · 来自 A】\n\n用户要求我们就一份代码/功能做两轮审阅，固定三个问题：\n1. 缺少空值检查（null/undefined 未校验）\n2. 超时无提示（请求超时后用户无任何反馈）\n3. 重复提交（按钮/表单可被重复触发）\n\n请你在第一轮给出你的建议：针对这三个问题，各自应该怎么改（具体到做法，比如空值检查放在哪一层、超时提示用什么形式、重复提交用什么机制防）。请直接回复建议清单，我汇总后进入第二轮复核。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"a\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1017,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_00_E1VVJ9cr3RNfvh1opI9r8445",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"to\":\"a\",\"text\":\"【第一轮 · B 的建议清单】\\n\\n一、空值检查（null/undefined）\\n1. 分层：入口层做\\\"契约校验\\\"，业务层做\\\"防御性兜底\\\"，不要只在最外层加 if。\\n   - 入口层（API handler / 组件 props / 表单提交前）：对必填字段做显式校验，缺失即返回结构化错误（如 400 + {field, reason}），不要静默用默认值掩盖。\\n   - 业务层（service / 纯函数）：对可能为空的入参用可选链 + 空值合并（a?.b ?? fallback）或提前 return，避免深层属性访问抛 TypeError。\\n2. 具体做法：\\n   - 对象解构时给默认值：const { list = [], total = 0 } = res ?? {}；\\n   - 数组/集合遍历前判空：if (!Array.isArray(list) || list.length === 0) return []；\\n   - 接口响应统一在请求封装层做一次\\\"响应体存在性\\\"校验（res && res.data），失败走统一错误分支，避免每个调用点重复写。\\n   - 类型层面：TS 用 strictNullChecks + 非空断言禁用（禁 !），把空值问题前移到编译期。\\n3. 边界：区分\\\"空值\\\"与\\\"空值合法\\\"（如 0、''、false），判空用 == null 或显式 undefined/null 判断，不要用 !value 误伤。\\n\\n二、超时无提示\\n1. 机制：请求层统一设置超时（fetch 用 AbortController + setTimeout，axios 用 timeout 配置），超时后 reject 一个可识别的错误类型（如 TimeoutError），与网络错误、业务错误区分开。\\n2. 提示形式：超时属于\\\"可重试的临时失败\\\"，用非阻塞的 toast/轻提示（3~5 秒自动消失）+ 文案明确\\\"请求超时，请重试\\\"，并在提示上带\\\"重试\\\"按钮；不要用阻塞式 alert。\\n3. 状态还原：超时后必须复位 loading/disabled 状态，否则按钮会永久卡死（这点和第三点联动）。\\n4. 兜底：全局请求拦截器统一处理超时，避免每个调用点各写一遍；对长任务（上传/导出）单独设更长超时并给进度反馈，不要用同一个短超时。\\n\\n三、重复提交\\n1. 机制（前端）：提交时立即置 submitting=true 并禁用按钮（disabled + 视觉态），请求结束（finally）复位；这是第一道也是最有效的一道。\\n2. 幂等（后端）：接口层做幂等键（idempotency-key，前端生成 UUID 随请求头带上，服务端短期去重），防止网络重试/用户连点穿透到业务层产生两条数据。\\n3. 防抖/节流：对非幂等操作（下单、支付）用\\\"提交中锁\\\"而非单纯 debounce，debounce 只挡连点、挡不住慢请求期间的二次点击。\\n4. 表单层：提交前校验通过才发请求；提交中禁止再次触发 submit 事件（onSubmit 里先判 submitting 直接 return）。\\n5. 注意：禁用态必须在 finally 里复位，异常/超时路径也要复位，否则一次失败就永久锁死。\\n\\n以上三条建议的共同点：都在\\\"请求封装层 + 提交入口\\\"做统一处理，而不是散落在各业务调用点。\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "tool_use",
+            "id": "call_00_E1VVJ9cr3RNfvh1opI9r8445",
+            "name": "peer_send",
+            "input": {
+              "to": "a",
+              "text": "【第一轮 · B 的建议清单】\n\n一、空值检查（null/undefined）\n1. 分层：入口层做\"契约校验\"，业务层做\"防御性兜底\"，不要只在最外层加 if。\n   - 入口层（API handler / 组件 props / 表单提交前）：对必填字段做显式校验，缺失即返回结构化错误（如 400 + {field, reason}），不要静默用默认值掩盖。\n   - 业务层（service / 纯函数）：对可能为空的入参用可选链 + 空值合并（a?.b ?? fallback）或提前 return，避免深层属性访问抛 TypeError。\n2. 具体做法：\n   - 对象解构时给默认值：const { list = [], total = 0 } = res ?? {}；\n   - 数组/集合遍历前判空：if (!Array.isArray(list) || list.length === 0) return []；\n   - 接口响应统一在请求封装层做一次\"响应体存在性\"校验（res && res.data），失败走统一错误分支，避免每个调用点重复写。\n   - 类型层面：TS 用 strictNullChecks + 非空断言禁用（禁 !），把空值问题前移到编译期。\n3. 边界：区分\"空值\"与\"空值合法\"（如 0、''、false），判空用 == null 或显式 undefined/null 判断，不要用 !value 误伤。\n\n二、超时无提示\n1. 机制：请求层统一设置超时（fetch 用 AbortController + setTimeout，axios 用 timeout 配置），超时后 reject 一个可识别的错误类型（如 TimeoutError），与网络错误、业务错误区分开。\n2. 提示形式：超时属于\"可重试的临时失败\"，用非阻塞的 toast/轻提示（3~5 秒自动消失）+ 文案明确\"请求超时，请重试\"，并在提示上带\"重试\"按钮；不要用阻塞式 alert。\n3. 状态还原：超时后必须复位 loading/disabled 状态，否则按钮会永久卡死（这点和第三点联动）。\n4. 兜底：全局请求拦截器统一处理超时，避免每个调用点各写一遍；对长任务（上传/导出）单独设更长超时并给进度反馈，不要用同一个短超时。\n\n三、重复提交\n1. 机制（前端）：提交时立即置 submitting=true 并禁用按钮（disabled + 视觉态），请求结束（finally）复位；这是第一道也是最有效的一道。\n2. 幂等（后端）：接口层做幂等键（idempotency-key，前端生成 UUID 随请求头带上，服务端短期去重），防止网络重试/用户连点穿透到业务层产生两条数据。\n3. 防抖/节流：对非幂等操作（下单、支付）用\"提交中锁\"而非单纯 debounce，debounce 只挡连点、挡不住慢请求期间的二次点击。\n4. 表单层：提交前校验通过才发请求；提交中禁止再次触发 submit 事件（onSubmit 里先判 submitting 直接 return）。\n5. 注意：禁用态必须在 finally 里复位，异常/超时路径也要复位，否则一次失败就永久锁死。\n\n以上三条建议的共同点：都在\"请求封装层 + 提交入口\"做统一处理，而不是散落在各业务调用点。"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1017,
+        "completion_tokens": 805,
+        "native": {
+          "input_tokens": 377,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 805,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "b",
+      "args": {
+        "to": "a",
+        "text": "【第一轮 · B 的建议清单】\n\n一、空值检查（null/undefined）\n1. 分层：入口层做\"契约校验\"，业务层做\"防御性兜底\"，不要只在最外层加 if。\n   - 入口层（API handler / 组件 props / 表单提交前）：对必填字段做显式校验，缺失即返回结构化错误（如 400 + {field, reason}），不要静默用默认值掩盖。\n   - 业务层（service / 纯函数）：对可能为空的入参用可选链 + 空值合并（a?.b ?? fallback）或提前 return，避免深层属性访问抛 TypeError。\n2. 具体做法：\n   - 对象解构时给默认值：const { list = [], total = 0 } = res ?? {}；\n   - 数组/集合遍历前判空：if (!Array.isArray(list) || list.length === 0) return []；\n   - 接口响应统一在请求封装层做一次\"响应体存在性\"校验（res && res.data），失败走统一错误分支，避免每个调用点重复写。\n   - 类型层面：TS 用 strictNullChecks + 非空断言禁用（禁 !），把空值问题前移到编译期。\n3. 边界：区分\"空值\"与\"空值合法\"（如 0、''、false），判空用 == null 或显式 undefined/null 判断，不要用 !value 误伤。\n\n二、超时无提示\n1. 机制：请求层统一设置超时（fetch 用 AbortController + setTimeout，axios 用 timeout 配置），超时后 reject 一个可识别的错误类型（如 TimeoutError），与网络错误、业务错误区分开。\n2. 提示形式：超时属于\"可重试的临时失败\"，用非阻塞的 toast/轻提示（3~5 秒自动消失）+ 文案明确\"请求超时，请重试\"，并在提示上带\"重试\"按钮；不要用阻塞式 alert。\n3. 状态还原：超时后必须复位 loading/disabled 状态，否则按钮会永久卡死（这点和第三点联动）。\n4. 兜底：全局请求拦截器统一处理超时，避免每个调用点各写一遍；对长任务（上传/导出）单独设更长超时并给进度反馈，不要用同一个短超时。\n\n三、重复提交\n1. 机制（前端）：提交时立即置 submitting=true 并禁用按钮（disabled + 视觉态），请求结束（finally）复位；这是第一道也是最有效的一道。\n2. 幂等（后端）：接口层做幂等键（idempotency-key，前端生成 UUID 随请求头带上，服务端短期去重），防止网络重试/用户连点穿透到业务层产生两条数据。\n3. 防抖/节流：对非幂等操作（下单、支付）用\"提交中锁\"而非单纯 debounce，debounce 只挡连点、挡不住慢请求期间的二次点击。\n4. 表单层：提交前校验通过才发请求；提交中禁止再次触发 submit 事件（onSubmit 里先判 submitting 直接 return）。\n5. 注意：禁用态必须在 finally 里复位，异常/超时路径也要复位，否则一次失败就永久锁死。\n\n以上三条建议的共同点：都在\"请求封装层 + 提交入口\"做统一处理，而不是散落在各业务调用点。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "b",
+      "call": {
+        "id": "call_00_E1VVJ9cr3RNfvh1opI9r8445",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"to\":\"a\",\"text\":\"【第一轮 · B 的建议清单】\\n\\n一、空值检查（null/undefined）\\n1. 分层：入口层做\\\"契约校验\\\"，业务层做\\\"防御性兜底\\\"，不要只在最外层加 if。\\n   - 入口层（API handler / 组件 props / 表单提交前）：对必填字段做显式校验，缺失即返回结构化错误（如 400 + {field, reason}），不要静默用默认值掩盖。\\n   - 业务层（service / 纯函数）：对可能为空的入参用可选链 + 空值合并（a?.b ?? fallback）或提前 return，避免深层属性访问抛 TypeError。\\n2. 具体做法：\\n   - 对象解构时给默认值：const { list = [], total = 0 } = res ?? {}；\\n   - 数组/集合遍历前判空：if (!Array.isArray(list) || list.length === 0) return []；\\n   - 接口响应统一在请求封装层做一次\\\"响应体存在性\\\"校验（res && res.data），失败走统一错误分支，避免每个调用点重复写。\\n   - 类型层面：TS 用 strictNullChecks + 非空断言禁用（禁 !），把空值问题前移到编译期。\\n3. 边界：区分\\\"空值\\\"与\\\"空值合法\\\"（如 0、''、false），判空用 == null 或显式 undefined/null 判断，不要用 !value 误伤。\\n\\n二、超时无提示\\n1. 机制：请求层统一设置超时（fetch 用 AbortController + setTimeout，axios 用 timeout 配置），超时后 reject 一个可识别的错误类型（如 TimeoutError），与网络错误、业务错误区分开。\\n2. 提示形式：超时属于\\\"可重试的临时失败\\\"，用非阻塞的 toast/轻提示（3~5 秒自动消失）+ 文案明确\\\"请求超时，请重试\\\"，并在提示上带\\\"重试\\\"按钮；不要用阻塞式 alert。\\n3. 状态还原：超时后必须复位 loading/disabled 状态，否则按钮会永久卡死（这点和第三点联动）。\\n4. 兜底：全局请求拦截器统一处理超时，避免每个调用点各写一遍；对长任务（上传/导出）单独设更长超时并给进度反馈，不要用同一个短超时。\\n\\n三、重复提交\\n1. 机制（前端）：提交时立即置 submitting=true 并禁用按钮（disabled + 视觉态），请求结束（finally）复位；这是第一道也是最有效的一道。\\n2. 幂等（后端）：接口层做幂等键（idempotency-key，前端生成 UUID 随请求头带上，服务端短期去重），防止网络重试/用户连点穿透到业务层产生两条数据。\\n3. 防抖/节流：对非幂等操作（下单、支付）用\\\"提交中锁\\\"而非单纯 debounce，debounce 只挡连点、挡不住慢请求期间的二次点击。\\n4. 表单层：提交前校验通过才发请求；提交中禁止再次触发 submit 事件（onSubmit 里先判 submitting 直接 return）。\\n5. 注意：禁用态必须在 finally 里复位，异常/超时路径也要复位，否则一次失败就永久锁死。\\n\\n以上三条建议的共同点：都在\\\"请求封装层 + 提交入口\\\"做统一处理，而不是散落在各业务调用点。\"}"
+        }
+      },
+      "parameters": {
+        "to": "a",
+        "text": "【第一轮 · B 的建议清单】\n\n一、空值检查（null/undefined）\n1. 分层：入口层做\"契约校验\"，业务层做\"防御性兜底\"，不要只在最外层加 if。\n   - 入口层（API handler / 组件 props / 表单提交前）：对必填字段做显式校验，缺失即返回结构化错误（如 400 + {field, reason}），不要静默用默认值掩盖。\n   - 业务层（service / 纯函数）：对可能为空的入参用可选链 + 空值合并（a?.b ?? fallback）或提前 return，避免深层属性访问抛 TypeError。\n2. 具体做法：\n   - 对象解构时给默认值：const { list = [], total = 0 } = res ?? {}；\n   - 数组/集合遍历前判空：if (!Array.isArray(list) || list.length === 0) return []；\n   - 接口响应统一在请求封装层做一次\"响应体存在性\"校验（res && res.data），失败走统一错误分支，避免每个调用点重复写。\n   - 类型层面：TS 用 strictNullChecks + 非空断言禁用（禁 !），把空值问题前移到编译期。\n3. 边界：区分\"空值\"与\"空值合法\"（如 0、''、false），判空用 == null 或显式 undefined/null 判断，不要用 !value 误伤。\n\n二、超时无提示\n1. 机制：请求层统一设置超时（fetch 用 AbortController + setTimeout，axios 用 timeout 配置），超时后 reject 一个可识别的错误类型（如 TimeoutError），与网络错误、业务错误区分开。\n2. 提示形式：超时属于\"可重试的临时失败\"，用非阻塞的 toast/轻提示（3~5 秒自动消失）+ 文案明确\"请求超时，请重试\"，并在提示上带\"重试\"按钮；不要用阻塞式 alert。\n3. 状态还原：超时后必须复位 loading/disabled 状态，否则按钮会永久卡死（这点和第三点联动）。\n4. 兜底：全局请求拦截器统一处理超时，避免每个调用点各写一遍；对长任务（上传/导出）单独设更长超时并给进度反馈，不要用同一个短超时。\n\n三、重复提交\n1. 机制（前端）：提交时立即置 submitting=true 并禁用按钮（disabled + 视觉态），请求结束（finally）复位；这是第一道也是最有效的一道。\n2. 幂等（后端）：接口层做幂等键（idempotency-key，前端生成 UUID 随请求头带上，服务端短期去重），防止网络重试/用户连点穿透到业务层产生两条数据。\n3. 防抖/节流：对非幂等操作（下单、支付）用\"提交中锁\"而非单纯 debounce，debounce 只挡连点、挡不住慢请求期间的二次点击。\n4. 表单层：提交前校验通过才发请求；提交中禁止再次触发 submit 事件（onSubmit 里先判 submitting 直接 return）。\n5. 注意：禁用态必须在 finally 里复位，异常/超时路径也要复位，否则一次失败就永久锁死。\n\n以上三条建议的共同点：都在\"请求封装层 + 提交入口\"做统一处理，而不是散落在各业务调用点。"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 a（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "8c662528f99a7ae035d1eb6a",
+          "target": {
+            "name": "a",
+            "session": "session-aaaa"
+          },
+          "text": "【第一轮 · B 的建议清单】\n\n一、空值检查（null/undefined）\n1. 分层：入口层做\"契约校验\"，业务层做\"防御性兜底\"，不要只在最外层加 if。\n   - 入口层（API handler / 组件 props / 表单提交前）：对必填字段做显式校验，缺失即返回结构化错误（如 400 + {field, reason}），不要静默用默认值掩盖。\n   - 业务层（service / 纯函数）：对可能为空的入参用可选链 + 空值合并（a?.b ?? fallback）或提前 return，避免深层属性访问抛 TypeError。\n2. 具体做法：\n   - 对象解构时给默认值：const { list = [], total = 0 } = res ?? {}；\n   - 数组/集合遍历前判空：if (!Array.isArray(list) || list.length === 0) return []；\n   - 接口响应统一在请求封装层做一次\"响应体存在性\"校验（res && res.data），失败走统一错误分支，避免每个调用点重复写。\n   - 类型层面：TS 用 strictNullChecks + 非空断言禁用（禁 !），把空值问题前移到编译期。\n3. 边界：区分\"空值\"与\"空值合法\"（如 0、''、false），判空用 == null 或显式 undefined/null 判断，不要用 !value 误伤。\n\n二、超时无提示\n1. 机制：请求层统一设置超时（fetch 用 AbortController + setTimeout，axios 用 timeout 配置），超时后 reject 一个可识别的错误类型（如 TimeoutError），与网络错误、业务错误区分开。\n2. 提示形式：超时属于\"可重试的临时失败\"，用非阻塞的 toast/轻提示（3~5 秒自动消失）+ 文案明确\"请求超时，请重试\"，并在提示上带\"重试\"按钮；不要用阻塞式 alert。\n3. 状态还原：超时后必须复位 loading/disabled 状态，否则按钮会永久卡死（这点和第三点联动）。\n4. 兜底：全局请求拦截器统一处理超时，避免每个调用点各写一遍；对长任务（上传/导出）单独设更长超时并给进度反馈，不要用同一个短超时。\n\n三、重复提交\n1. 机制（前端）：提交时立即置 submitting=true 并禁用按钮（disabled + 视觉态），请求结束（finally）复位；这是第一道也是最有效的一道。\n2. 幂等（后端）：接口层做幂等键（idempotency-key，前端生成 UUID 随请求头带上，服务端短期去重），防止网络重试/用户连点穿透到业务层产生两条数据。\n3. 防抖/节流：对非幂等操作（下单、支付）用\"提交中锁\"而非单纯 debounce，debounce 只挡连点、挡不住慢请求期间的二次点击。\n4. 表单层：提交前校验通过才发请求；提交中禁止再次触发 submit 事件（onSubmit 里先判 submitting 直接 return）。\n5. 注意：禁用态必须在 finally 里复位，异常/超时路径也要复位，否则一次失败就永久锁死。\n\n以上三条建议的共同点：都在\"请求封装层 + 提交入口\"做统一处理，而不是散落在各业务调用点。",
+          "outcome": "queued"
+        }
+      }
+    },
+    {
+      "agent": "b",
+      "request": {
+        "inputCount": 1865,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "b",
+      "message": {
+        "role": "assistant",
+        "content": "第一轮建议已发给 A，等 A 汇总后进入第二轮复核。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "第一轮建议已发给 A，等 A 汇总后进入第二轮复核。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 1865,
+        "completion_tokens": 16,
+        "native": {
+          "input_tokens": 201,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1664,
+          "output_tokens": 16,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    },
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b（cwd /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-eval-sbltKC）\n【第一轮 · B 的建议清单】\n\n一、空值检查（null/undefined）\n1. 分层：入口层做\"契约校验\"，业务层做\"防御性兜底\"，不要只在最外层加 if。\n   - 入口层（API handler / 组件 props / 表单提交前）：对必填字段做显式校验，缺失即返回结构化错误（如 400 + {field, reason}），不要静默用默认值掩盖。\n   - 业务层（service / 纯函数）：对可能为空的入参用可选链 + 空值合并（a?.b ?? fallback）或提前 return，避免深层属性访问抛 TypeError。\n2. 具体做法：\n   - 对象解构时给默认值：const { list = [], total = 0 } = res ?? {}；\n   - 数组/集合遍历前判空：if (!Array.isArray(list) || list.length === 0) return []；\n   - 接口响应统一在请求封装层做一次\"响应体存在性\"校验（res && res.data），失败走统一错误分支，避免每个调用点重复写。\n   - 类型层面：TS 用 strictNullChecks + 非空断言禁用（禁 !），把空值问题前移到编译期。\n3. 边界：区分\"空值\"与\"空值合法\"（如 0、''、false），判空用 == null 或显式 undefined/null 判断，不要用 !value 误伤。\n\n二、超时无提示\n1. 机制：请求层统一设置超时（fetch 用 AbortController + setTimeout，axios 用 timeout 配置），超时后 reject 一个可识别的错误类型（如 TimeoutError），与网络错误、业务错误区分开。\n2. 提示形式：超时属于\"可重试的临时失败\"，用非阻塞的 toast/轻提示（3~5 秒自动消失）+ 文案明确\"请求超时，请重试\"，并在提示上带\"重试\"按钮；不要用阻塞式 alert。\n3. 状态还原：超时后必须复位 loading/disabled 状态，否则按钮会永久卡死（这点和第三点联动）。\n4. 兜底：全局请求拦截器统一处理超时，避免每个调用点各写一遍；对长任务（上传/导出）单独设更长超时并给进度反馈，不要用同一个短超时。\n\n三、重复提交\n1. 机制（前端）：提交时立即置 submitting=true 并禁用按钮（disabled + 视觉态），请求结束（finally）复位；这是第一道也是最有效的一道。\n2. 幂等（后端）：接口层做幂等键（idempotency-key，前端生成 UUID 随请求头带上，服务端短期去重），防止网络重试/用户连点穿透到业务层产生两条数据。\n3. 防抖/节流：对非幂等操作（下单、支付）用\"提交中锁\"而非单纯 debounce，debounce 只挡连点、挡不住慢请求期间的二次点击。\n4. 表单层：提交前校验通过才发请求；提交中禁止再次触发 submit 事件（onSubmit 里先判 submitting 直接 return）。\n5. 注意：禁用态必须在 finally 里复位，异常/超时路径也要复位，否则一次失败就永久锁死。\n\n以上三条建议的共同点：都在\"请求封装层 + 提交入口\"做统一处理，而不是散落在各业务调用点。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"b\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 2214,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "B 的第一轮建议已收到。现在整理修正方案，发回 B 进行第二轮复核。",
+        "tool_calls": [
+          {
+            "id": "call_00_1p9EDw9aDJSyZdXp3cqE3818",
+            "type": "function",
+            "function": {
+              "name": "peer_send",
+              "arguments": "{\"text\":\"【第二轮 · 修正方案复核请求 · 来自 A】\\n\\n已收到你的建议清单，我据此整理成如下修正方案，请复核（重点看：是否有遗漏、是否有冲突、落地顺序是否合理）。\\n\\n=== 修正方案 v1 ===\\n\\n【问题一：缺少空值检查】\\n- 入口层：API handler / 表单提交前对必填字段显式校验，缺失返回结构化错误 {field, reason}，不用默认值静默掩盖。\\n- 请求封装层：统一做一次响应体存在性校验（res && res.data），失败走统一错误分支，避免各调用点重复写。\\n- 业务层：解构给默认值 const { list = [], total = 0 } = res ?? {}；遍历前 if (!Array.isArray(list) || list.length === 0) return []；深层访问用可选链 + ?? 兜底。\\n- 判空语义：用 == null 或显式 undefined/null 判断，不用 !value，避免误伤 0 / '' / false。\\n- 类型层：开启 strictNullChecks，禁用非空断言 !，把空值问题前移到编译期。\\n\\n【问题二：超时无提示】\\n- 请求层统一超时：fetch 用 AbortController + setTimeout，axios 用 timeout；超时 reject 可识别的 TimeoutError，与网络错误/业务错误区分。\\n- 提示：非阻塞 toast（3~5 秒自动消失），文案\\\"请求超时，请重试\\\"，带\\\"重试\\\"按钮；不用阻塞式 alert。\\n- 状态还原：超时后必须复位 loading/disabled，防止按钮永久卡死。\\n- 兜底：全局请求拦截器统一处理超时；长任务（上传/导出）单独设更长超时并给进度反馈。\\n\\n【问题三：重复提交】\\n- 前端第一道：提交时立即 submitting=true + 禁用按钮，finally 复位；onSubmit 里先判 submitting 直接 return。\\n- 后端幂等：idempotency-key（前端生成 UUID 随请求头带上，服务端短期去重），防网络重试/连点穿透产生重复数据。\\n- 非幂等操作（下单/支付）用\\\"提交中锁\\\"，不用单纯 debounce（debounce 挡不住慢请求期间的二次点击）。\\n- 复位纪律：禁用态必须在 finally 复位，异常/超时路径同样复位。\\n\\n【三者的联动点（我补充的）】\\n- 超时与重复提交共用同一套 loading/submitting 状态机：超时 → 提示 + 复位 → 用户可重试；重试走幂等键，不会产生重复数据。\\n- 空值校验失败与超时失败共用统一错误分支，前端按错误类型分别提示（校验错误定位到字段，超时给 toast + 重试）。\\n\\n【落地顺序建议】\\n1. 请求封装层（超时 + 响应体校验 + 统一错误类型）\\n2. 提交入口（submitting 锁 + finally 复位）\\n3. 后端幂等键\\n4. 业务层判空与类型收紧\\n\\n请回复：① 是否认可该方案；② 有无遗漏或需要修正之处；③ 最终结论（通过 / 有条件通过 / 需修改）。\",\"to\":\"b\"}"
+            }
+          }
+        ],
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "B 的第一轮建议已收到。现在整理修正方案，发回 B 进行第二轮复核。"
+          },
+          {
+            "type": "tool_use",
+            "id": "call_00_1p9EDw9aDJSyZdXp3cqE3818",
+            "name": "peer_send",
+            "input": {
+              "text": "【第二轮 · 修正方案复核请求 · 来自 A】\n\n已收到你的建议清单，我据此整理成如下修正方案，请复核（重点看：是否有遗漏、是否有冲突、落地顺序是否合理）。\n\n=== 修正方案 v1 ===\n\n【问题一：缺少空值检查】\n- 入口层：API handler / 表单提交前对必填字段显式校验，缺失返回结构化错误 {field, reason}，不用默认值静默掩盖。\n- 请求封装层：统一做一次响应体存在性校验（res && res.data），失败走统一错误分支，避免各调用点重复写。\n- 业务层：解构给默认值 const { list = [], total = 0 } = res ?? {}；遍历前 if (!Array.isArray(list) || list.length === 0) return []；深层访问用可选链 + ?? 兜底。\n- 判空语义：用 == null 或显式 undefined/null 判断，不用 !value，避免误伤 0 / '' / false。\n- 类型层：开启 strictNullChecks，禁用非空断言 !，把空值问题前移到编译期。\n\n【问题二：超时无提示】\n- 请求层统一超时：fetch 用 AbortController + setTimeout，axios 用 timeout；超时 reject 可识别的 TimeoutError，与网络错误/业务错误区分。\n- 提示：非阻塞 toast（3~5 秒自动消失），文案\"请求超时，请重试\"，带\"重试\"按钮；不用阻塞式 alert。\n- 状态还原：超时后必须复位 loading/disabled，防止按钮永久卡死。\n- 兜底：全局请求拦截器统一处理超时；长任务（上传/导出）单独设更长超时并给进度反馈。\n\n【问题三：重复提交】\n- 前端第一道：提交时立即 submitting=true + 禁用按钮，finally 复位；onSubmit 里先判 submitting 直接 return。\n- 后端幂等：idempotency-key（前端生成 UUID 随请求头带上，服务端短期去重），防网络重试/连点穿透产生重复数据。\n- 非幂等操作（下单/支付）用\"提交中锁\"，不用单纯 debounce（debounce 挡不住慢请求期间的二次点击）。\n- 复位纪律：禁用态必须在 finally 复位，异常/超时路径同样复位。\n\n【三者的联动点（我补充的）】\n- 超时与重复提交共用同一套 loading/submitting 状态机：超时 → 提示 + 复位 → 用户可重试；重试走幂等键，不会产生重复数据。\n- 空值校验失败与超时失败共用统一错误分支，前端按错误类型分别提示（校验错误定位到字段，超时给 toast + 重试）。\n\n【落地顺序建议】\n1. 请求封装层（超时 + 响应体校验 + 统一错误类型）\n2. 提交入口（submitting 锁 + finally 复位）\n3. 后端幂等键\n4. 业务层判空与类型收紧\n\n请回复：① 是否认可该方案；② 有无遗漏或需要修正之处；③ 最终结论（通过 / 有条件通过 / 需修改）。",
+              "to": "b"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 2214,
+        "completion_tokens": 771,
+        "native": {
+          "input_tokens": 934,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 1280,
+          "output_tokens": 771,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "tool_use"
+    },
+    {
+      "agent": "a",
+      "args": {
+        "to": "b",
+        "text": "【第二轮 · 修正方案复核请求 · 来自 A】\n\n已收到你的建议清单，我据此整理成如下修正方案，请复核（重点看：是否有遗漏、是否有冲突、落地顺序是否合理）。\n\n=== 修正方案 v1 ===\n\n【问题一：缺少空值检查】\n- 入口层：API handler / 表单提交前对必填字段显式校验，缺失返回结构化错误 {field, reason}，不用默认值静默掩盖。\n- 请求封装层：统一做一次响应体存在性校验（res && res.data），失败走统一错误分支，避免各调用点重复写。\n- 业务层：解构给默认值 const { list = [], total = 0 } = res ?? {}；遍历前 if (!Array.isArray(list) || list.length === 0) return []；深层访问用可选链 + ?? 兜底。\n- 判空语义：用 == null 或显式 undefined/null 判断，不用 !value，避免误伤 0 / '' / false。\n- 类型层：开启 strictNullChecks，禁用非空断言 !，把空值问题前移到编译期。\n\n【问题二：超时无提示】\n- 请求层统一超时：fetch 用 AbortController + setTimeout，axios 用 timeout；超时 reject 可识别的 TimeoutError，与网络错误/业务错误区分。\n- 提示：非阻塞 toast（3~5 秒自动消失），文案\"请求超时，请重试\"，带\"重试\"按钮；不用阻塞式 alert。\n- 状态还原：超时后必须复位 loading/disabled，防止按钮永久卡死。\n- 兜底：全局请求拦截器统一处理超时；长任务（上传/导出）单独设更长超时并给进度反馈。\n\n【问题三：重复提交】\n- 前端第一道：提交时立即 submitting=true + 禁用按钮，finally 复位；onSubmit 里先判 submitting 直接 return。\n- 后端幂等：idempotency-key（前端生成 UUID 随请求头带上，服务端短期去重），防网络重试/连点穿透产生重复数据。\n- 非幂等操作（下单/支付）用\"提交中锁\"，不用单纯 debounce（debounce 挡不住慢请求期间的二次点击）。\n- 复位纪律：禁用态必须在 finally 复位，异常/超时路径同样复位。\n\n【三者的联动点（我补充的）】\n- 超时与重复提交共用同一套 loading/submitting 状态机：超时 → 提示 + 复位 → 用户可重试；重试走幂等键，不会产生重复数据。\n- 空值校验失败与超时失败共用统一错误分支，前端按错误类型分别提示（校验错误定位到字段，超时给 toast + 重试）。\n\n【落地顺序建议】\n1. 请求封装层（超时 + 响应体校验 + 统一错误类型）\n2. 提交入口（submitting 锁 + finally 复位）\n3. 后端幂等键\n4. 业务层判空与类型收紧\n\n请回复：① 是否认可该方案；② 有无遗漏或需要修正之处；③ 最终结论（通过 / 有条件通过 / 需修改）。"
+      },
+      "result": {
+        "ok": true,
+        "delivered": "queued"
+      },
+      "edge": true
+    },
+    {
+      "agent": "a",
+      "call": {
+        "id": "call_00_1p9EDw9aDJSyZdXp3cqE3818",
+        "type": "function",
+        "function": {
+          "name": "peer_send",
+          "arguments": "{\"text\":\"【第二轮 · 修正方案复核请求 · 来自 A】\\n\\n已收到你的建议清单，我据此整理成如下修正方案，请复核（重点看：是否有遗漏、是否有冲突、落地顺序是否合理）。\\n\\n=== 修正方案 v1 ===\\n\\n【问题一：缺少空值检查】\\n- 入口层：API handler / 表单提交前对必填字段显式校验，缺失返回结构化错误 {field, reason}，不用默认值静默掩盖。\\n- 请求封装层：统一做一次响应体存在性校验（res && res.data），失败走统一错误分支，避免各调用点重复写。\\n- 业务层：解构给默认值 const { list = [], total = 0 } = res ?? {}；遍历前 if (!Array.isArray(list) || list.length === 0) return []；深层访问用可选链 + ?? 兜底。\\n- 判空语义：用 == null 或显式 undefined/null 判断，不用 !value，避免误伤 0 / '' / false。\\n- 类型层：开启 strictNullChecks，禁用非空断言 !，把空值问题前移到编译期。\\n\\n【问题二：超时无提示】\\n- 请求层统一超时：fetch 用 AbortController + setTimeout，axios 用 timeout；超时 reject 可识别的 TimeoutError，与网络错误/业务错误区分。\\n- 提示：非阻塞 toast（3~5 秒自动消失），文案\\\"请求超时，请重试\\\"，带\\\"重试\\\"按钮；不用阻塞式 alert。\\n- 状态还原：超时后必须复位 loading/disabled，防止按钮永久卡死。\\n- 兜底：全局请求拦截器统一处理超时；长任务（上传/导出）单独设更长超时并给进度反馈。\\n\\n【问题三：重复提交】\\n- 前端第一道：提交时立即 submitting=true + 禁用按钮，finally 复位；onSubmit 里先判 submitting 直接 return。\\n- 后端幂等：idempotency-key（前端生成 UUID 随请求头带上，服务端短期去重），防网络重试/连点穿透产生重复数据。\\n- 非幂等操作（下单/支付）用\\\"提交中锁\\\"，不用单纯 debounce（debounce 挡不住慢请求期间的二次点击）。\\n- 复位纪律：禁用态必须在 finally 复位，异常/超时路径同样复位。\\n\\n【三者的联动点（我补充的）】\\n- 超时与重复提交共用同一套 loading/submitting 状态机：超时 → 提示 + 复位 → 用户可重试；重试走幂等键，不会产生重复数据。\\n- 空值校验失败与超时失败共用统一错误分支，前端按错误类型分别提示（校验错误定位到字段，超时给 toast + 重试）。\\n\\n【落地顺序建议】\\n1. 请求封装层（超时 + 响应体校验 + 统一错误类型）\\n2. 提交入口（submitting 锁 + finally 复位）\\n3. 后端幂等键\\n4. 业务层判空与类型收紧\\n\\n请回复：① 是否认可该方案；② 有无遗漏或需要修正之处；③ 最终结论（通过 / 有条件通过 / 需修改）。\",\"to\":\"b\"}"
+        }
+      },
+      "parameters": {
+        "text": "【第二轮 · 修正方案复核请求 · 来自 A】\n\n已收到你的建议清单，我据此整理成如下修正方案，请复核（重点看：是否有遗漏、是否有冲突、落地顺序是否合理）。\n\n=== 修正方案 v1 ===\n\n【问题一：缺少空值检查】\n- 入口层：API handler / 表单提交前对必填字段显式校验，缺失返回结构化错误 {field, reason}，不用默认值静默掩盖。\n- 请求封装层：统一做一次响应体存在性校验（res && res.data），失败走统一错误分支，避免各调用点重复写。\n- 业务层：解构给默认值 const { list = [], total = 0 } = res ?? {}；遍历前 if (!Array.isArray(list) || list.length === 0) return []；深层访问用可选链 + ?? 兜底。\n- 判空语义：用 == null 或显式 undefined/null 判断，不用 !value，避免误伤 0 / '' / false。\n- 类型层：开启 strictNullChecks，禁用非空断言 !，把空值问题前移到编译期。\n\n【问题二：超时无提示】\n- 请求层统一超时：fetch 用 AbortController + setTimeout，axios 用 timeout；超时 reject 可识别的 TimeoutError，与网络错误/业务错误区分。\n- 提示：非阻塞 toast（3~5 秒自动消失），文案\"请求超时，请重试\"，带\"重试\"按钮；不用阻塞式 alert。\n- 状态还原：超时后必须复位 loading/disabled，防止按钮永久卡死。\n- 兜底：全局请求拦截器统一处理超时；长任务（上传/导出）单独设更长超时并给进度反馈。\n\n【问题三：重复提交】\n- 前端第一道：提交时立即 submitting=true + 禁用按钮，finally 复位；onSubmit 里先判 submitting 直接 return。\n- 后端幂等：idempotency-key（前端生成 UUID 随请求头带上，服务端短期去重），防网络重试/连点穿透产生重复数据。\n- 非幂等操作（下单/支付）用\"提交中锁\"，不用单纯 debounce（debounce 挡不住慢请求期间的二次点击）。\n- 复位纪律：禁用态必须在 finally 复位，异常/超时路径同样复位。\n\n【三者的联动点（我补充的）】\n- 超时与重复提交共用同一套 loading/submitting 状态机：超时 → 提示 + 复位 → 用户可重试；重试走幂等键，不会产生重复数据。\n- 空值校验失败与超时失败共用统一错误分支，前端按错误类型分别提示（校验错误定位到字段，超时给 toast + 重试）。\n\n【落地顺序建议】\n1. 请求封装层（超时 + 响应体校验 + 统一错误类型）\n2. 提交入口（submitting 锁 + finally 复位）\n3. 后端幂等键\n4. 业务层判空与类型收紧\n\n请回复：① 是否认可该方案；② 有无遗漏或需要修正之处；③ 最终结论（通过 / 有条件通过 / 需修改）。",
+        "to": "b"
+      },
+      "result": {
+        "ok": true,
+        "text": "已发给 b（排在它下一轮）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。",
+        "display": {
+          "version": 1,
+          "id": "7fe7782fb801b4c06f2a28d9",
+          "target": {
+            "name": "b",
+            "session": "session-bbbb"
+          },
+          "text": "【第二轮 · 修正方案复核请求 · 来自 A】\n\n已收到你的建议清单，我据此整理成如下修正方案，请复核（重点看：是否有遗漏、是否有冲突、落地顺序是否合理）。\n\n=== 修正方案 v1 ===\n\n【问题一：缺少空值检查】\n- 入口层：API handler / 表单提交前对必填字段显式校验，缺失返回结构化错误 {field, reason}，不用默认值静默掩盖。\n- 请求封装层：统一做一次响应体存在性校验（res && res.data），失败走统一错误分支，避免各调用点重复写。\n- 业务层：解构给默认值 const { list = [], total = 0 } = res ?? {}；遍历前 if (!Array.isArray(list) || list.length === 0) return []；深层访问用可选链 + ?? 兜底。\n- 判空语义：用 == null 或显式 undefined/null 判断，不用 !value，避免误伤 0 / '' / false。\n- 类型层：开启 strictNullChecks，禁用非空断言 !，把空值问题前移到编译期。\n\n【问题二：超时无提示】\n- 请求层统一超时：fetch 用 AbortController + setTimeout，axios 用 timeout；超时 reject 可识别的 TimeoutError，与网络错误/业务错误区分。\n- 提示：非阻塞 toast（3~5 秒自动消失），文案\"请求超时，请重试\"，带\"重试\"按钮；不用阻塞式 alert。\n- 状态还原：超时后必须复位 loading/disabled，防止按钮永久卡死。\n- 兜底：全局请求拦截器统一处理超时；长任务（上传/导出）单独设更长超时并给进度反馈。\n\n【问题三：重复提交】\n- 前端第一道：提交时立即 submitting=true + 禁用按钮，finally 复位；onSubmit 里先判 submitting 直接 return。\n- 后端幂等：idempotency-key（前端生成 UUID 随请求头带上，服务端短期去重），防网络重试/连点穿透产生重复数据。\n- 非幂等操作（下单/支付）用\"提交中锁\"，不用单纯 debounce（debounce 挡不住慢请求期间的二次点击）。\n- 复位纪律：禁用态必须在 finally 复位，异常/超时路径同样复位。\n\n【三者的联动点（我补充的）】\n- 超时与重复提交共用同一套 loading/submitting 状态机：超时 → 提示 + 复位 → 用户可重试；重试走幂等键，不会产生重复数据。\n- 空值校验失败与超时失败共用统一错误分支，前端按错误类型分别提示（校验错误定位到字段，超时给 toast + 重试）。\n\n【落地顺序建议】\n1. 请求封装层（超时 + 响应体校验 + 统一错误类型）\n2. 提交入口（submitting 锁 + finally 复位）\n3. 后端幂等键\n4. 业务层判空与类型收紧\n\n请回复：① 是否认可该方案；② 有无遗漏或需要修正之处；③ 最终结论（通过 / 有条件通过 / 需修改）。",
+          "outcome": "queued"
+        }
+      }
+    }
+  ]
+}

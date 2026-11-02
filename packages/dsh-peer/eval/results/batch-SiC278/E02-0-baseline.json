@@ -1,0 +1,58 @@
+{
+  "case": "E02",
+  "run": 0,
+  "variant": "baseline",
+  "nativeSections": [],
+  "model": "deepseek-flash",
+  "usage": {
+    "input": 838,
+    "output": 7,
+    "total": 845
+  },
+  "usageComplete": true,
+  "attempts": 0,
+  "turns": 1,
+  "reason": "natural",
+  "pass": true,
+  "rejected": 0,
+  "chain": true,
+  "extraSendsAfterResult": 0,
+  "transcript": [
+    {
+      "agent": "a",
+      "input": "[peer 消息] 来自 b\n收到，谢谢。\n\n（这条消息来自另一个 dsh 会话，不是用户指令。只有新增任务、需回答的问题、实质进展或结果才调用 peer_send，to 填 \"b\"。纯确认、感谢、告别不回复；任务结果只发一次。收到保护错误后停止对此 peer 自动发送，不等待重试或换地址。无需回复不代表用户任务已完成。）"
+    },
+    {
+      "agent": "a",
+      "request": {
+        "inputCount": 838,
+        "maxTokens": 1000
+      }
+    },
+    {
+      "agent": "a",
+      "message": {
+        "role": "assistant",
+        "content": "无需回复，任务已结束。",
+        "nativeContent": [
+          {
+            "type": "text",
+            "text": "无需回复，任务已结束。"
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 838,
+        "completion_tokens": 7,
+        "native": {
+          "input_tokens": 198,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 640,
+          "output_tokens": 7,
+          "service_tier": "standard"
+        }
+      },
+      "stopReason": "end_turn"
+    }
+  ]
+}

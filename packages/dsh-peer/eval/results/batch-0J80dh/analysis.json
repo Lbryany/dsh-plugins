@@ -1,0 +1,182 @@
+[
+  {
+    "case": "E01",
+    "variant": "baseline",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 4504,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  },
+  {
+    "case": "E01",
+    "variant": "changed",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 5187,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  },
+  {
+    "case": "E02",
+    "variant": "baseline",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 4225,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  },
+  {
+    "case": "E02",
+    "variant": "changed",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 5000,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  },
+  {
+    "case": "E03",
+    "variant": "baseline",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 4380,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  },
+  {
+    "case": "E03",
+    "variant": "changed",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 5108,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  },
+  {
+    "case": "E04",
+    "variant": "baseline",
+    "pass": 0,
+    "runs": 5,
+    "tokens": 53003,
+    "rejected": 0,
+    "reasons": [
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap"
+    ]
+  },
+  {
+    "case": "E04",
+    "variant": "changed",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 39083,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  },
+  {
+    "case": "E05",
+    "variant": "baseline",
+    "pass": 0,
+    "runs": 5,
+    "tokens": 54576,
+    "rejected": 0,
+    "reasons": [
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap"
+    ]
+  },
+  {
+    "case": "E05",
+    "variant": "changed",
+    "pass": 0,
+    "runs": 5,
+    "tokens": 47828,
+    "rejected": 0,
+    "reasons": [
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap"
+    ]
+  },
+  {
+    "case": "E06",
+    "variant": "baseline",
+    "pass": 0,
+    "runs": 5,
+    "tokens": 52021,
+    "rejected": 0,
+    "reasons": [
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap",
+      "token-cap"
+    ]
+  },
+  {
+    "case": "E06",
+    "variant": "changed",
+    "pass": 5,
+    "runs": 5,
+    "tokens": 39985,
+    "rejected": 0,
+    "reasons": [
+      "natural",
+      "natural",
+      "natural",
+      "natural",
+      "natural"
+    ]
+  }
+]

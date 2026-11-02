@@ -1,0 +1,262 @@
+✖ G01/G07 local: new IDs with same content deliver once (3.481167ms)
+✖ G03/G07 local: seventh different message rejected (0.792292ms)
+✖ G06/G07 local: alternating novel replies stop (0.545542ms)
+✖ G01/G07 socket: new IDs with same content deliver once (0.577958ms)
+✖ G03/G07 socket: seventh different message rejected (0.565ms)
+✖ G06/G07 socket: alternating novel replies stop (0.623417ms)
+✖ G02 exact bytes, rename, target/mode isolation and 60 s boundary (0.622916ms)
+✖ G04 20 messages at 5 s intervals: rejected attempts consume no quota (0.523916ms)
+✖ G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional (0.571583ms)
+✖ G10 scoped IDs and synchronous failure rollback (0.538916ms)
+✖ G11 concurrent sends do not over-admit (0.481417ms)
+✖ G11 capacity refuses new pair without evicting pause (0.481125ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 0
+ℹ fail 12
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84.070416
+
+✖ failing tests:
+
+test at test/loop-control.test.mjs:6:3
+✖ G01/G07 local: new IDs with same content deliver once (3.481167ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-9BOHjb/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:7:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-9BOHjb/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:12:3
+✖ G03/G07 local: seventh different message rejected (0.792292ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-ubkx0J/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:13:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-ubkx0J/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:18:3
+✖ G06/G07 local: alternating novel replies stop (0.545542ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-3IhNV1/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:19:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-3IhNV1/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:6:3
+✖ G01/G07 socket: new IDs with same content deliver once (0.577958ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-zKaPRP/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:7:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-zKaPRP/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:12:3
+✖ G03/G07 socket: seventh different message rejected (0.565ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-MXIupn/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:13:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-MXIupn/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:18:3
+✖ G06/G07 socket: alternating novel replies stop (0.623417ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-qDP0iL/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:19:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-qDP0iL/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:28:1
+✖ G02 exact bytes, rename, target/mode isolation and 60 s boundary (0.622916ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-QWXmV8/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:29:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-QWXmV8/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:37:1
+✖ G04 20 messages at 5 s intervals: rejected attempts consume no quota (0.523916ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-qgd9VZ/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:38:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-qgd9VZ/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:47:1
+✖ G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional (0.571583ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-BsFIm2/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:48:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-BsFIm2/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:61:1
+✖ G10 scoped IDs and synchronous failure rollback (0.538916ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-GGfAou/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:62:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-GGfAou/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:70:1
+✖ G11 concurrent sends do not over-admit (0.481417ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-7PPvQx/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:71:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-7PPvQx/run/68378.sock',
+    port: -1
+  }
+
+test at test/loop-control.test.mjs:75:1
+✖ G11 capacity refuses new pair without evicting pause (0.481125ms)
+  Error: listen EPERM: operation not permitted /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-GA7dyF/run/68378.sock
+      at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+      at listenInCluster (node:net:2499:12)
+      at Server.listen (node:net:2641:5)
+      at file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:44:16
+      at new Promise (<anonymous>)
+      at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/transport.js:42:14)
+      at Object.start (file:///private/tmp/dsh-peer-baseline-0.1.0-20261101/lib/core.js:267:23)
+      at setup (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/helpers.mjs:27:29)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/loop-control.test.mjs:76:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-a-GA7dyF/run/68378.sock',
+    port: -1
+  }

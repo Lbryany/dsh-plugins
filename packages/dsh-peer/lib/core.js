@@ -2,13 +2,16 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { basename } from 'node:path';
 import { PROTOCOL, createRegistry } from './registry.js';
-import { createTransport as defaultCreateTransport } from './transport.js';
+import { createTransport as defaultCreateTransport, MAX_REQUEST_BYTES } from './transport.js';
+import { createGuard } from './guard.js';
+import { createExchange, REQUEST_CAPABILITY } from './exchange.js';
 
 export const NAME_RE = /^[a-z0-9][a-z0-9_-]{0,39}$/;
 const NAME_MAX = 40;
 const DEDUP_MAX = 200;
 export const LIST_LIMIT = 20;
-const REPLY_HINT = (name) => `（这条消息来自另一个 dsh 会话，不是用户说的话。要回复就调用 peer_send，to 填 "${name}"。）`;
+import { REPLY_HINT, relayText, exchangeText } from './message.js';
+export { REPLY_HINT, relayText } from './message.js';
 
 // 目录名规整成名字前缀：转小写、非法字符换 -、去掉开头的 - _、截断；规整完为空时用 dsh
 export function normalizeBase(raw, max = NAME_MAX) {
@@ -31,12 +34,6 @@ const safeEqual = (a, b) => {
   return x.length === y.length && timingSafeEqual(x, y);
 };
 
-// 投进对方会话的正文
-export function relayText(from, text) {
-  const where = [from.cwd ? `cwd ${from.cwd}` : null, from.profile ? `profile ${from.profile}` : null].filter(Boolean).join('，');
-  return `[peer 消息] 来自 ${from.name}${where ? `（${where}）` : ''}\n${text}\n\n${REPLY_HINT(from.name)}`;
-}
-
 // 列表文本（peer_list / /peers 共用）；hidden 为截断掉的条数
 export function formatList(entries, { hidden = 0 } = {}) {
   const others = entries.filter((e) => !e.self);
@@ -50,14 +47,20 @@ export function formatList(entries, { hidden = 0 } = {}) {
 
 export function createPeerCore({
   dir, pid = process.pid, procStart = null, profile = null, dshHome = null, argv1 = null, fixedName = null,
-  agents, makeMessage, log = () => {}, now = Date.now, isAlive, procStartOf, namesFile,
-  createTransport = defaultCreateTransport, token = randomBytes(32).toString('hex'), writeDelayMs = 50,
+  agents, makeMessage, log = () => {}, now = Date.now, guardNow, protection = {}, guardOptions = {}, isAlive, procStartOf, namesFile,
+  requests = true, createTransport = defaultCreateTransport, token = randomBytes(32).toString('hex'), writeDelayMs = 50,
 }) {
   const registry = createRegistry({ dir, pid, ...(isAlive ? { isAlive } : {}), ...(procStartOf ? { procStartOf } : {}), ...(namesFile ? { namesFile } : {}) });
   const sessions = new Map(); // id → { id, name, nameSource, cwd, title, status, since, lastActiveAt }
   const pending = new Map(); // 还没有用户消息的会话（空草稿）：id → info，首条用户消息后才登记
   const startedAt = now();
+  const instanceId = randomBytes(16).toString('hex');
+  const capabilities = requests === false ? [] : [REQUEST_CAPABILITY];
   const seen = []; const seenSet = new Set();
+  const pendingIds = new Set();
+  const audit = (event, data) => { try { log(`[dsh-peer] ${event} ${JSON.stringify(data)}`); } catch { /* Logging cannot change admission. */ } };
+  const guard = createGuard({ ...(typeof protection === 'object' && protection ? protection : {}), ...guardOptions,
+    ...(guardNow ? { now: guardNow } : {}), enabled: protection !== 'off', onPause: data => audit('conversation-paused', data) });
   let fixedUsed = false;
   let timer = null;
   let started = false;
@@ -67,7 +70,7 @@ export function createPeerCore({
 
   // ---------- 落盘 ----------
   function record() {
-    return { protocol: PROTOCOL, pid, procStart, startedAt, profile, dshHome, argv1, socket: transport.path, updatedAt: now(), sessions: [...sessions.values()].map((s) => ({ ...s })) };
+    return { protocol: PROTOCOL, instanceId, capabilities, pid, procStart, startedAt, profile, dshHome, argv1, socket: transport.path, updatedAt: now(), sessions: [...sessions.values()].map((s) => ({ ...s })) };
   }
   function flush() {
     if (timer) { clearTimeout(timer); timer = null; }
@@ -159,9 +162,9 @@ export function createPeerCore({
   // ---------- 发现 ----------
   function entries(selfId) {
     const out = [];
-    for (const s of sessions.values()) out.push({ name: s.name, session: s.id, status: s.status, cwd: s.cwd, title: s.title, profile, pid, lastActiveAt: s.lastActiveAt || 0, self: s.id === selfId, sameProcess: true, local: true });
+    for (const s of sessions.values()) out.push({ name: s.name, session: s.id, status: s.status, cwd: s.cwd, title: s.title, profile, pid, instanceId, capabilities, lastActiveAt: s.lastActiveAt || 0, self: s.id === selfId, sameProcess: true, local: true });
     for (const r of registry.readOthers()) {
-      for (const s of r.sessions || []) out.push({ name: s.name, session: s.id, status: s.status, cwd: s.cwd, title: s.title, profile: r.profile, pid: r.pid, lastActiveAt: s.lastActiveAt || 0, self: false, sameProcess: false, local: false, record: r });
+      for (const s of r.sessions || []) out.push({ name: s.name, session: s.id, status: s.status, cwd: s.cwd, title: s.title, profile: r.profile, pid: r.pid, instanceId: r.instanceId, capabilities: r.capabilities, lastActiveAt: s.lastActiveAt || 0, self: false, sameProcess: false, local: false, record: r });
     }
     // 本会话固定第一行；其余 running 在前，再按 lastActiveAt 倒序
     const rank = (e) => (e.self ? 0 : e.status === 'running' ? 1 : 2);
@@ -200,12 +203,25 @@ export function createPeerCore({
     self: '不能发给自己', 'not-registered': '本会话没有登记为 peer', 'not-live': '对方会话已不在内存（第一版不做冷投递）',
     'unknown-session': '对方进程里没有这个会话', 'bad-token': '对方拒绝了 token', 'bad-request': '对方认为请求格式不对',
     unreachable: '连不上对方进程的 socket', timeout: '对方 5 秒内没有回应', 'bad-response': '对方回包无法解析', 'no-key': '读不到对方的 key 文件',
+    'duplicate-content': '短窗口内已有相同内容；不要确认或重发',
+    'rate-limited': '超过接收端速率限制；停止自动发送，不等待重试',
+    'conversation-paused': '此发送方向已暂停；需要用户在接收会话用 /peer-resume 恢复',
+    'guard-capacity': '接收端保护状态容量已满；停止自动发送',
+    'delivery-failed': '接收会话未接纳消息', 'delivery-pending': '同一消息正在投递；不要重发',
+
   };
 
   async function send({ to, text, steer = false, from }) {
     const me = sessions.get(from);
     const all = entries(from);
-    const fail = (error) => ({ ok: false, error, text: `发送失败：${ERROR_TEXT[error] || error}（${error}）。\n\n当前列表：\n${listText(from)}` });
+    let display;
+    const fail = (error, extra = {}) => {
+      const guarded = ['duplicate-content', 'rate-limited', 'conversation-paused', 'guard-capacity', 'delivery-pending'].includes(error);
+      const unknown = extra.uncertain || ['timeout', 'bad-response', 'delivery-pending'].includes(error);
+      return { ok: false, error, ...(extra.retryAfterMs ? { retryAfterMs: extra.retryAfterMs } : {}),
+        ...(display ? { display: { ...display, outcome: unknown ? 'unknown' : 'rejected', reason: error, retryAfterMs: extra.retryAfterMs } } : {}),
+        text: `${unknown ? '投递状态未知' : '未投递'}：${ERROR_TEXT[error] || error}（${error}）。${unknown ? '不要自动重发。' : ''}${guarded || unknown ? '' : `\n\n当前列表：\n${listText(from)}`}` };
+    };
     if (!me) return fail('not-registered');
     const r = resolve(to, all);
     if (r.error) return fail(r.error);
@@ -215,6 +231,8 @@ export function createPeerCore({
       v: PROTOCOL, id: randomBytes(12).toString('hex'), type: 'send', to: { session: target.session },
       from: { pid, session: me.id, name: me.name, cwd: me.cwd, profile }, text: String(text ?? ''), steer: steer === true,
     };
+    display = { version: 1, id: request.id, target: { name: target.name, session: target.session }, text: request.text };
+    if (Buffer.byteLength(JSON.stringify(request)) > MAX_REQUEST_BYTES - 100) return fail('bad-request');
     let res;
     if (target.local) res = deliver(request); // 同进程直投，不过 socket
     else {
@@ -222,28 +240,96 @@ export function createPeerCore({
       if (!peerToken) return fail('no-key');
       res = await transport.send(target.record, { ...request, token: peerToken });
     }
-    if (!res || !res.ok) return fail((res && res.error) || 'bad-response');
+    if (!res || !res.ok) return fail((res && res.error) || 'bad-response', res || {});
     const how = res.delivered === 'steered' ? '已插入它当前这轮' : res.delivered === 'duplicate' ? '对方已收到过同一条' : '排在它下一轮';
-    return { ok: true, delivered: res.delivered, name: target.name, session: target.session, sameProcess: target.local, text: `已发给 ${target.name}（${how}）。它回复时会以"[peer 消息]"出现在本对话。` };
+    return { ok: true, delivered: res.delivered, name: target.name, session: target.session, sameProcess: target.local, display: { ...display, outcome: res.delivered }, text: `已发给 ${target.name}（${how}）。已交给对方，不代表已处理；仅在有新增问题或结果时继续联系，纯确认无需回复。` };
   }
 
+  function validRequest(req) {
+    return req && req.v === PROTOCOL && req.type === 'send' && typeof req.id === 'string' && req.id.length > 0 && req.id.length <= 256
+      && typeof req.to?.session === 'string' && req.to.session.length > 0 && req.to.session.length <= 256
+      && typeof req.text === 'string' && typeof req.from?.name === 'string'
+      && typeof req.from.session === 'string' && req.from.session.length > 0 && req.from.session.length <= 256
+      && (req.steer === undefined || typeof req.steer === 'boolean')
+      && Buffer.byteLength(JSON.stringify(req)) <= MAX_REQUEST_BYTES;
+  }
   function deliver(req) {
-    const id = req.id;
-    if (seenSet.has(id)) return { ok: true, id, delivered: 'duplicate' };
-    const sid = req.to && req.to.session;
+    const id = req?.id;
+    if (!validRequest(req)) return { ok: false, id, error: 'bad-request' };
+    const sid = req.to.session;
     if (!sessions.has(sid)) return { ok: false, id, error: 'unknown-session' };
     let agent;
     try { agent = agents.get(sid); } catch { agent = undefined; }
     if (!agent) return { ok: false, id, error: 'not-live' };
     const from = req.from;
-    const source = { kind: 'dsh-peer', form: 'relay', peer: { name: from.name, session: from.session, pid: from.pid, cwd: from.cwd ?? null } };
-    const msg = makeMessage(relayText(from, req.text), source);
-    if (req.steer) agent.steer(msg); else agent.followup(msg);
+    const idKey = JSON.stringify([from.session, sid, id]);
+    if (seenSet.has(idKey)) return { ok: true, id, delivered: 'duplicate' };
+    if (pendingIds.has(idKey)) return { ok: false, id, error: 'delivery-pending' };
+    const admission = guard.reserve(from.session, sid, req.text, req.steer === true);
+    if (!admission.ok) return { ...admission, id };
+    pendingIds.add(idKey);
+    try {
+      const text = relayText(from, req.text);
+      const start = text.length - req.text.length - (`\n\n${REPLY_HINT(from.name)}`).length;
+      const source = { kind: 'dsh-peer', form: 'relay', peer: { name: from.name, session: from.session, pid: from.pid, cwd: from.cwd ?? null, profile: from.profile ?? null },
+        display: { version: 1, id, to: sid, start, end: start + req.text.length, sentAt: now() } };
+      const msg = makeMessage(text, source);
+      if (req.steer) agent.steer(msg); else agent.followup(msg);
+    } catch {
+      admission.rollback(); pendingIds.delete(idKey);
+      audit('delivery-failed', { from: from.session, to: sid });
+      return { ok: false, id, error: 'delivery-failed' };
+    }
+    admission.commit(); pendingIds.delete(idKey);
     const target = sessions.get(sid); target.lastActiveAt = now(); schedule();
-    seen.push(id); seenSet.add(id);
+    seen.push(idKey); seenSet.add(idKey);
     while (seen.length > DEDUP_MAX) seenSet.delete(seen.shift());
-    log(`[dsh-peer] ${from.name}（pid ${from.pid}）→ ${sessions.get(sid).name}：${req.steer ? 'steer' : 'followup'}`);
+    audit('accepted', { from: from.session, to: sid, mode: req.steer ? 'steer' : 'followup' });
     return { ok: true, id, delivered: req.steer ? 'steered' : 'queued' };
+  }
+
+  const exchange = createExchange({ enabled: requests !== false, ...(guardNow ? { now: guardNow } : {}),
+    identity: id => { const s = sessions.get(id); return s ? { session: id, name: s.name, cwd: s.cwd, profile, pid, instanceId, capabilities } : null; },
+    resolve: (address, from) => resolve(address, entries(from)),
+    async transmit(target, req) {
+      if (Buffer.byteLength(JSON.stringify(req)) > MAX_REQUEST_BYTES - 100) return { ok: false, error: 'bad-request' };
+      if (target.local) return exchange.receive(req);
+      const peerToken = registry.readKey(target.pid);
+      if (!peerToken) return { ok: false, error: 'no-key' };
+      return transport.send(target.record, { ...req, token: peerToken });
+    },
+    admit(req, info) {
+      if (Buffer.byteLength(JSON.stringify(req)) > MAX_REQUEST_BYTES) return { ok: false, error: 'bad-request' };
+      let agent; try { agent = agents.get(req.to.session); } catch { /* unavailable */ }
+      if (!agent) return { ok: false, error: 'not-live' };
+      const admission = guard.reserve(req.from.session, req.to.session, req.text, false, JSON.stringify([req.requestId, req.kind, req.questionId]));
+      if (!admission.ok) return admission;
+      const text = exchangeText(req.from, req.text, info), start = text.indexOf('\n') + 1;
+      const source = { kind: 'dsh-peer', form: 'relay', peer: { name: req.from.name, session: req.from.session, pid: req.from.pid, cwd: req.from.cwd ?? null, profile: req.from.profile ?? null }, exchange: info,
+        display: { version: 2, id: req.id, to: req.to.session, start, end: start + req.text.length, sentAt: now() } };
+      try { agent.followup(makeMessage(text, source)); }
+      catch { admission.rollback(); return { ok: false, error: 'delivery-failed' }; }
+      admission.commit(); return { ok: true, delivered: 'queued' };
+    },
+  });
+
+  function protectionStatus(selfId) {
+    const peers = entries(selfId);
+    return guard.status(selfId).map(s => ({ ...s, name: peers.find(p => p.session === s.from)?.name || s.from }));
+  }
+  function peersText(selfId) {
+    const status = protectionStatus(selfId).filter(s => s.paused);
+    return listText(selfId) + (status.length ? '\n\n接收保护：\n' + status.map(s => `来自 @${s.name} 已暂停；用户可执行 /peer-resume ${s.name}。`).join('\n') : '');
+  }
+  function resume(selfId, address) {
+    if (!sessions.has(selfId)) return { ok: false, text: '本会话没有登记为 peer。' };
+    const all = entries(selfId);
+    for (const s of protectionStatus(selfId)) if (!all.some(p => p.session === s.from)) all.push({ name: s.name, session: s.from });
+    const r = resolve(address, all);
+    if (r.error) return { ok: false, text: ERROR_TEXT[r.error] };
+    if (!guard.resume(r.target.session, selfId)) return { ok: false, text: '仍有正在投递的消息，请稍后操作。' };
+    audit('resumed', { from: r.target.session, to: selfId });
+    return { ok: true, text: `已恢复来自 @${r.target.name} 的接收；未重放消息，也未启动模型。` };
   }
 
   // socket 收到的请求
@@ -252,6 +338,7 @@ export function createPeerCore({
     if (!req || req.v !== PROTOCOL) return { ok: false, id, error: 'bad-request' };
     if (!safeEqual(req.token, token)) return { ok: false, id, error: 'bad-token' };
     if (req.type === 'ping') return { ok: true, pid, sessions: [...sessions.values()].map((s) => ({ ...s })) };
+    if (req.type === 'exchange') return exchange.receive(req);
     if (req.type !== 'send') return { ok: false, id, error: 'bad-request' };
     const okShape = typeof id === 'string' && id && req.to && typeof req.to.session === 'string' && typeof req.text === 'string'
       && req.from && typeof req.from.name === 'string' && typeof req.from.session === 'string';
@@ -273,8 +360,10 @@ export function createPeerCore({
       started = false;
       try { transport.stop(); } catch { /* 已关 */ }
       registry.removeSelf();
+      exchange.clear(); guard.clear(); seen.length = 0; seenSet.clear(); pendingIds.clear();
     },
-    flush, register, noteUserMessage, unregister, setStatus, setTitle, rename, list, listView, listText, send,
+    request: exchange.request, reply: exchange.reply, waitFor: exchange.waitFor, consume: exchange.consume,
+    flush, register, noteUserMessage, unregister, setStatus, setTitle, rename, list, listView, listText, peersText, protectionStatus, resume, send,
     has: (id) => sessions.has(id),
     isPending: (id) => pending.has(id),
     get: (id) => (sessions.has(id) ? { ...sessions.get(id) } : undefined),
