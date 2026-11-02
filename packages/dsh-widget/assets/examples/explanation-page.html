@@ -1,0 +1,34 @@
+<!-- page: a reading-first argument with one adjustable numerical example. -->
+<div id="explain">
+  <style>
+    #explain .explain-equation { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin: 24px 0; font-variant-numeric: tabular-nums; }
+    #explain .explain-equation output { font-size: 40px; }
+    #explain .explain-control { max-width: 560px; display: grid; gap: 12px; }
+    #explain input { width: 100%; }
+    #explain .explain-track { display: flex; height: 32px; margin: 24px 0 12px; background: var(--card); }
+    #explain #explain-kept { background: var(--primary); }
+    #explain #explain-lost { background: var(--viz-context); }
+    #explain .explain-copy { max-width: 65ch; line-height: 1.8; }
+  </style>
+  <header class="viz-page-header"><h1>转化率变化，意味着多少订单？</h1></header>
+  <main class="viz-page viz-page-narrow">
+    <p class="viz-lead">先固定访问量，再改变转化率，才能单独观察这个参数对订单量的影响。</p>
+    <section class="viz-section"><h2>01 · 从同一基数比较</h2><p class="explain-copy">假设每月有 4,000 次访问，每次访问最多产生一个订单。这里使用示例数字，不是实际经营预测。</p></section>
+    <section class="viz-section" aria-labelledby="explain-title"><h2 id="explain-title">02 · 改变假设，观察结果</h2><div class="explain-control"><label for="explain-rate">转化率：<output id="explain-rate-label">10%</output></label><input id="explain-rate" type="range" min="0" max="50" value="10" step="1"></div><div class="explain-equation"><span>4,000 次访问 × 转化率 =</span><output id="explain-result" aria-live="polite">400</output><span>个订单</span></div><div class="explain-track" aria-hidden="true"><div id="explain-kept" style="width: 10%;"></div><div id="explain-lost" style="width: 90%;"></div></div><p id="explain-caption" class="text-small">400 次转化，3,600 次未转化；两段共用 4,000 次访问的基数。</p></section>
+    <section class="viz-section"><h2>03 · 这个模型解释不了什么</h2><p class="explain-copy">订单数 = 访问量 × 转化率。真实流量质量、重复购买、客单价和成本并不在此模型中；订单增加不等于利润同比增加。</p></section>
+  </main>
+</div>
+<script>
+(function () {
+  var rate = document.getElementById('explain-rate');
+  function draw() {
+    var percent = Number(rate.value), orders = 4000 * percent / 100;
+    document.getElementById('explain-rate-label').textContent = percent + '%';
+    document.getElementById('explain-result').textContent = orders.toLocaleString('zh-CN');
+    document.getElementById('explain-kept').style.width = percent + '%';
+    document.getElementById('explain-lost').style.width = (100 - percent) + '%';
+    document.getElementById('explain-caption').textContent = orders.toLocaleString('zh-CN') + ' 次转化，' + (4000 - orders).toLocaleString('zh-CN') + ' 次未转化；两段共用 4,000 次访问的基数。';
+  }
+  rate.addEventListener('input', draw); draw();
+})();
+</script>

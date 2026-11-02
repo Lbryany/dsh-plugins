@@ -22,6 +22,7 @@
   ],
   "exclude": [
     "src/client",
+    "tests/visual-quality.spec.ts",
     "tests/client.spec.ts",
     "tests/turn-cards.spec.tsx",
     "tests/streaming-preview.spec.ts",
@@ -32,6 +33,8 @@
     "tests/live-style.spec.tsx",
     "tests/settings-section.spec.tsx",
     "tests/frame-bridge.spec.ts",
-    "tests/bridge-host.spec.ts"
+    "tests/bridge-host.spec.ts",
+    "tests/interaction-form.spec.ts",
+    "tests/interaction-bar.spec.tsx"
   ]
 }

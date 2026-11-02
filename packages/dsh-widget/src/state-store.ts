@@ -143,7 +143,7 @@ export const MODEL_STATE_NOTE = '（以上是用户在本对话的可视化卡�
  * 至多 100 条、JSON 正文合计 ≤ 64 KiB（放不下的整条跳过），`<` 转义成 `<`。
  * 没有可回流的内容时返回空串。
  * @param rows - 会话的全部状态。
- * @returns 系统提示段文本。
+ * @returns 回流数据文本（兼容导出；当前输入准入序列化完整快照）。
  */
 export function modelStateText(rows: readonly StoredWidgetState[]): string {
   const sorted = [...rows].sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))

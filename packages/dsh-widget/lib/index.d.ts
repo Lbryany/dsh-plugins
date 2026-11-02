@@ -966,6 +966,21 @@ declare class ZodTuple<T extends ZodTupleItems | [] = ZodTupleItems, Rest extend
   rest<RestSchema extends ZodTypeAny>(rest: RestSchema): ZodTuple<T, RestSchema>;
   static create: <Items extends [ZodTypeAny, ...ZodTypeAny[]] | []>(schemas: Items, params?: RawCreateParams) => ZodTuple<Items, null>;
 }
+interface ZodRecordDef<Key extends KeySchema = ZodString, Value extends ZodTypeAny = ZodTypeAny> extends ZodTypeDef {
+  valueType: Value;
+  keyType: Key;
+  typeName: ZodFirstPartyTypeKind.ZodRecord;
+}
+type KeySchema = ZodType<string | number | symbol, any, any>;
+type RecordType<K extends string | number | symbol, V> = [string] extends [K] ? Record<K, V> : [number] extends [K] ? Record<K, V> : [symbol] extends [K] ? Record<K, V> : [BRAND<string | number | symbol>] extends [K] ? Record<K, V> : Partial<Record<K, V>>;
+declare class ZodRecord<Key extends KeySchema = ZodString, Value extends ZodTypeAny = ZodTypeAny> extends ZodType<RecordType<Key["_output"], Value["_output"]>, ZodRecordDef<Key, Value>, RecordType<Key["_input"], Value["_input"]>> {
+  get keySchema(): Key;
+  get valueSchema(): Value;
+  _parse(input: ParseInput): ParseReturnType<this["_output"]>;
+  get element(): Value;
+  static create<Value extends ZodTypeAny>(valueType: Value, params?: RawCreateParams): ZodRecord<ZodString, Value>;
+  static create<Keys extends KeySchema, Value extends ZodTypeAny>(keySchema: Keys, valueType: Value, params?: RawCreateParams): ZodRecord<Keys, Value>;
+}
 interface ZodLiteralDef<T = any> extends ZodTypeDef {
   value: T;
   typeName: ZodFirstPartyTypeKind.ZodLiteral;
@@ -1179,7 +1194,7 @@ declare const STATE_PATH = "/api/dsh-widget/state";
 /** 卡片片段路径（状态的键）长度上限。 */
 declare const CARD_PATH_MAX_CHARS = 4096;
 /** 桥能调用的方法。`tweak.*` 为参数面板预留，本版不实现。 */
-declare const BRIDGE_METHODS: readonly ["state.set", "followUp", "openExternal"];
+declare const BRIDGE_METHODS: readonly ["state.set", "followUp", "openExternal", "interaction.register"];
 type BridgeMethod = typeof BRIDGE_METHODS[number];
 /** 桥调用失败的原因码。 */
 type BridgeErrorCode = 'invalid-params' | 'unknown-method' | 'unavailable' | 'no-user-gesture' | 'cancelled' | 'failed';
@@ -1213,6 +1228,38 @@ declare const followUpSchema: ZodObject<{
   title?: string | undefined;
 }>;
 type FollowUpParams = TypeOf<typeof followUpSchema>;
+declare const interactionActionSchema: ZodObject<{
+  label: ZodString;
+  intent: ZodEffects<ZodString, string, string>;
+  fieldLabels: ZodOptional<ZodEffects<ZodRecord<ZodString, ZodString>, Record<string, string>, Record<string, string>>>;
+}, "strict", ZodTypeAny, {
+  label: string;
+  intent: string;
+  fieldLabels?: Record<string, string> | undefined;
+}, {
+  label: string;
+  intent: string;
+  fieldLabels?: Record<string, string> | undefined;
+}>;
+type InteractionAction = TypeOf<typeof interactionActionSchema>;
+declare const interactionRegistrationSchema: ZodObject<{
+  label: ZodString;
+  intent: ZodEffects<ZodString, string, string>;
+  fieldLabels: ZodOptional<ZodEffects<ZodRecord<ZodString, ZodString>, Record<string, string>, Record<string, string>>>;
+} & {
+  epoch: ZodString;
+}, "strict", ZodTypeAny, {
+  label: string;
+  intent: string;
+  epoch: string;
+  fieldLabels?: Record<string, string> | undefined;
+}, {
+  label: string;
+  intent: string;
+  epoch: string;
+  fieldLabels?: Record<string, string> | undefined;
+}>;
+type InteractionRegistration = TypeOf<typeof interactionRegistrationSchema>;
 /**
  * 是否 http(s) 绝对地址。
  * @param href - 地址。
@@ -1322,7 +1369,7 @@ declare function stateStore(root: string, now?: () => number): StateStore;
  * 至多 100 条、JSON 正文合计 ≤ 64 KiB（放不下的整条跳过），`<` 转义成 `<`。
  * 没有可回流的内容时返回空串。
  * @param rows - 会话的全部状态。
- * @returns 系统提示段文本。
+ * @returns 回流数据文本（兼容导出；当前输入准入序列化完整快照）。
  */
 declare function modelStateText(rows: readonly StoredWidgetState[]): string;
 //#endregion
@@ -1357,8 +1404,8 @@ declare const Config: z<Config>;
  * @param config - validated deployment configuration.
  */
 declare function apply(ctx: Context, config: Config): void;
-/** 回流段的名字与排序（靠后，排在宿主与其他插件的段之后）。 */
+/** Stable protocol rules only; widget values never enter system sections. */
 declare const MODEL_STATE_SECTION = "dsh-widget.state";
 declare const MODEL_STATE_ORDER = 10000;
 //#endregion
-export { BRIDGE_MESSAGE_TYPE, BRIDGE_METHODS, BRIDGE_RESULT_TYPE, BridgeErrorCode, BridgeMethod, BridgeRequest, BridgeResult, CARD_PATH_MAX_CHARS, Config, FOLLOW_UP_MARK, FOLLOW_UP_PREVIEW_CHARS, FollowUpParams, GESTURE_WINDOW_MS, GLOBALS_EVENT, JsonValue, MODEL_STATE_MAX_BYTES, MODEL_STATE_MAX_ITEMS, MODEL_STATE_ORDER, MODEL_STATE_SECTION, OpenExternalParams, PROMPT_MAX_BYTES, SESSION_STATE_MAX_ENTRIES, STATE_MAX_BYTES, STATE_PATH, STYLE_FILES_PATH, STYLE_IDS, SaveStateRequest, StoredWidgetState, type StyleId, type StyleSetting, TITLE_MAX_CHARS, VISUALIZE_TOOL_NAME, type VisualizeMeta, type VisualizeMode, WidgetState, apply, bridgeRequestSchema, cardPathSchema, describeIssues, followUpSchema, inject, isHttpUrl, jsonValueSchema, modelStateText, name, openExternalSchema, readStyle, saveStateRequestSchema, sessionIdSchema, stateStore, utf8Bytes, validateFragment, visualizeMetaFrom, widgetStateSchema };
+export { BRIDGE_MESSAGE_TYPE, BRIDGE_METHODS, BRIDGE_RESULT_TYPE, BridgeErrorCode, BridgeMethod, BridgeRequest, BridgeResult, CARD_PATH_MAX_CHARS, Config, FOLLOW_UP_MARK, FOLLOW_UP_PREVIEW_CHARS, FollowUpParams, GESTURE_WINDOW_MS, GLOBALS_EVENT, InteractionAction, InteractionRegistration, JsonValue, MODEL_STATE_MAX_BYTES, MODEL_STATE_MAX_ITEMS, MODEL_STATE_ORDER, MODEL_STATE_SECTION, OpenExternalParams, PROMPT_MAX_BYTES, SESSION_STATE_MAX_ENTRIES, STATE_MAX_BYTES, STATE_PATH, STYLE_FILES_PATH, STYLE_IDS, SaveStateRequest, StoredWidgetState, type StyleId, type StyleSetting, TITLE_MAX_CHARS, VISUALIZE_TOOL_NAME, type VisualizeMeta, type VisualizeMode, WidgetState, apply, bridgeRequestSchema, cardPathSchema, describeIssues, followUpSchema, inject, interactionActionSchema, interactionRegistrationSchema, isHttpUrl, jsonValueSchema, modelStateText, name, openExternalSchema, readStyle, saveStateRequestSchema, sessionIdSchema, stateStore, utf8Bytes, validateFragment, visualizeMetaFrom, widgetStateSchema };

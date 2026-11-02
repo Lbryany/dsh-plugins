@@ -1,0 +1,103 @@
+{
+  "model": "deepseek-flash",
+  "baseline": "397dd1b67e0cd13df90ff7d450cc2efd132f7b99",
+  "totalTokens": 126935,
+  "results": [
+    {
+      "id": "parameter-simulator-baseline",
+      "status": "generated",
+      "inputTokens": 8597,
+      "outputTokens": 2138,
+      "stopReason": "end_turn",
+      "promptSha256": "996a6cbc8dc0a8cde9e4f4ce68430c8f5c3d7a3c2bfaee01727f30c6c9034206"
+    },
+    {
+      "id": "parameter-simulator-candidate",
+      "status": "generated",
+      "inputTokens": 7509,
+      "outputTokens": 1365,
+      "stopReason": "end_turn",
+      "promptSha256": "d191d995c1688b866505e379f56ecb8fe12792ee8234ff2a97cdd8af1df0342f"
+    },
+    {
+      "id": "option-comparison-baseline",
+      "status": "generated",
+      "inputTokens": 8588,
+      "outputTokens": 3043,
+      "stopReason": "end_turn",
+      "promptSha256": "996a6cbc8dc0a8cde9e4f4ce68430c8f5c3d7a3c2bfaee01727f30c6c9034206"
+    },
+    {
+      "id": "option-comparison-candidate",
+      "status": "generated",
+      "inputTokens": 7614,
+      "outputTokens": 1560,
+      "stopReason": "end_turn",
+      "promptSha256": "05281a2a05174a9b0606e4a2fb9281cc77c95a1052d9fb4c26a19aa99e49eae4"
+    },
+    {
+      "id": "step-explainer-baseline",
+      "status": "generated",
+      "inputTokens": 8589,
+      "outputTokens": 2237,
+      "stopReason": "end_turn",
+      "promptSha256": "996a6cbc8dc0a8cde9e4f4ce68430c8f5c3d7a3c2bfaee01727f30c6c9034206"
+    },
+    {
+      "id": "step-explainer-candidate",
+      "status": "generated",
+      "inputTokens": 7690,
+      "outputTokens": 1294,
+      "stopReason": "end_turn",
+      "promptSha256": "635a1125c3b4ab383bb3e4cabf7988e59bbb5701806cd5c3d0567afcc2a9acdd"
+    },
+    {
+      "id": "analysis-dashboard-baseline",
+      "status": "generated",
+      "inputTokens": 8607,
+      "outputTokens": 3203,
+      "stopReason": "end_turn",
+      "promptSha256": "996a6cbc8dc0a8cde9e4f4ce68430c8f5c3d7a3c2bfaee01727f30c6c9034206"
+    },
+    {
+      "id": "analysis-dashboard-candidate",
+      "status": "generated",
+      "inputTokens": 7918,
+      "outputTokens": 2480,
+      "stopReason": "end_turn",
+      "promptSha256": "fd0c9299c98ea7157ed0c07df6950f0cf8e5c624baff86a6c429f56252950d4a"
+    },
+    {
+      "id": "exploration-tool-baseline",
+      "status": "generated",
+      "inputTokens": 8600,
+      "outputTokens": 3898,
+      "stopReason": "end_turn",
+      "promptSha256": "996a6cbc8dc0a8cde9e4f4ce68430c8f5c3d7a3c2bfaee01727f30c6c9034206"
+    },
+    {
+      "id": "exploration-tool-candidate",
+      "status": "generated",
+      "inputTokens": 7896,
+      "outputTokens": 1946,
+      "stopReason": "end_turn",
+      "promptSha256": "c646bf46679ae0e7aa8171a3bdf4226ce000556bf29c662948d2b89118158804"
+    },
+    {
+      "id": "explanation-page-baseline",
+      "status": "generated",
+      "inputTokens": 8600,
+      "outputTokens": 4189,
+      "stopReason": "end_turn",
+      "promptSha256": "996a6cbc8dc0a8cde9e4f4ce68430c8f5c3d7a3c2bfaee01727f30c6c9034206"
+    },
+    {
+      "id": "explanation-page-candidate",
+      "status": "generated",
+      "inputTokens": 7718,
+      "outputTokens": 1656,
+      "stopReason": "end_turn",
+      "promptSha256": "da7b739eb26abca5eaa117a809c06e6c478b90805b71ba6b298072009e2b0d12"
+    }
+  ]
+}

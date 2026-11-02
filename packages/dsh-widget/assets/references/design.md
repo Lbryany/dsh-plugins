@@ -53,6 +53,13 @@ theme switches live.
 
 ## Base classes
 
+Choice-and-continue cards use the shared `.viz-choice` system: `.viz-fields`,
+`.viz-field`, `.viz-field--full`, `.viz-options`, `.viz-option`, and
+`.viz-description`. Native controls receive consistent sizes and focus states;
+the host submission/confirmation uses the same component rules. See
+`examples/choice-form.html`. Do not replace that system with ad hoc button CSS.
+Style is a constraint on the composition, not optional polish after it works.
+
 The frame stylesheet ships these utilities — prefer them over re-implementing
 the same controls, and add custom CSS only where they run out.
 

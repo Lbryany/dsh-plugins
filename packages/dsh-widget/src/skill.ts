@@ -35,7 +35,12 @@ const RESOURCE_BASE = {
 } as const
 const INVOCATION = { modelInvocable: true, userInvocable: true } as const
 const DESCRIPTION =
-  'Authoring contract for the visualize tool, which renders interactive cards '
+  'Proactively help users choose options, adjust assumptions, fill requirements, '
+  + 'and send their confirmed choices back to the conversation for further analysis. '
+  + 'Use for interactive comparisons, preference forms and parameter exploration when '
+  + 'the user wants to try or choose before you continue; they need not ask for a chart. '
+  + 'Keep purely local demonstrations local, and answer simple facts directly. '
+  + 'Authoring contract for the visualize tool, which renders interactive cards '
   + 'in the conversation, or full pages in their own tab: simulations, algorithm '
   + 'walkthroughs, charts, comparisons, dashboards, and product-screen mockups. Load before the first visualize '
   + 'call in a session — it defines the fragment structure, theming variables, '

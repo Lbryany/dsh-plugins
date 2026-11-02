@@ -18,6 +18,7 @@ import { FRAME_CSS, PAGE_CSS } from './frame-css.ts'
 import { DEFAULT_STYLE, STYLES, type StyleId } from './style.ts'
 import { vizHelperScript } from './viz-helper.ts'
 import { frameBridgeScript, type BridgeMode } from './frame-bridge.ts'
+import { interactionHelperScript } from './interaction-form.ts'
 import type { WidgetState } from './bridge-contract.ts'
 
 /** CDN origins a fragment may load static resources from. */
@@ -129,10 +130,11 @@ ${options.variant === 'page' ? '' : 'body { padding: 4px 2px; }'}${style.extraCs
     theme: options.colorScheme,
     mode: options.bridge?.mode ?? 'detached',
   })}</script>
+<script>${interactionHelperScript()}</script>
 </head>
 <body>
 ${options.fragment}
-<script>${heightReporter(options.reportToken)}</script>
+<script>${heightReporter(options.reportToken, options.variant === 'page')}</script>
 </body>
 </html>
 `
@@ -145,7 +147,7 @@ ${options.fragment}
  * @param reportToken - correlation token echoed in each message.
  * @returns the inline script body.
  */
-function heightReporter(reportToken: string): string {
+function heightReporter(reportToken: string, page = false): string {
   const token = JSON.stringify(reportToken)
   return `
 (function () {
@@ -153,10 +155,11 @@ function heightReporter(reportToken: string): string {
     parent.postMessage({
       type: ${JSON.stringify(HEIGHT_MESSAGE_TYPE)},
       token: ${token},
-      height: document.documentElement.scrollHeight,
+      height: ${page ? 'document.documentElement.scrollHeight' : 'Math.ceil(Math.max(document.body.getBoundingClientRect().height, document.body.scrollHeight))'},
     }, '*');
   };
   new ResizeObserver(post).observe(document.documentElement);
+  new ResizeObserver(post).observe(document.body);
   addEventListener('load', post);
   post();
 })();

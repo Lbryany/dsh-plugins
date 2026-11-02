@@ -19,6 +19,8 @@
  */
 
 /** The frame stylesheet, inlined into the sandboxed srcdoc document. */
+import { CHOICE_CSS } from './choice-css.ts'
+
 export const FRAME_CSS = `
 :root {
   color-scheme: light dark;
@@ -148,6 +150,7 @@ table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--border); }
 th { font-weight: 500; color: var(--muted-foreground); font-size: var(--font-size-small); }
 .table-responsive { overflow-x: auto; }
+${CHOICE_CSS}
 `
 
 /**
@@ -161,6 +164,16 @@ export const PAGE_CSS = `
 :root { --background: var(--dsh-viz-page, light-dark(rgb(255 255 255), rgb(24 24 27))); }
 html { background: var(--background); }
 body { min-height: 100vh; }
+/* Page hierarchy is deliberately separate from the compact chat frame. */
+h1 { font-size: 32px; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
+h2 { font-size: 20px; line-height: 1.35; }
+.viz-stat-value { font-size: 40px; font-variant-numeric: tabular-nums; letter-spacing: -0.025em; }
+.viz-page .card { padding: 24px; }
+.viz-page .viz-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 24px; }
+.viz-page :is(.viz-grid, .viz-layout) > * { min-width: 0; }
+.viz-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); gap: 24px; align-items: start; }
+.viz-lead { max-width: 65ch; color: var(--muted-foreground); line-height: 1.7; }
+.viz-page :is(h1, h2, h3, p, td, th) { overflow-wrap: anywhere; }
 .viz-page { max-width: 1440px; margin: 0 auto; padding: 24px clamp(16px, 3vw, 40px) 48px; }
 .viz-page-narrow { max-width: 960px; }
 .viz-page-header {
@@ -175,7 +188,7 @@ body { min-height: 100vh; }
   background: var(--background);
   border-bottom: 1px solid var(--border);
 }
-.viz-page-header h1 { margin: 0; font-size: 1.25em; }
+.viz-page-header h1 { margin: 0; }
 .viz-page-header .viz-controls { margin: 0 0 0 auto; }
 .viz-section { margin-top: 32px; }
 .viz-section:first-child { margin-top: 0; }
@@ -194,6 +207,9 @@ body { min-height: 100vh; }
 .viz-tab:hover { color: var(--foreground); }
 .viz-tab[aria-selected='true'] { color: var(--foreground); border-bottom-color: var(--primary); font-weight: 500; }
 @media (max-width: 768px) {
+  h1 { font-size: 28px; }
+  .viz-layout { grid-template-columns: minmax(0, 1fr); }
+  .viz-page .card { padding: 16px; }
   .viz-page-header .viz-controls { margin-left: 0; width: 100%; }
 }
 `

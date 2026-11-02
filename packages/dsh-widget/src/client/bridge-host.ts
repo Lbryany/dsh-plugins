@@ -14,6 +14,8 @@ import {
   bridgeRequestSchema,
   describeIssues,
   followUpSchema,
+  interactionRegistrationSchema,
+  type InteractionRegistration,
   openExternalSchema,
   STATE_PATH,
   widgetStateSchema,
@@ -40,6 +42,7 @@ export class BridgeError extends Error {
 
 /** 一张卡片的桥能做的事。 */
 export interface BridgeHandlers {
+  registerInteraction?(action: InteractionRegistration): Promise<{ supported: boolean }>
   setState(state: WidgetState): Promise<void>
   followUp(params: FollowUpParams): Promise<void>
   openExternal(params: OpenExternalParams): Promise<void>
@@ -111,6 +114,11 @@ export function attachBridgeHost(options: BridgeHostOptions): () => void {
  */
 async function dispatch(method: string, params: unknown, handlers: BridgeHandlers, userActive: () => boolean): Promise<unknown> {
   switch (method) {
+    case 'interaction.register': {
+      const action = interactionRegistrationSchema.safeParse(params)
+      if (!action.success) throw new BridgeError('invalid-params', describeIssues(action.error))
+      return handlers.registerInteraction ? await handlers.registerInteraction(action.data) : { supported: false }
+    }
     case 'state.set': {
       const state = widgetStateSchema.safeParse(params)
       if (!state.success) throw new BridgeError('invalid-params', describeIssues(state.error))

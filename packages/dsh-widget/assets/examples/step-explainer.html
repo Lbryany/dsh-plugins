@@ -1,0 +1,37 @@
+<!-- inline: a finite-state walkthrough, with an explicit end and reset. -->
+<section id="step" aria-labelledby="step-title">
+  <style>
+    #step { padding: 12px; display: grid; gap: 20px; }
+    #step h2, #step p { margin: 0; }
+    #step .step-cells { display: flex; gap: 12px; }
+    #step .step-cell { flex: 1; padding: 20px 8px; text-align: center; font-size: 28px; border-bottom: 3px solid var(--border); background: var(--card); font-variant-numeric: tabular-nums; }
+    #step .step-cell[data-active="true"] { border-color: var(--primary); }
+    #step .step-note { min-height: 3em; }
+  </style>
+  <div><h2 id="step-title">插入排序：把一个数放到正确位置</h2><p class="text-small">示例数组 [3, 1, 2] · 下划线标出本步移动的位置</p></div>
+  <div class="step-cells" role="img" id="step-array" aria-label="3，1，2"><span class="step-cell" id="step-a">3</span><span class="step-cell" id="step-b">1</span><span class="step-cell" id="step-c">2</span></div>
+  <p class="step-note" id="step-note" aria-live="polite">把第一个数视为已排序部分。</p>
+  <div class="viz-row"><button class="btn" id="step-back" type="button">上一步</button><button class="btn btn-primary" id="step-next" type="button">下一步</button><button class="btn btn-ghost" id="step-reset" type="button">重置</button><output class="text-small" id="step-status">1 / 4</output></div>
+</section>
+<script>
+(function () {
+  var states = [
+    { values: [3, 1, 2], active: 0, note: '把第一个数视为已排序部分。' },
+    { values: [1, 3, 2], active: 0, note: '1 小于 3，把 1 插入最前面；前两个数已有序。' },
+    { values: [1, 2, 3], active: 1, note: '2 小于 3 但大于 1，把 2 插到两者之间。' },
+    { values: [1, 2, 3], active: -1, note: '遍历结束，整个数组有序。每轮只扩展已排序的前缀。' }
+  ], index = 0;
+  var back = document.getElementById('step-back'), next = document.getElementById('step-next');
+  function draw() {
+    var state = states[index];
+    ['step-a', 'step-b', 'step-c'].forEach(function (id, i) { var cell = document.getElementById(id); cell.textContent = state.values[i]; cell.setAttribute('data-active', String(i === state.active)); });
+    document.getElementById('step-array').setAttribute('aria-label', state.values.join('，'));
+    document.getElementById('step-note').textContent = state.note;
+    document.getElementById('step-status').textContent = (index + 1) + ' / 4';
+    back.disabled = index === 0; next.disabled = index === states.length - 1;
+  }
+  back.addEventListener('click', function () { index = Math.max(0, index - 1); draw(); });
+  next.addEventListener('click', function () { index = Math.min(states.length - 1, index + 1); draw(); });
+  document.getElementById('step-reset').addEventListener('click', function () { index = 0; draw(); }); draw();
+})();
+</script>

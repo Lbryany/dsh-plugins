@@ -77,6 +77,8 @@ export function frameBridgeScript(options: FrameBridgeOptions): string {
   var seq = 0;
   var pending = {};
   var queue = Promise.resolve();
+  var readInteraction = null;
+  var interactionEpoch = String(Date.now()) + '-' + Math.random().toString(36).slice(2);
   var now = function () { return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now(); };
   var mark = function (event) { if (event.isTrusted) lastGesture = now(); };
   ['pointerup', 'keyup', 'keydown', 'click'].forEach(function (name) { addEventListener(name, mark, true); });
@@ -112,6 +114,16 @@ export function frameBridgeScript(options: FrameBridgeOptions): string {
   addEventListener('message', function (event) {
     if (event.source !== parent) return;
     var data = event.data;
+    if (data && data.type === 'dsh-widget:capture' && data.token === TOKEN && data.epoch === interactionEpoch && typeof data.captureId === 'string' && readInteraction) {
+      try {
+        var selected = readInteraction();
+        if (!isJson(selected, 0) || bytes(JSON.stringify(selected)) > STATE_MAX) throw new Error('Invalid selection');
+        parent.postMessage({ type: 'dsh-widget:captured', token: TOKEN, epoch: interactionEpoch, captureId: data.captureId, modelContent: copy(selected) }, '*');
+      } catch (error) {
+        parent.postMessage({ type: 'dsh-widget:captured', token: TOKEN, epoch: interactionEpoch, captureId: data.captureId, error: String(error && error.message || error) }, '*');
+      }
+      return;
+    }
     if (!data || data.type !== RESULT || data.token !== TOKEN || typeof data.id !== 'number') return;
     var waiter = pending[data.id];
     if (!waiter) return;
@@ -183,6 +195,13 @@ export function frameBridgeScript(options: FrameBridgeOptions): string {
     return call('openExternal', { href: href }).then(function () {});
   }
   var api = {
+    registerInteraction: function (action, read) {
+      if (readInteraction || typeof read !== 'function') return Promise.reject(fail('invalid-params', 'An interaction is already registered or invalid'));
+      readInteraction = read;
+      var registration = { label: action.label, intent: action.intent, epoch: interactionEpoch };
+      if (action.fieldLabels) registration.fieldLabels = action.fieldLabels;
+      return call('interaction.register', registration);
+    },
     setWidgetState: setWidgetState,
     sendFollowUpMessage: sendFollowUpMessage,
     openExternal: openExternal,

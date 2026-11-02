@@ -41,6 +41,8 @@ import { resolveTheme } from './theme.ts'
 import { liveStyle, noteSettledStyle } from './style.ts'
 import { FOLLOW_UP_MARK, FOLLOW_UP_PREVIEW_CHARS, type WidgetState } from '../bridge-contract.ts'
 import { attachBridgeHost, BridgeError, type WidgetHost } from './bridge-host.ts'
+import { InteractionBar, supportsInteraction } from './InteractionBar.tsx'
+import type { InteractionRegistration } from '../bridge-contract.ts'
 import type { BridgeMode } from '../shell.ts'
 
 /** Iframe height bounds; content beyond the cap scrolls inside the frame. */
@@ -75,7 +77,6 @@ const titleStyle: CSSProperties = {
   textOverflow: 'ellipsis',
 }
 
-const pathStyle: CSSProperties = { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }
 
 /** Icon button at the header's end; it never yields width to the path. */
 const openStyle: CSSProperties = {
@@ -189,7 +190,13 @@ function firstResultLine(content: readonly { type: string; text?: string }[]): s
 export function useThemeTick(): number {
   const [themeTick, setThemeTick] = useState(0)
   useEffect(() => {
-    const bump = () => setThemeTick(tick => tick + 1)
+    let palette = JSON.stringify(resolveTheme())
+    const bump = () => {
+      const next = JSON.stringify(resolveTheme())
+      if (next === palette) return
+      palette = next
+      setThemeTick(tick => tick + 1)
+    }
     const observer = new MutationObserver(bump)
     // Both mount points: DSH toggles dark via a body attribute, other hosts
     // conventionally re-theme via root-element attributes.
@@ -252,7 +259,7 @@ function useFrameDoc(
     return { doc, colorScheme }
     // themeTick is the deliberate re-resolution trigger for the palette read.
     // version：同一张卡片的另一个实例保存了新状态，重建文档以带上它
-  }, [meta, reportToken, variant, themeTick, state, mode, version])
+  }, [meta.fragment, meta.title, meta.style, reportToken, variant, themeTick, state, mode, version])
 }
 
 /** 无宿主时的桥：只读、状态 null。 */
@@ -264,12 +271,14 @@ const stateCache = new Map<string, WidgetState | null>()
 /** 同一张卡片的其他实例：一处保存后通知其余实例用新状态重建 frame。 */
 const stateListeners = new Map<string, Set<(state: WidgetState) => void>>()
 
-/** 读状态最多等这么久，超时按 null 渲染。 */
+/** 读状态最多等这么久；超时显示重试，不能用默认值覆盖未知的已存状态。 */
 const STATE_LOAD_TIMEOUT_MS = 1500
 
 /** 一张卡片的状态：是否已读到、当前值（ref）、写入。 */
 interface CardState {
   ready: boolean
+  error: string | null
+  retry(): void
   /** 别的实例保存后递增，触发 frame 文档重建。 */
   version: number
   state: { current: WidgetState | null }
@@ -287,6 +296,8 @@ function useCardState(host: WidgetHost | undefined, meta: VisualizeMeta): CardSt
   const key = host === undefined || meta.path === '' ? undefined : `${host.sessionId}\n${meta.path}`
   const ref = useRef<WidgetState | null>(key === undefined ? null : stateCache.get(key) ?? null)
   const [ready, setReady] = useState(key === undefined || stateCache.has(key))
+  const [error, setError] = useState<string | null>(null)
+  const [attempt, setAttempt] = useState(0)
   const [version, setVersion] = useState(0)
   const selfRef = useRef<((state: WidgetState) => void) | undefined>(undefined)
   useEffect(() => {
@@ -312,12 +323,15 @@ function useCardState(host: WidgetHost | undefined, meta: VisualizeMeta): CardSt
     }
     let live = true
     setReady(false)
+    setError(null)
     const done = (state: WidgetState | null) => {
       if (!live) return
       ref.current = state
+      setError(null)
       setReady(true)
     }
-    const timer = setTimeout(() => done(null), STATE_LOAD_TIMEOUT_MS)
+    const fail = () => { if (live) setError('状态读取失败，请重试后继续操作') }
+    const timer = setTimeout(fail, STATE_LOAD_TIMEOUT_MS)
     host.loadState(meta.path).then(
       (record) => {
         clearTimeout(timer)
@@ -327,14 +341,14 @@ function useCardState(host: WidgetHost | undefined, meta: VisualizeMeta): CardSt
       },
       () => {
         clearTimeout(timer)
-        done(null)
+        fail()
       },
     )
     return () => {
       live = false
       clearTimeout(timer)
     }
-  }, [key, host, meta.path])
+  }, [key, host, meta.path, attempt])
   const save = useCallback(async (next: WidgetState) => {
     if (key === undefined || host === undefined) throw new BridgeError('unavailable', 'this card has no saved state on this host')
     await host.saveState(meta.path, meta.title, next)
@@ -344,7 +358,7 @@ function useCardState(host: WidgetHost | undefined, meta: VisualizeMeta): CardSt
       if (listener !== selfRef.current) listener(next)
     }
   }, [key, host, meta.path, meta.title])
-  return { ready, version, state: ref, mode: key === undefined ? 'detached' : 'live', save }
+  return { ready, error, retry: () => setAttempt(value => value + 1), version, state: ref, mode: key === undefined ? 'detached' : 'live', save }
 }
 
 /** 一次待确认的追问。 */
@@ -436,6 +450,7 @@ function FollowUpDialog({ pending }: { pending: PendingFollowUp }) {
 
 /** The sandboxed frame, sized to its content's reported height up to the mode's cap. */
 function SizedFrame({ meta, callId, card, host }: { meta: VisualizeMeta; callId: string; card: CardState; host: WidgetHost | undefined }) {
+  const [interaction, setInteraction] = useState<InteractionRegistration | null>(null)
   const [height, setHeight] = useState(MIN_HEIGHT)
   const frameRef = useRef<HTMLIFrameElement | null>(null)
   const [pending, setPending] = useState<PendingFollowUp | undefined>(undefined)
@@ -444,6 +459,11 @@ function SizedFrame({ meta, callId, card, host }: { meta: VisualizeMeta; callId:
     token: callId,
     frame: () => frameRef.current?.contentWindow,
     handlers: {
+      async registerInteraction(action) {
+        const supported = host !== undefined && await supportsInteraction(host.sessionId)
+        setInteraction(supported ? action : null)
+        return { supported }
+      },
       setState: save,
       async followUp({ prompt, title }) {
         if (host === undefined) throw new BridgeError('unavailable', 'this card cannot send messages here')
@@ -491,6 +511,7 @@ function SizedFrame({ meta, callId, card, host }: { meta: VisualizeMeta; callId:
       style={{ ...frameStyle, height, colorScheme }}
     />
     {pending !== undefined && <FollowUpDialog pending={pending} />}
+    {interaction !== null && host !== undefined && <InteractionBar key={interaction.epoch} action={interaction} epoch={interaction.epoch} session={host.sessionId} path={meta.path} token={callId} frame={frameRef} />}
     </>
   )
 }
@@ -504,14 +525,15 @@ function SizedFrame({ meta, callId, card, host }: { meta: VisualizeMeta; callId:
 export function Frame({ meta, callId, host }: { meta: VisualizeMeta; callId: string; host?: WidgetHost | undefined }) {
   const card = useCardState(host, meta)
   // 先读到状态再挂 frame，片段渲染时 window.dsh.widgetState 就是保存过的值
-  if (!card.ready) return <div style={{ ...headerStyle, minHeight: MIN_HEIGHT }}>{meta.title}</div>
+  if (!card.ready) return <div style={{ ...headerStyle, minHeight: MIN_HEIGHT }}>
+    {meta.title}{card.error && <><span role="status">{card.error}</span><button type="button" onClick={card.retry}>重试</button></>}
+  </div>
   if (meta.mode === 'page') return <PageLauncher meta={meta} callId={callId} card={card} host={host} />
   const label = openLabel()
   return (
     <div style={cardStyle}>
       <div style={headerStyle} title={meta.path === '' ? meta.title : meta.path}>
         <span style={titleStyle}>{meta.title}</span>
-        {meta.path !== '' && <span style={pathStyle}>{meta.path}</span>}
         <button
           type="button"
           style={openStyle}
@@ -663,13 +685,13 @@ function PageThumbnail({ meta, callId, onOpen, card }: { meta: VisualizeMeta; ca
 function PageLauncher({ meta, callId, card, host }: { meta: VisualizeMeta; callId: string; card: CardState; host: WidgetHost | undefined }) {
   const opens = canOpenWindow()
   const [expanded, setExpanded] = useState(!opens)
+  const [mounted, setMounted] = useState(!opens)
   const labels = launcherLabels()
   const open = opens ? () => openInWindow(meta, callId, card.state.current) : undefined
   return (
     <div style={launcherStyle} data-visualize-launcher="">
-      {expanded
-        ? <SizedFrame meta={meta} callId={callId} card={card} host={host} />
-        : <PageThumbnail meta={meta} callId={callId} onOpen={open} card={card} />}
+      {mounted && <div hidden={!expanded}><SizedFrame meta={meta} callId={callId} card={card} host={host} /></div>}
+      {!expanded && <PageThumbnail meta={meta} callId={callId} onOpen={open} card={card} />}
       <div style={launcherBarStyle}>
         <div style={launcherTextStyle} title={meta.path === '' ? meta.title : meta.path}>
           <div style={launcherTitleStyle}>{meta.title}</div>
@@ -677,7 +699,7 @@ function PageLauncher({ meta, callId, card, host }: { meta: VisualizeMeta; callI
         </div>
         {open !== undefined && (
           <div style={actionsStyle}>
-            <button type="button" style={ghostButtonStyle} aria-expanded={expanded} onClick={() => setExpanded(on => !on)}>
+            <button type="button" style={ghostButtonStyle} aria-expanded={expanded} onClick={() => { setMounted(true); setExpanded(on => !on) }}>
               {expanded ? labels.hide : labels.show}
             </button>
             <button type="button" style={primaryButtonStyle} onClick={open}>

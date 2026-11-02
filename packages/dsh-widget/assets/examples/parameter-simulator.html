@@ -1,0 +1,32 @@
+<!-- inline: a parameter changes the graphic and the numerical answer. -->
+<form id="sim" aria-labelledby="sim-title">
+  <style>
+    #sim { display: grid; gap: 20px; padding: 12px; }
+    #sim .sim-input { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; }
+    #sim input { grid-column: 1 / -1; width: 100%; }
+    #sim .sim-track { height: 32px; background: var(--card); border-radius: var(--radius); overflow: hidden; }
+    #sim .sim-fill { height: 100%; background: var(--primary); }
+    #sim .sim-reading { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    #sim #sim-result { font-size: 32px; font-variant-numeric: tabular-nums; }
+    #sim h2, #sim p { margin: 0; }
+  </style>
+  <div><h2 id="sim-title">咖啡还要等多久？</h2><p class="text-small">示例模型 · 室温 22°C，初始温度 90°C</p></div>
+  <div class="sim-input"><label for="sim-rate">冷却系数 k</label><output id="sim-rate-label" for="sim-rate">0.10 / 分钟</output><input id="sim-rate" name="kHundredths" type="range" min="2" max="30" value="10" step="1"></div>
+  <div class="sim-reading"><output id="sim-result" aria-live="polite">55.8°C</output><span class="text-small">冷却 7 分钟后的温度</span></div>
+  <div class="sim-track" role="img" aria-label="温度在 22 至 90°C 范围内的位置" id="sim-graphic"><div class="sim-fill" id="sim-fill" style="width: 50%;"></div></div>
+  <p class="text-small">T(t) = 22 + 68 × e⁻ᵏᵗ。系数越大，降温越快；这只是理想化模型。</p>
+</form>
+<script>
+(function () {
+  var rate = document.getElementById('sim-rate');
+  function draw() {
+    var k = Number(rate.value) / 100;
+    var temperature = 22 + 68 * Math.exp(-k * 7);
+    document.getElementById('sim-rate-label').textContent = k.toFixed(2) + ' / 分钟';
+    document.getElementById('sim-result').textContent = temperature.toFixed(1) + '°C';
+    document.getElementById('sim-fill').style.width = ((temperature - 22) / 68 * 100) + '%';
+    document.getElementById('sim-graphic').setAttribute('aria-label', '7 分钟后 ' + temperature.toFixed(1) + '°C；刻度 22 至 90°C');
+  }
+  dshViz.interaction({ form: document.getElementById('sim'), fields: { kHundredths: { type: 'number', min: 2, max: 30, step: 1 } }, action: { label: '解释当前参数', intent: '解释本次冷却参数：k=kHundredths/100，每分钟；t固定7分钟，T=22+68*exp(-k*t)。说明结果和示例模型局限。' }, render: draw });
+})();
+</script>

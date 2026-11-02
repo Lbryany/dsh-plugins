@@ -1,0 +1,21 @@
+// Isolated upstream change proposal: teardown must not cancel queued user inputs.
+import { cp, mkdir, readFile, writeFile, symlink } from 'node:fs/promises';
+import { resolve, join } from 'node:path';
+import { createHash } from 'node:crypto';
+const [sourceArg, targetArg] = process.argv.slice(2);
+if (!sourceArg || !targetArg) throw new Error('Pass installed loop package and fresh tmp target');
+const source = resolve(sourceArg), target = resolve(targetArg);
+if (!target.startsWith('/private/tmp/') && !target.startsWith('/tmp/')) throw new Error('Target must be isolated under tmp');
+const pkg = JSON.parse(await readFile(join(source, 'package.json'), 'utf8'));
+if (pkg.name !== '@deepseek-ai/dsh-agent-loop' || pkg.version !== '0.2.1-rc.5') throw new Error('Unreviewed loop version');
+const original = await readFile(join(source, 'lib/index.js'), 'utf8');
+const from = 'machine.cancel({ kind: "disposed" });';
+if (original.split(from).length !== 2) throw new Error('Loop shape changed');
+const code = original.replace(from, 'machine.cancel({ kind: "disposed" }, { keepInbox: true });');
+await mkdir(target, { recursive: false });
+await cp(source, target, { recursive: true, filter: path => path !== join(source, 'node_modules') });
+await writeFile(join(target, 'lib/index.js'), code);
+await symlink(resolve(source, '../..'), join(target, 'node_modules'), 'dir');
+const hash = text => createHash('sha256').update(text).digest('hex');
+await writeFile(join(target, 'widget-extension.json'), JSON.stringify({ package: pkg.name, packageVersion: pkg.version, originalHash: hash(original), patchedHash: hash(code), change: 'preserve pending inbox on lifecycle disposal; explicit user/archive cancellation unchanged' }, null, 2));
+console.log(JSON.stringify({ target, version: pkg.version }));

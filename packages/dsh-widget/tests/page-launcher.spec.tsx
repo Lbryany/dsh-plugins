@@ -142,4 +142,50 @@ describe('page launcher', () => {
     expect(container.querySelector('[data-visualize-launcher]')).toBeNull()
     expect(container.querySelector('iframe')!.getAttribute('srcdoc')).not.toContain('.viz-page-header')
   })
+
+  it('retains the live iframe across collapse and re-expansion', () => {
+    const container = mount(PAGE)
+    const toggle = container.querySelector('button[aria-expanded]') as HTMLButtonElement
+    act(() => toggle.click())
+    const live = [...container.querySelectorAll('iframe')].find(f => f.style.pointerEvents !== 'none')!
+    act(() => toggle.click())
+    expect(live.isConnected).toBe(true)
+    act(() => toggle.click())
+    expect([...container.querySelectorAll('iframe')].find(f => f.style.pointerEvents !== 'none')).toBe(live)
+  })
+
+  it('does not reload a saved live card when conversation metadata is refreshed', async () => {
+    const meta = { ...PAGE, mode: 'inline' as const }
+    const host = { sessionId: 'refresh-regression', loadState: vi.fn(async () => null), saveState: vi.fn(async () => {}), send: vi.fn(async () => {}) }
+    const container = document.createElement('div'); document.body.append(container)
+    const root = createRoot(container)
+    await act(async () => root.render(<Frame meta={meta} callId="refresh" host={host} />))
+    const frame = container.querySelector('iframe')!
+    const original = frame.srcdoc
+    await act(async () => {
+      window.dispatchEvent(new MessageEvent('message', { source: frame.contentWindow, data: {
+        type: 'dsh-widget:bridge', token: 'refresh', id: 1, method: 'state.set', params: { modelContent: { hours: 30 }, privateContent: null },
+      } }))
+      await Promise.resolve()
+    })
+    expect(host.saveState).toHaveBeenCalledOnce()
+    await act(async () => root.render(<Frame meta={{ ...meta }} callId="refresh" host={host} />))
+    expect(frame.srcdoc).toBe(original)
+    await act(async () => { document.body.setAttribute('data-input-mode', 'pointer'); await Promise.resolve() })
+    expect(frame.srcdoc).toBe(original)
+    await act(async () => root.unmount())
+  })
+
+  it('keeps a failed state read visible and retries before mounting writable content', async () => {
+    const host = { sessionId: 'failed-state-read', loadState: vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce(null), saveState: vi.fn(async () => {}), send: vi.fn(async () => {}) }
+    const container = document.createElement('div'); document.body.append(container)
+    const root = createRoot(container)
+    await act(async () => root.render(<Frame meta={{ ...PAGE, mode: 'inline' }} callId="failed-read" host={host} />))
+    expect(container.querySelector('iframe')).toBe(null)
+    expect(container.textContent).toContain('状态读取失败')
+    await act(async () => { (container.querySelector('button') as HTMLButtonElement).click(); await Promise.resolve() })
+    expect(host.loadState).toHaveBeenCalledTimes(2)
+    expect(container.querySelector('iframe')).not.toBe(null)
+    await act(async () => root.unmount())
+  })
 })

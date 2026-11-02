@@ -3,14 +3,14 @@
 ## Choosing the tool
 
 - **Standard chart shapes** — line, area, bar, scatter, doughnut — use
-  Chart.js, starting from `../examples/interactive-simulator.html`. The
+  Chart.js using the complete setup below. The
   library owns axis layout, tick spacing, and label collision, and its first
   render animates by default (lines sweep in, bars grow), so charts arrive
   with the entrance the design calls for at zero extra code. A curve with a
   baseline annotation or a second comparison series is still standard.
 - **Custom visuals** — bespoke diagrams, spatial layouts, anything a chart
   library genuinely cannot express — hand-roll SVG per the rules below,
-  starting from `../examples/comparison-chart.html`.
+  using the SVG rules below.
 - D3 (pinned: `https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js`) remains
   available for data-heavy custom work: scales, shapes, and geo projections.
 
@@ -34,6 +34,7 @@ var root = document.getElementById('my-viz');
 var theme = dshViz.chartDefaults(Chart, root);
 var chart = null;
 dshViz.fontsReady('华东华北 Q1 Q2', root).then(function () {
+  // canvas is the canvas element; labels and values are arrays from this task.
   chart = new Chart(canvas, {
     type: 'line',
     data: { labels: labels, datasets: [{ data: values, borderColor: theme.series[0] }] },
@@ -72,6 +73,23 @@ dshViz.fontsReady('华东华北 Q1 Q2', root).then(function () {
   dataset `backgroundColor` with `fill: true`.
 - Tooltips and legends come themed via the defaults above; drop the legend
   entirely for a single series.
+
+For a return-to-model form, `dshViz.interaction` calls `render(values)` with a
+field object. Adapt a chart-specific function explicitly:
+
+```js
+render: function(values) {
+  var region = data[values.region];
+  if (chart) {
+    chart.data.datasets[0].data = [region.q1, region.q2];
+    chart.update();
+  }
+}
+```
+
+The chart may still be waiting for fonts when the helper first renders; keep
+its creation separate and guard updates until it exists. Read native controls
+for the initial chart data so valid restored values are reflected at first draw.
 
 ## Hand-rolled SVG rules
 

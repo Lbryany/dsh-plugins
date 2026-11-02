@@ -436,6 +436,59 @@ window.__ModuleLoader__.load({
 			return /<\/script\s*>/iu.test(rest) ? fragment : fragment.slice(0, opener.index);
 		}
 		//#endregion
+		//#region src/choice-css.ts
+		/** Shared native-control design system for generated selection cards and host confirmation. */
+		const CHOICE_CSS = `
+.viz-choice { --viz-choice-surface: var(--dsh-viz-page, var(--dsw-alias-bg-base, light-dark(#fff, #202329))); container-type: inline-size; color: var(--foreground); font: 400 14px/1.55 var(--font-sans, system-ui, sans-serif); }
+.viz-choice *, .viz-choice *::before, .viz-choice *::after { box-sizing: border-box; }
+.viz-choice h2 { margin: 0 0 6px; font-size: 22px; line-height: 1.3; font-weight: 600; letter-spacing: -.025em; }
+.viz-choice p { margin: 0; }
+.viz-choice .viz-description { color: color-mix(in srgb, var(--foreground) 72%, var(--viz-choice-surface)); font-size: 13px; }
+.viz-choice .viz-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0 16px; }
+.viz-choice .viz-field { display: grid; gap: 8px; min-width: 0; font-size: 13px; font-weight: 500; }
+.viz-choice .viz-field--full { grid-column: 1 / -1; }
+.viz-choice :is(input:not([type=radio]):not([type=checkbox]):not([type=range]), select, textarea) {
+  width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--viz-choice-surface); color: var(--foreground); font: inherit; font-weight: 400;
+}
+.viz-choice fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.viz-choice legend { margin-bottom: 8px; font-size: 13px; font-weight: 500; }
+.viz-choice .viz-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.viz-choice .viz-option { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; }
+.viz-choice .viz-option:has(input:checked) { border-color: var(--foreground); background: color-mix(in srgb, var(--foreground) 6%, transparent); }
+.viz-choice :is(input[type=radio], input[type=checkbox]) { margin: 0; accent-color: var(--foreground); }
+.viz-choice :is(button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--foreground); outline-offset: 3px; }
+.viz-choice .viz-button { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--foreground); font: inherit; font-size: 13px; font-weight: 600; line-height: 1.5; cursor: pointer; white-space: normal; text-align: center; transition: background .15s ease; }
+.viz-choice .viz-button:hover:not(:disabled) { background: color-mix(in srgb, var(--foreground) 8%, transparent); }
+.viz-choice .viz-button--primary { background: var(--foreground); border-color: var(--foreground); color: var(--viz-choice-surface); }
+.viz-choice .viz-button--primary:hover:not(:disabled) { background: color-mix(in srgb, var(--foreground) 85%, var(--viz-choice-surface)); }
+.viz-choice .viz-button:disabled { opacity: .5; cursor: default; }
+.viz-choice .viz-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.viz-choice .viz-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); gap: 16px; margin: 20px 0; padding: 16px; background: color-mix(in srgb, var(--foreground) 4%, var(--viz-choice-surface)); border: 1px solid var(--border); border-radius: 12px; }
+.viz-choice .viz-summary > div { min-width: 0; }
+.viz-choice .viz-summary dt { font-size: 12px; color: color-mix(in srgb, var(--foreground) 72%, var(--viz-choice-surface)); margin-bottom: 4px; }
+.viz-choice .viz-summary dd { margin: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.viz-choice [data-dsh-interaction-status] { grid-column: 1 / -1; margin-top: 0; font-size: 12px; }
+.viz-choice [data-dsh-interaction-status]:empty { display: none; }
+@container (max-width: 320px) { .viz-choice .viz-fields { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .viz-choice .viz-button { transition: none; } }
+`;
+		const INTERACTION_CSS = `
+[data-dsh-interaction-bar] {
+  --foreground: var(--dsw-alias-label-primary, #1a1c1f);
+  --background: var(--dsw-alias-bg-base, #fff);
+  --border: var(--dsw-alias-border-l2, #dce0e5);
+  padding: 16px 12px; border-top: 1px solid var(--border);
+}
+[data-dsh-interaction-bar] .viz-confirm { padding: 4px 0; }
+[data-dsh-interaction-bar] .viz-confirm h3 { margin: 0 0 4px; font: inherit; font-size: 16px; font-weight: 600; }
+[data-dsh-interaction-bar] .viz-status:not(:empty) { display: block; font-size: 12px; margin: 10px 0 0; }
+[data-dsh-interaction-bar] details { margin-top: 16px; font-size: 12px; }
+[data-dsh-interaction-bar] summary { cursor: pointer; width: fit-content; padding: 6px 0; }
+[data-dsh-interaction-bar] details p { margin-top: 12px; overflow-wrap: anywhere; }
+[data-dsh-interaction-bar] pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow: auto; }
+`;
+		//#endregion
 		//#region src/frame-css.ts
 		/**
 		* The stylesheet injected into every visualization frame: theme tokens with
@@ -586,6 +639,7 @@ table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--border); }
 th { font-weight: 500; color: var(--muted-foreground); font-size: var(--font-size-small); }
 .table-responsive { overflow-x: auto; }
+${CHOICE_CSS}
 `;
 		/**
 		* Additions for a `page` frame: a full browser tab rather than a card in the
@@ -598,6 +652,16 @@ th { font-weight: 500; color: var(--muted-foreground); font-size: var(--font-siz
 :root { --background: var(--dsh-viz-page, light-dark(rgb(255 255 255), rgb(24 24 27))); }
 html { background: var(--background); }
 body { min-height: 100vh; }
+/* Page hierarchy is deliberately separate from the compact chat frame. */
+h1 { font-size: 32px; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
+h2 { font-size: 20px; line-height: 1.35; }
+.viz-stat-value { font-size: 40px; font-variant-numeric: tabular-nums; letter-spacing: -0.025em; }
+.viz-page .card { padding: 24px; }
+.viz-page .viz-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 24px; }
+.viz-page :is(.viz-grid, .viz-layout) > * { min-width: 0; }
+.viz-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); gap: 24px; align-items: start; }
+.viz-lead { max-width: 65ch; color: var(--muted-foreground); line-height: 1.7; }
+.viz-page :is(h1, h2, h3, p, td, th) { overflow-wrap: anywhere; }
 .viz-page { max-width: 1440px; margin: 0 auto; padding: 24px clamp(16px, 3vw, 40px) 48px; }
 .viz-page-narrow { max-width: 960px; }
 .viz-page-header {
@@ -612,7 +676,7 @@ body { min-height: 100vh; }
   background: var(--background);
   border-bottom: 1px solid var(--border);
 }
-.viz-page-header h1 { margin: 0; font-size: 1.25em; }
+.viz-page-header h1 { margin: 0; }
 .viz-page-header .viz-controls { margin: 0 0 0 auto; }
 .viz-section { margin-top: 32px; }
 .viz-section:first-child { margin-top: 0; }
@@ -631,6 +695,9 @@ body { min-height: 100vh; }
 .viz-tab:hover { color: var(--foreground); }
 .viz-tab[aria-selected='true'] { color: var(--foreground); border-bottom-color: var(--primary); font-weight: 500; }
 @media (max-width: 768px) {
+  h1 { font-size: 28px; }
+  .viz-layout { grid-template-columns: minmax(0, 1fr); }
+  .viz-page .card { padding: 16px; }
   .viz-page-header .viz-controls { margin-left: 0; width: 100%; }
 }
 `;
@@ -4388,6 +4455,11 @@ body { min-height: 100vh; }
 			prompt: stringType().min(1).refine((text) => text.trim().length > 0, "prompt is blank").refine((text) => utf8Bytes(text) <= PROMPT_MAX_BYTES, `prompt exceeds ${PROMPT_MAX_BYTES} bytes`),
 			title: stringType().max(250).optional()
 		}).strict();
+		const interactionRegistrationSchema = objectType({
+			label: stringType().trim().min(1).max(100),
+			intent: stringType().trim().min(1).refine((text) => utf8Bytes(text) <= PROMPT_MAX_BYTES),
+			fieldLabels: recordType(stringType().max(100), stringType().trim().min(1).max(100)).refine((labels) => Object.keys(labels).length <= 64).optional()
+		}).strict().extend({ epoch: stringType().min(1).max(128) }).strict();
 		/**
 		* 是否 http(s) 绝对地址。
 		* @param href - 地址。
@@ -4477,6 +4549,8 @@ body { min-height: 100vh; }
   var seq = 0;
   var pending = {};
   var queue = Promise.resolve();
+  var readInteraction = null;
+  var interactionEpoch = String(Date.now()) + '-' + Math.random().toString(36).slice(2);
   var now = function () { return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now(); };
   var mark = function (event) { if (event.isTrusted) lastGesture = now(); };
   ['pointerup', 'keyup', 'keydown', 'click'].forEach(function (name) { addEventListener(name, mark, true); });
@@ -4512,6 +4586,16 @@ body { min-height: 100vh; }
   addEventListener('message', function (event) {
     if (event.source !== parent) return;
     var data = event.data;
+    if (data && data.type === 'dsh-widget:capture' && data.token === TOKEN && data.epoch === interactionEpoch && typeof data.captureId === 'string' && readInteraction) {
+      try {
+        var selected = readInteraction();
+        if (!isJson(selected, 0) || bytes(JSON.stringify(selected)) > STATE_MAX) throw new Error('Invalid selection');
+        parent.postMessage({ type: 'dsh-widget:captured', token: TOKEN, epoch: interactionEpoch, captureId: data.captureId, modelContent: copy(selected) }, '*');
+      } catch (error) {
+        parent.postMessage({ type: 'dsh-widget:captured', token: TOKEN, epoch: interactionEpoch, captureId: data.captureId, error: String(error && error.message || error) }, '*');
+      }
+      return;
+    }
     if (!data || data.type !== RESULT || data.token !== TOKEN || typeof data.id !== 'number') return;
     var waiter = pending[data.id];
     if (!waiter) return;
@@ -4583,6 +4667,13 @@ body { min-height: 100vh; }
     return call('openExternal', { href: href }).then(function () {});
   }
   var api = {
+    registerInteraction: function (action, read) {
+      if (readInteraction || typeof read !== 'function') return Promise.reject(fail('invalid-params', 'An interaction is already registered or invalid'));
+      readInteraction = read;
+      var registration = { label: action.label, intent: action.intent, epoch: interactionEpoch };
+      if (action.fieldLabels) registration.fieldLabels = action.fieldLabels;
+      return call('interaction.register', registration);
+    },
     setWidgetState: setWidgetState,
     sendFollowUpMessage: sendFollowUpMessage,
     openExternal: openExternal,
@@ -4602,6 +4693,106 @@ body { min-height: 100vh; }
   }, true);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', emit);
   else setTimeout(emit, 0);
+})();
+`;
+		}
+		//#endregion
+		//#region src/interaction-form.ts
+		/** Frame helper installed after the host bridge. Generated pages declare fields, not transactions. */
+		function interactionHelperScript() {
+			return `
+(function () {
+  var owned = false;
+  window.dshViz.interaction = function (definition) {
+    if (owned) throw new Error('Only one interaction per card');
+    var form = definition.form, fields = definition.fields, action = definition.action;
+    if (!form || form.tagName !== 'FORM' || !fields || !action || !action.label || !action.intent) throw new Error('An interaction requires a form, fields and action');
+    var names = Object.keys(fields), elements = {}, fieldLabels = {};
+    if (!names.length || names.length > 64) throw new Error('Declare 1 to 64 fields');
+    names.forEach(function (name) {
+      if (name === '__proto__' || name === 'constructor' || name === 'prototype') throw new Error('Invalid field name');
+      var matches = Array.from(form.elements).filter(function (el) { return el.name === name; });
+      if (!matches.length || (matches.length > 1 && !matches.every(function (el) { return el.type === 'radio'; }))) throw new Error('Missing or ambiguous field: ' + name);
+      elements[name] = matches;
+      var el = matches[0], label = el.labels && el.labels[0];
+      if (el.type === 'radio') label = el.closest('fieldset') && el.closest('fieldset').querySelector('legend');
+      var text = fields[name].label;
+      if (!text && label) {
+        var copy = label.cloneNode(true);
+        copy.querySelectorAll('input, select, textarea, button, output, [aria-hidden="true"]').forEach(function (node) { node.remove(); });
+        text = copy.textContent;
+      }
+      fieldLabels[name] = String(text || el.getAttribute('aria-label') || name).replace(/\\s+/g, ' ').trim().slice(0, 100) || name;
+    });
+    function check(name, value) {
+      var spec = fields[name];
+      if (spec.type === 'number') {
+        if (typeof value !== 'number' || !Number.isFinite(value) || (spec.min !== undefined && value < spec.min) || (spec.max !== undefined && value > spec.max) || (spec.step !== undefined && Math.abs((value - (spec.min || 0)) / spec.step - Math.round((value - (spec.min || 0)) / spec.step)) > 1e-7)) throw new Error('Invalid number: ' + name);
+      } else if (spec.type === 'enum') {
+        if (!Array.isArray(spec.values) || spec.values.indexOf(value) === -1) throw new Error('Invalid option: ' + name);
+      } else if (spec.type === 'boolean') {
+        if (typeof value !== 'boolean') throw new Error('Invalid boolean: ' + name);
+      } else if (spec.type === 'text') {
+        if (typeof value !== 'string' || value.length > (spec.maxLength || 1000)) throw new Error('Invalid text: ' + name);
+      } else throw new Error('Unsupported field type: ' + name);
+      return value;
+    }
+    function read() {
+      var result = {};
+      names.forEach(function (name) {
+        var list = elements[name], el = list[0], value;
+        if (el.type === 'radio') value = (list.find(function (item) { return item.checked; }) || {}).value;
+        else if (fields[name].type === 'boolean') value = el.checked;
+        else if (fields[name].type === 'number') value = el.value.trim() === '' ? NaN : Number(el.value);
+        else value = el.value;
+        result[name] = check(name, value);
+      });
+      return result;
+    }
+    var status = document.createElement('p');
+    status.setAttribute('role', 'status');
+    status.setAttribute('data-dsh-interaction-status', '');
+    form.appendChild(status);
+    var saved = window.dsh.widgetState;
+    names.forEach(function (name) {
+      if (!saved || !saved.modelContent || !Object.prototype.hasOwnProperty.call(saved.modelContent, name)) return;
+      var value = saved.modelContent[name];
+      try { check(name, value); } catch (_) { status.textContent = '部分旧选项无效，已使用默认值'; return; }
+      elements[name].forEach(function (el) {
+        if (el.type === 'radio') el.checked = el.value === value;
+        else if (fields[name].type === 'boolean') el.checked = value;
+        else el.value = String(value);
+      });
+    });
+    var disposed = false, version = 0;
+    function render() { var values = read(); if (definition.render) definition.render(values); return values; }
+    function local() { try { render(); } catch (error) { status.textContent = error.message; } }
+    function save() {
+      var current = ++version, values;
+      try { values = render(); } catch (error) { status.textContent = error.message; return; }
+      status.textContent = '保存中…';
+      window.dsh.setWidgetState({ modelContent: values, privateContent: saved ? saved.privateContent : null }).then(function () {
+        if (!disposed && current === version) status.textContent = '选择已保存';
+      }, function () { if (!disposed && current === version) status.textContent = '保存失败；当前选择仍可预览，请重试'; });
+    }
+    function preventSubmit(event) { event.preventDefault(); }
+    render();
+    owned = true;
+    form.addEventListener('input', local);
+    form.addEventListener('change', save);
+    form.addEventListener('submit', preventSubmit);
+    window.dsh.registerInteraction({ label: action.label, intent: action.intent, fieldLabels: fieldLabels }, read).then(function (capability) {
+      if (!disposed && !capability.supported) status.textContent = '此窗口暂不支持提交，请返回支持交互的对话';
+    }, function () { if (!disposed) status.textContent = '交互连接失败，请返回对话重试'; });
+    return function () {
+      if (disposed) return;
+      disposed = true;
+      form.removeEventListener('input', local);
+      form.removeEventListener('change', save);
+      form.removeEventListener('submit', preventSubmit);
+      status.remove();
+    };
+  };
 })();
 `;
 		}
@@ -4666,10 +4857,11 @@ ${options.variant === "page" ? "" : "body { padding: 4px 2px; }"}${style.extraCs
 				theme: options.colorScheme,
 				mode: options.bridge?.mode ?? "detached"
 			})}<\/script>
+<script>${interactionHelperScript()}<\/script>
 </head>
 <body>
 ${options.fragment}
-<script>${heightReporter(options.reportToken)}<\/script>
+<script>${heightReporter(options.reportToken, options.variant === "page")}<\/script>
 </body>
 </html>
 `;
@@ -4681,7 +4873,7 @@ ${options.fragment}
 		* @param reportToken - correlation token echoed in each message.
 		* @returns the inline script body.
 		*/
-		function heightReporter(reportToken) {
+		function heightReporter(reportToken, page = false) {
 			const token = JSON.stringify(reportToken);
 			return `
 (function () {
@@ -4689,10 +4881,11 @@ ${options.fragment}
     parent.postMessage({
       type: ${JSON.stringify(HEIGHT_MESSAGE_TYPE)},
       token: ${token},
-      height: document.documentElement.scrollHeight,
+      height: ${page ? "document.documentElement.scrollHeight" : "Math.ceil(Math.max(document.body.getBoundingClientRect().height, document.body.scrollHeight))"},
     }, '*');
   };
   new ResizeObserver(post).observe(document.documentElement);
+  new ResizeObserver(post).observe(document.body);
   addEventListener('load', post);
   post();
 })();
@@ -5021,6 +5214,11 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 		*/
 		async function dispatch(method, params, handlers, userActive) {
 			switch (method) {
+				case "interaction.register": {
+					const action = interactionRegistrationSchema.safeParse(params);
+					if (!action.success) throw new BridgeError("invalid-params", describeIssues(action.error));
+					return handlers.registerInteraction ? await handlers.registerInteraction(action.data) : { supported: false };
+				}
 				case "state.set": {
 					const state = widgetStateSchema.safeParse(params);
 					if (!state.success) throw new BridgeError("invalid-params", describeIssues(state.error));
@@ -5126,6 +5324,272 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 			};
 		}
 		//#endregion
+		//#region src/client/InteractionBar.tsx
+		/** Host-owned capture, preview and submission UI. Never sends a text-only fallback. */
+		const PATH = "/api/dsh-widget/interaction";
+		var RequestError = class extends Error {
+			code;
+			constructor(code, message) {
+				super(message);
+				this.code = code;
+			}
+		};
+		function captureInteraction(frame, token, epoch, signal) {
+			const source = frame.contentWindow;
+			const captureId = crypto.randomUUID();
+			return new Promise((resolve, reject) => {
+				const finish = (error, value) => {
+					clearTimeout(timer);
+					window.removeEventListener("message", receive);
+					signal.removeEventListener("abort", cancel);
+					if (error) reject(error);
+					else resolve(value);
+				};
+				const cancel = () => finish(/* @__PURE__ */ new Error("页面已关闭，请重新选择"));
+				const receive = (event) => {
+					const data = event.data;
+					if (event.source !== source || source !== frame.contentWindow || !data || data.type !== "dsh-widget:captured" || data.token !== token || data.epoch !== epoch || data.captureId !== captureId) return;
+					if (data.error) {
+						finish(new Error(String(data.error)));
+						return;
+					}
+					const parsed = jsonValueSchema.safeParse(data.modelContent);
+					if (!parsed.success || utf8Bytes(JSON.stringify(parsed.data)) > 16384) finish(/* @__PURE__ */ new Error("选择无效或过大"));
+					else finish(void 0, parsed.data);
+				};
+				const timer = setTimeout(() => finish(/* @__PURE__ */ new Error("读取选择超时，请重试")), 5e3);
+				window.addEventListener("message", receive);
+				signal.addEventListener("abort", cancel, { once: true });
+				if (signal.aborted || source === null) {
+					cancel();
+					return;
+				}
+				source.postMessage({
+					type: "dsh-widget:capture",
+					token,
+					epoch,
+					captureId
+				}, "*");
+			});
+		}
+		async function request(method, session, selection) {
+			const url = new URL(PATH.slice(1), document.baseURI);
+			url.searchParams.set("session", session);
+			if (method === "GET" && selection) url.searchParams.set("submissionId", selection.submissionId);
+			const response = await fetch(url, {
+				method,
+				credentials: "same-origin",
+				headers: { "content-type": "application/json" },
+				...method === "POST" ? { body: JSON.stringify({
+					session,
+					submission: selection
+				}) } : {},
+				signal: AbortSignal.timeout(3e4)
+			});
+			const data = await response.json();
+			if (!response.ok) throw new RequestError(data.error, data.message ?? "交互提交暂不可用");
+			return data;
+		}
+		async function supportsInteraction(session) {
+			try {
+				return (await request("GET", session)).supported === true;
+			} catch {
+				return false;
+			}
+		}
+		function InteractionBar(props) {
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InteractionBarState, { ...props }, JSON.stringify([
+				props.session,
+				props.path,
+				props.epoch
+			]));
+		}
+		function InteractionBarState({ action, session, path, token, epoch, frame }) {
+			const [preview, setPreview] = (0, react.useState)(null);
+			const [status, setStatus] = (0, react.useState)("");
+			const [busy, setBusy] = (0, react.useState)(false);
+			const lock = (0, react.useRef)(false);
+			const primaryButton = (0, react.useRef)(null);
+			const confirmButton = (0, react.useRef)(null);
+			(0, react.useEffect)(() => {
+				if (preview) confirmButton.current?.focus();
+			}, [preview]);
+			const storageKey = "dsh-widget:pending:" + JSON.stringify([session, path]);
+			const unresolved = (0, react.useRef)(null);
+			const [retryAllowed, setRetryAllowed] = (0, react.useState)(false);
+			const initialized = (0, react.useRef)(false);
+			if (!initialized.current) {
+				initialized.current = true;
+				try {
+					const raw = sessionStorage.getItem(storageKey);
+					if (raw && /^[a-zA-Z0-9_-]{1,128}$/.test(raw)) unresolved.current = { submissionId: raw };
+					else if (raw) {
+						const saved = JSON.parse(raw);
+						const selected = saved.selection;
+						if (saved.version === 2 && selected && selected.path === path && typeof selected.intent === "string" && /^[a-zA-Z0-9_-]{1,128}$/.test(selected.submissionId) && jsonValueSchema.safeParse(selected.modelContent).success && utf8Bytes(JSON.stringify(selected.modelContent)) <= 16384) unresolved.current = {
+							submissionId: selected.submissionId,
+							selection: selected
+						};
+					}
+				} catch {}
+			}
+			const clearPending = () => {
+				sessionStorage.removeItem(storageKey);
+				unresolved.current = null;
+			};
+			const lifetime = (0, react.useRef)(new AbortController());
+			(0, react.useEffect)(() => {
+				const controller = new AbortController();
+				lifetime.current = controller;
+				return () => controller.abort();
+			}, []);
+			const capture = async () => {
+				if (lock.current) return;
+				lock.current = true;
+				setBusy(true);
+				try {
+					if (unresolved.current) {
+						if (retryAllowed && unresolved.current.selection) {
+							await sendSelection(unresolved.current.selection);
+							return;
+						}
+						if ((await request("GET", session, unresolved.current)).receipt) {
+							clearPending();
+							setStatus("提交已接收");
+							return;
+						}
+						setRetryAllowed(unresolved.current.selection !== void 0);
+						setStatus(unresolved.current.selection ? "尚未查询到接收记录；可重试原选择，提交标识保持不变" : "接收状态仍待确认，请稍后核实；没有重复发送");
+						return;
+					}
+					if (!frame.current) throw new Error("当前页面不可用");
+					const modelContent = await captureInteraction(frame.current, token, epoch, lifetime.current.signal);
+					setPreview({
+						submissionId: crypto.randomUUID(),
+						path,
+						intent: action.intent,
+						modelContent
+					});
+					setStatus("");
+				} catch (error) {
+					setStatus(error instanceof Error ? error.message : "读取失败");
+				} finally {
+					lock.current = false;
+					setBusy(false);
+				}
+			};
+			const sendSelection = async (selected) => {
+				try {
+					sessionStorage.setItem(storageKey, JSON.stringify({
+						version: 2,
+						selection: selected
+					}));
+				} catch {
+					setStatus("浏览器无法保存恢复标识，本次未发送");
+					return;
+				}
+				unresolved.current = {
+					submissionId: selected.submissionId,
+					selection: selected
+				};
+				setRetryAllowed(false);
+				try {
+					if (!(await request("POST", session, selected)).receipt) throw new Error("缺少提交回执");
+					clearPending();
+					setPreview(null);
+					setStatus("提交已接收，模型将基于本次选择继续");
+				} catch (error) {
+					setPreview(null);
+					if (error instanceof RequestError && ["invalid-params", "id-conflict"].includes(error.code ?? "")) {
+						clearPending();
+						setStatus(error.message + "；本次未接纳，请重新选择");
+					} else setStatus("接收状态待确认；点击核实，不会自动重发");
+				}
+			};
+			const submit = async () => {
+				if (!preview || lock.current) return;
+				lock.current = true;
+				setBusy(true);
+				try {
+					await sendSelection(preview);
+				} finally {
+					lock.current = false;
+					setBusy(false);
+				}
+			};
+			const cancelPreview = () => {
+				setPreview(null);
+				setStatus("已取消，未发送");
+				requestAnimationFrame(() => primaryButton.current?.focus());
+			};
+			const rows = preview === null ? [] : preview.modelContent !== null && typeof preview.modelContent === "object" && !Array.isArray(preview.modelContent) ? Object.entries(preview.modelContent) : [["选择", preview.modelContent]];
+			const valueText = (value) => value === null ? "未设置" : typeof value === "boolean" ? value ? "是" : "否" : typeof value === "object" ? JSON.stringify(value, null, 2) : String(value);
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				"data-dsh-interaction-bar": "",
+				className: "viz-choice",
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("style", { children: CHOICE_CSS + INTERACTION_CSS }),
+					!preview && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						ref: primaryButton,
+						className: "viz-button viz-button--primary",
+						type: "button",
+						disabled: busy,
+						onClick: () => void capture(),
+						children: busy ? "正在处理…" : unresolved.current ? retryAllowed ? "重试本次提交" : "核实提交状态" : action.label
+					}),
+					preview && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						role: "dialog",
+						"aria-label": "确认本次选择",
+						className: "viz-confirm",
+						onKeyDown: (event) => {
+							if (event.key === "Escape" && !busy) {
+								event.preventDefault();
+								cancelPreview();
+							}
+						},
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h3", { children: "确认本次选择" }),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+								className: "viz-description",
+								children: "确认后，模型会根据这些选择继续回答。"
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("dl", {
+								className: "viz-summary",
+								children: rows.map(([name, value]) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("dt", { children: action.fieldLabels && Object.hasOwn(action.fieldLabels, name) ? action.fieldLabels[name] : name }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("dd", { children: valueText(value) })] }, name))
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								className: "viz-actions",
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+									ref: confirmButton,
+									className: "viz-button viz-button--primary",
+									type: "button",
+									disabled: busy,
+									onClick: () => void submit(),
+									children: busy ? "正在发送…" : "确认并继续"
+								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+									className: "viz-button",
+									type: "button",
+									disabled: busy,
+									onClick: cancelPreview,
+									children: "返回修改"
+								})]
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("details", { children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("summary", { children: "查看完整发送内容" }),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", { children: preview.intent }),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", { children: JSON.stringify(preview.modelContent, null, 2) })
+							] })
+						]
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						role: "status",
+						className: "viz-status",
+						children: status
+					})
+				]
+			});
+		}
+		//#endregion
 		//#region src/client/VisualizeCard.tsx
 		/**
 		* The `visualize` toolview: renders the persisted fragment from the call's
@@ -5191,11 +5655,6 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 			fontWeight: 500,
 			flexShrink: 0,
 			maxWidth: "100%",
-			overflow: "hidden",
-			textOverflow: "ellipsis"
-		};
-		const pathStyle$1 = {
-			minWidth: 0,
 			overflow: "hidden",
 			textOverflow: "ellipsis"
 		};
@@ -5314,7 +5773,13 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 		function useThemeTick() {
 			const [themeTick, setThemeTick] = (0, react.useState)(0);
 			(0, react.useEffect)(() => {
-				const bump = () => setThemeTick((tick) => tick + 1);
+				let palette = JSON.stringify(resolveTheme());
+				const bump = () => {
+					const next = JSON.stringify(resolveTheme());
+					if (next === palette) return;
+					palette = next;
+					setThemeTick((tick) => tick + 1);
+				};
 				const observer = new MutationObserver(bump);
 				observer.observe(document.documentElement, { attributes: true });
 				observer.observe(document.body, { attributes: true });
@@ -5356,7 +5821,9 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 					colorScheme
 				};
 			}, [
-				meta,
+				meta.fragment,
+				meta.title,
+				meta.style,
 				reportToken,
 				variant,
 				themeTick,
@@ -5374,7 +5841,7 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 		const stateCache = /* @__PURE__ */ new Map();
 		/** 同一张卡片的其他实例：一处保存后通知其余实例用新状态重建 frame。 */
 		const stateListeners = /* @__PURE__ */ new Map();
-		/** 读状态最多等这么久，超时按 null 渲染。 */
+		/** 读状态最多等这么久；超时显示重试，不能用默认值覆盖未知的已存状态。 */
 		const STATE_LOAD_TIMEOUT_MS = 1500;
 		/**
 		* 读一张卡片保存的状态，并提供写入。没有宿主（无会话、流式中的卡片没有路径）时只读、为 null。
@@ -5386,6 +5853,8 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 			const key = host === void 0 || meta.path === "" ? void 0 : `${host.sessionId}\n${meta.path}`;
 			const ref = (0, react.useRef)(key === void 0 ? null : stateCache.get(key) ?? null);
 			const [ready, setReady] = (0, react.useState)(key === void 0 || stateCache.has(key));
+			const [error, setError] = (0, react.useState)(null);
+			const [attempt, setAttempt] = (0, react.useState)(0);
 			const [version, setVersion] = (0, react.useState)(0);
 			const selfRef = (0, react.useRef)(void 0);
 			(0, react.useEffect)(() => {
@@ -5411,12 +5880,17 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 				}
 				let live = true;
 				setReady(false);
+				setError(null);
 				const done = (state) => {
 					if (!live) return;
 					ref.current = state;
+					setError(null);
 					setReady(true);
 				};
-				const timer = setTimeout(() => done(null), STATE_LOAD_TIMEOUT_MS);
+				const fail = () => {
+					if (live) setError("状态读取失败，请重试后继续操作");
+				};
+				const timer = setTimeout(fail, STATE_LOAD_TIMEOUT_MS);
 				host.loadState(meta.path).then((record) => {
 					clearTimeout(timer);
 					const state = record?.state ?? null;
@@ -5424,7 +5898,7 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 					done(state);
 				}, () => {
 					clearTimeout(timer);
-					done(null);
+					fail();
 				});
 				return () => {
 					live = false;
@@ -5433,7 +5907,8 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 			}, [
 				key,
 				host,
-				meta.path
+				meta.path,
+				attempt
 			]);
 			const save = (0, react.useCallback)(async (next) => {
 				if (key === void 0 || host === void 0) throw new BridgeError("unavailable", "this card has no saved state on this host");
@@ -5449,6 +5924,8 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 			]);
 			return {
 				ready,
+				error,
+				retry: () => setAttempt((value) => value + 1),
 				version,
 				state: ref,
 				mode: key === void 0 ? "detached" : "live",
@@ -5586,6 +6063,7 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 		}
 		/** The sandboxed frame, sized to its content's reported height up to the mode's cap. */
 		function SizedFrame({ meta, callId, card, host }) {
+			const [interaction, setInteraction] = (0, react.useState)(null);
 			const [height, setHeight] = (0, react.useState)(MIN_HEIGHT);
 			const frameRef = (0, react.useRef)(null);
 			const [pending, setPending] = (0, react.useState)(void 0);
@@ -5594,6 +6072,11 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 				token: callId,
 				frame: () => frameRef.current?.contentWindow,
 				handlers: {
+					async registerInteraction(action) {
+						const supported = host !== void 0 && await supportsInteraction(host.sessionId);
+						setInteraction(supported ? action : null);
+						return { supported };
+					},
 					setState: save,
 					async followUp({ prompt, title }) {
 						if (host === void 0) throw new BridgeError("unavailable", "this card cannot send messages here");
@@ -5632,18 +6115,29 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 				return () => removeEventListener("message", onMessage);
 			}, [callId, meta.mode]);
 			const { doc, colorScheme } = useFrameDoc(meta, callId, variantOf(meta), card);
-			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("iframe", {
-				ref: frameRef,
-				sandbox: FRAME_SANDBOX,
-				referrerPolicy: "no-referrer",
-				title: meta.title,
-				srcDoc: doc,
-				style: {
-					...frameStyle$1,
-					height,
-					colorScheme
-				}
-			}, colorScheme), pending !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FollowUpDialog, { pending })] });
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("iframe", {
+					ref: frameRef,
+					sandbox: FRAME_SANDBOX,
+					referrerPolicy: "no-referrer",
+					title: meta.title,
+					srcDoc: doc,
+					style: {
+						...frameStyle$1,
+						height,
+						colorScheme
+					}
+				}, colorScheme),
+				pending !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FollowUpDialog, { pending }),
+				interaction !== null && host !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InteractionBar, {
+					action: interaction,
+					epoch: interaction.epoch,
+					session: host.sessionId,
+					path: meta.path,
+					token: callId,
+					frame: frameRef
+				}, interaction.epoch)
+			] });
 		}
 		/**
 		* The settled, well-formed card: header line plus the sandboxed frame, or a
@@ -5653,12 +6147,19 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 		*/
 		function Frame({ meta, callId, host }) {
 			const card = useCardState(host, meta);
-			if (!card.ready) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			if (!card.ready) return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				style: {
 					...headerStyle,
 					minHeight: MIN_HEIGHT
 				},
-				children: meta.title
+				children: [meta.title, card.error && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					role: "status",
+					children: card.error
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					onClick: card.retry,
+					children: "重试"
+				})] })]
 			});
 			if (meta.mode === "page") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(PageLauncher, {
 				meta,
@@ -5672,24 +6173,17 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					style: headerStyle,
 					title: meta.path === "" ? meta.title : meta.path,
-					children: [
-						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-							style: titleStyle,
-							children: meta.title
-						}),
-						meta.path !== "" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-							style: pathStyle$1,
-							children: meta.path
-						}),
-						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
-							type: "button",
-							style: openStyle,
-							"aria-label": label,
-							title: label,
-							onClick: () => openInWindow(meta, callId, card.state.current),
-							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(OpenIcon, {})
-						})
-					]
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						style: titleStyle,
+						children: meta.title
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						style: openStyle,
+						"aria-label": label,
+						title: label,
+						onClick: () => openInWindow(meta, callId, card.state.current),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(OpenIcon, {})
+					})]
 				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SizedFrame, {
 					meta,
 					callId,
@@ -5856,49 +6350,60 @@ iframe { display: block; box-sizing: border-box; width: 100%; height: 100%; bord
 		function PageLauncher({ meta, callId, card, host }) {
 			const opens = canOpenWindow();
 			const [expanded, setExpanded] = (0, react.useState)(!opens);
+			const [mounted, setMounted] = (0, react.useState)(!opens);
 			const labels = launcherLabels();
 			const open = opens ? () => openInWindow(meta, callId, card.state.current) : void 0;
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				style: launcherStyle,
 				"data-visualize-launcher": "",
-				children: [expanded ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SizedFrame, {
-					meta,
-					callId,
-					card,
-					host
-				}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(PageThumbnail, {
-					meta,
-					callId,
-					onOpen: open,
-					card
-				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-					style: launcherBarStyle,
-					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						style: launcherTextStyle,
-						title: meta.path === "" ? meta.title : meta.path,
-						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-							style: launcherTitleStyle,
-							children: meta.title
-						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-							style: launcherSummaryStyle,
-							children: meta.summary ?? labels.kind
+				children: [
+					mounted && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						hidden: !expanded,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SizedFrame, {
+							meta,
+							callId,
+							card,
+							host
+						})
+					}),
+					!expanded && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(PageThumbnail, {
+						meta,
+						callId,
+						onOpen: open,
+						card
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						style: launcherBarStyle,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							style: launcherTextStyle,
+							title: meta.path === "" ? meta.title : meta.path,
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								style: launcherTitleStyle,
+								children: meta.title
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								style: launcherSummaryStyle,
+								children: meta.summary ?? labels.kind
+							})]
+						}), open !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							style: actionsStyle,
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								type: "button",
+								style: ghostButtonStyle,
+								"aria-expanded": expanded,
+								onClick: () => {
+									setMounted(true);
+									setExpanded((on) => !on);
+								},
+								children: expanded ? labels.hide : labels.show
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+								type: "button",
+								style: primaryButtonStyle$1,
+								onClick: open,
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(OpenIcon, {}), labels.open]
+							})]
 						})]
-					}), open !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						style: actionsStyle,
-						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
-							type: "button",
-							style: ghostButtonStyle,
-							"aria-expanded": expanded,
-							onClick: () => setExpanded((on) => !on),
-							children: expanded ? labels.hide : labels.show
-						}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
-							type: "button",
-							style: primaryButtonStyle$1,
-							onClick: open,
-							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(OpenIcon, {}), labels.open]
-						})]
-					})]
-				})]
+					})
+				]
 			});
 		}
 		/**

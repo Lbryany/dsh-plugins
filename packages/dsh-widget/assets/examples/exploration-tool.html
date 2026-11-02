@@ -1,0 +1,37 @@
+<!-- page: filters govern the distribution, count and source table together. -->
+<div id="explore">
+  <style>
+    #explore .explore-bar { display: grid; gap: 6px; margin-top: 24px; }
+    #explore .explore-track { height: 16px; background: var(--card); }
+    #explore .explore-fill { height: 100%; }
+    #explore .explore-controls { display: flex; flex-wrap: wrap; gap: 16px; margin: 24px 0; }
+    #explore .explore-controls > label { flex: 1 1 180px; }
+    #explore .explore-table { max-height: 480px; overflow: auto; }
+    #explore th { position: sticky; top: 0; background: var(--background); }
+  </style>
+  <header class="viz-page-header"><h1>资源目录</h1><span class="text-small">示例资产 · 4 条记录</span></header>
+  <main class="viz-page">
+    <p class="viz-lead">筛选类型或搜索名称，分布与明细同时更新。颜色始终对应同一类型。</p>
+    <form id="explore-form" class="explore-controls"><label>类型<select class="form-select" id="explore-category" name="category"><option value="all">全部类型</option><option value="compute">计算</option><option value="storage">存储</option></select></label><label>搜索名称<input class="form-control" id="explore-search" name="query" type="search" placeholder="例如：归档"></label></form>
+    <div class="viz-layout">
+      <section><h2>匹配记录 <output id="explore-count" aria-live="polite">4</output></h2><p id="explore-empty" hidden>没有匹配记录，请调整筛选或搜索。</p><div class="explore-table"><table><caption class="text-small">示例数据 · 月费用单位：元</caption><thead><tr><th scope="col">名称</th><th scope="col">类型</th><th scope="col">月费用</th></tr></thead><tbody id="explore-rows"></tbody></table></div></section>
+      <aside class="card"><h2>类型分布</h2><p class="text-small">记录数 · 共用 0–4 刻度</p><div class="explore-bar"><span>计算 <output id="explore-compute">2</output></span><div class="explore-track" aria-hidden="true"><div class="explore-fill" id="explore-compute-bar" style="background: var(--viz-series-1);"></div></div></div><div class="explore-bar"><span>存储 <output id="explore-storage">2</output></span><div class="explore-track" aria-hidden="true"><div class="explore-fill" id="explore-storage-bar" style="background: var(--viz-series-2);"></div></div></div></aside>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  var rows = [{ name: '应用节点', category: 'compute', cost: 120 }, { name: '批处理节点', category: 'compute', cost: 80 }, { name: '归档存储', category: 'storage', cost: 30 }, { name: '热数据存储', category: 'storage', cost: 60 }];
+  var category = document.getElementById('explore-category'), search = document.getElementById('explore-search');
+  function draw() {
+    var query = search.value.trim().toLowerCase();
+    var selected = rows.filter(function (r) { return (category.value === 'all' || r.category === category.value) && r.name.toLowerCase().includes(query); });
+    document.getElementById('explore-count').textContent = selected.length;
+    document.getElementById('explore-empty').hidden = selected.length > 0;
+    var tbody = document.getElementById('explore-rows'); tbody.replaceChildren();
+    selected.forEach(function (r) { var tr = document.createElement('tr'); [r.name, r.category === 'compute' ? '计算' : '存储', r.cost].forEach(function (v) { var td = document.createElement('td'); td.textContent = v; tr.appendChild(td); }); tbody.appendChild(tr); });
+    ['compute', 'storage'].forEach(function (key) { var count = selected.filter(function (r) { return r.category === key; }).length; document.getElementById('explore-' + key).textContent = count; document.getElementById('explore-' + key + '-bar').style.width = (count / 4 * 100) + '%'; });
+  }
+  dshViz.interaction({ form: document.getElementById('explore-form'), fields: { category: { type: 'enum', values: ['all', 'compute', 'storage'] }, query: { type: 'text', maxLength: 100 } }, action: { label: '分析筛选结果', intent: '根据本次category和query分析匹配资源。category为all全部/compute计算/storage存储。示例月费用元：应用节点/计算/120，批处理节点/计算/80，归档存储/存储/30，热数据存储/存储/60。仅分析匹配记录，不编造性能。' }, render: draw });
+})();
+</script>

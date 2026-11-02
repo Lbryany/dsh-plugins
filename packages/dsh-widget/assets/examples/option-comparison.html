@@ -1,0 +1,37 @@
+<!-- inline/wide: comparable units and a finding that follows the input. -->
+<form id="compare" aria-labelledby="compare-title">
+  <style>
+    #compare { padding: 12px; display: grid; gap: 20px; }
+    #compare h2, #compare p { margin: 0; }
+    #compare .compare-control { display: grid; gap: 8px; }
+    #compare .compare-control input { width: 100%; }
+    #compare .compare-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 24px; }
+    #compare .compare-price { font-size: 28px; font-variant-numeric: tabular-nums; margin: 8px 0; }
+    #compare .compare-line { height: 4px; background: var(--border); margin-top: 12px; }
+    #compare .compare-line > span { display: block; height: 100%; background: var(--primary); }
+  </style>
+  <div><h2 id="compare-title">按用量选择，而不是只看单价</h2><p class="text-small">示例报价 · 同一服务质量 · 人民币 / 月</p></div>
+  <div class="compare-control"><label for="compare-hours">每月使用时长：<output id="compare-hours-label">10 小时</output></label><input id="compare-hours" name="hours" type="range" min="0" max="50" value="10"></div>
+  <div class="compare-options">
+    <article><h3>方案 A · 按量</h3><p class="text-small">无固定费，12 元 / 小时</p><p class="compare-price" id="compare-a">¥120</p><div class="compare-line" aria-hidden="true"><span id="compare-bar-a"></span></div></article>
+    <article><h3>方案 B · 套餐</h3><p class="text-small">固定 100 元，另收 5 元 / 小时</p><p class="compare-price" id="compare-b">¥150</p><div class="compare-line" aria-hidden="true"><span id="compare-bar-b"></span></div></article>
+  </div>
+  <label>我的选择<select name="plan"><option value="A">方案 A</option><option value="B">方案 B</option></select></label>
+  <p id="compare-result" aria-live="polite">方案 A 每月节省 ¥30。</p>
+  <p class="text-small">两条长度共用 0–600 元刻度；只比较费用，不推断质量。约 14.3 小时是成本交点。</p>
+</form>
+<script>
+(function () {
+  var hours = document.getElementById('compare-hours');
+  function draw() {
+    var n = Number(hours.value), a = n * 12, b = 100 + n * 5;
+    document.getElementById('compare-hours-label').textContent = n + ' 小时';
+    document.getElementById('compare-a').textContent = '¥' + a;
+    document.getElementById('compare-b').textContent = '¥' + b;
+    document.getElementById('compare-bar-a').style.width = (a / 600 * 100) + '%';
+    document.getElementById('compare-bar-b').style.width = (b / 600 * 100) + '%';
+    document.getElementById('compare-result').textContent = a === b ? '两种方案费用相同。' : '方案 ' + (a < b ? 'A' : 'B') + ' 每月节省 ¥' + Math.abs(a - b) + '。';
+  }
+  dshViz.interaction({ form: document.getElementById('compare'), fields: { hours: { type: 'number', min: 0, max: 50, step: 1 }, plan: { type: 'enum', values: ['A', 'B'] } }, action: { label: '分析我的选择', intent: '根据本次选择的 hours（小时）与 plan 分析费用。A每小时12元；B固定100元加每小时5元。不推断服务质量。' }, render: draw });
+})();
+</script>

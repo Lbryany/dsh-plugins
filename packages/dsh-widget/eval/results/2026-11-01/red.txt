@@ -1,0 +1,127 @@
+
+> @lbryany/dsh-widget@0.1.0 test
+> vitest run tests/visual-quality.spec.ts
+
+
+ RUN  v4.1.11 /Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget
+
+ ❯ tests/visual-quality.spec.ts (8 tests | 8 failed) 53ms
+     × VQ01 gives page headings and figures a readable hierarchy without enlarging chat cards 51ms
+     × VQ02 parameter-simulator obeys the fragment contract and runs without script errors 1ms
+     × VQ02 option-comparison obeys the fragment contract and runs without script errors 0ms
+     × VQ02 step-explainer obeys the fragment contract and runs without script errors 0ms
+     × VQ02 analysis-dashboard obeys the fragment contract and runs without script errors 0ms
+     × VQ02 exploration-tool obeys the fragment contract and runs without script errors 0ms
+     × VQ02 explanation-page obeys the fragment contract and runs without script errors 0ms
+     × VQ03 each pattern changes the answer when its primary control changes 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ01 gives page headings and figures a readable hierarchy without enlarging chat cards
+AssertionError: expected 1.25 to be greater than or equal to 28
+ ❯ tests/visual-quality.spec.ts:18:40
+     16|     try {
+     17|       const css = page.window.getComputedStyle(page.window.document.qu…
+     18|       expect(parseFloat(css.fontSize)).toBeGreaterThanOrEqual(28)
+       |                                        ^
+     19|       expect(parseFloat(page.window.getComputedStyle(page.window.docum…
+     20|       expect(card.window.getComputedStyle(card.window.document.querySe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ02 parameter-simulator obeys the fragment contract and runs without script errors
+Error: ENOENT: no such file or directory, open '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/assets/examples/parameter-simulator.html'
+ ❯ read tests/visual-quality.spec.ts:8:32
+      6|
+      7| const names = ['parameter-simulator', 'option-comparison', 'step-expla…
+      8| const read = (name: string) => readFileSync(new URL(`../assets/example…
+       |                                ^
+      9|
+     10| describe('visual quality foundations', () => {
+ ❯ tests/visual-quality.spec.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ02 option-comparison obeys the fragment contract and runs without script errors
+Error: ENOENT: no such file or directory, open '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/assets/examples/option-comparison.html'
+ ❯ read tests/visual-quality.spec.ts:8:32
+      6|
+      7| const names = ['parameter-simulator', 'option-comparison', 'step-expla…
+      8| const read = (name: string) => readFileSync(new URL(`../assets/example…
+       |                                ^
+      9|
+     10| describe('visual quality foundations', () => {
+ ❯ tests/visual-quality.spec.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ02 step-explainer obeys the fragment contract and runs without script errors
+Error: ENOENT: no such file or directory, open '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/assets/examples/step-explainer.html'
+ ❯ read tests/visual-quality.spec.ts:8:32
+      6|
+      7| const names = ['parameter-simulator', 'option-comparison', 'step-expla…
+      8| const read = (name: string) => readFileSync(new URL(`../assets/example…
+       |                                ^
+      9|
+     10| describe('visual quality foundations', () => {
+ ❯ tests/visual-quality.spec.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ02 analysis-dashboard obeys the fragment contract and runs without script errors
+Error: ENOENT: no such file or directory, open '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/assets/examples/analysis-dashboard.html'
+ ❯ read tests/visual-quality.spec.ts:8:32
+      6|
+      7| const names = ['parameter-simulator', 'option-comparison', 'step-expla…
+      8| const read = (name: string) => readFileSync(new URL(`../assets/example…
+       |                                ^
+      9|
+     10| describe('visual quality foundations', () => {
+ ❯ tests/visual-quality.spec.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ02 exploration-tool obeys the fragment contract and runs without script errors
+Error: ENOENT: no such file or directory, open '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/assets/examples/exploration-tool.html'
+ ❯ read tests/visual-quality.spec.ts:8:32
+      6|
+      7| const names = ['parameter-simulator', 'option-comparison', 'step-expla…
+      8| const read = (name: string) => readFileSync(new URL(`../assets/example…
+       |                                ^
+      9|
+     10| describe('visual quality foundations', () => {
+ ❯ tests/visual-quality.spec.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ02 explanation-page obeys the fragment contract and runs without script errors
+Error: ENOENT: no such file or directory, open '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/assets/examples/explanation-page.html'
+ ❯ read tests/visual-quality.spec.ts:8:32
+      6|
+      7| const names = ['parameter-simulator', 'option-comparison', 'step-expla…
+      8| const read = (name: string) => readFileSync(new URL(`../assets/example…
+       |                                ^
+      9|
+     10| describe('visual quality foundations', () => {
+ ❯ tests/visual-quality.spec.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/visual-quality.spec.ts > visual quality foundations > VQ03 each pattern changes the answer when its primary control changes
+Error: ENOENT: no such file or directory, open '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/assets/examples/parameter-simulator.html'
+ ❯ read tests/visual-quality.spec.ts:8:32
+      6|
+      7| const names = ['parameter-simulator', 'option-comparison', 'step-expla…
+      8| const read = (name: string) => readFileSync(new URL(`../assets/example…
+       |                                ^
+      9|
+     10| describe('visual quality foundations', () => {
+ ❯ tests/visual-quality.spec.ts:49:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  12:34:35
+   Duration  367ms (transform 34ms, setup 0ms, import 197ms, tests 53ms, environment 0ms)

@@ -1,0 +1,55 @@
+
+> @lbryany/dsh-widget@0.1.0 check
+> npm run typecheck && npm run test && npm run build
+
+
+> @lbryany/dsh-widget@0.1.0 typecheck
+> tsc -p tsconfig.json && tsc -p tsconfig.client.json
+
+
+> @lbryany/dsh-widget@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget
+
+
+ Test Files  24 passed (24)
+      Tests  357 passed (357)
+   Start at  12:39:05
+   Duration  4.20s (transform 922ms, setup 0ms, import 2.23s, tests 5.18s, environment 1.98s)
+
+
+> @lbryany/dsh-widget@0.1.0 build
+> tsdown
+
+ℹ tsdown v0.22.14 powered by rolldown v1.2.14
+ℹ config file: /Users/bryanlee/Projects/dsh-plugins/packages/dsh-widget/tsdown.config.ts
+ℹ entry: src/index.ts
+ℹ target: es2024
+ℹ tsconfig: tsconfig.json
+ℹ entry: src/client/index.tsx
+ℹ target: node22.19.0
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+
+ WARN  We recommend using the ESM format instead of CommonJS.
+The ESM format is compatible with modern platforms and runtimes, and most new libraries are now distributed only in ESM format.
+Learn more at https://nodejs.org/en/learn/modules/publishing-a-package#how-did-we-get-here
+
+ℹ Cleaning 3 files
+ℹ Hint: consider adding deps.onlyBundle option to avoid unintended bundling of dependencies, or set deps.onlyBundle: false to disable this hint.
+See more at https://tsdown.dev/options/dependencies#deps-onlybundle
+Detected dependencies in bundle:
+- zod
+ℹ [CJS] lib/client.js  256.88 kB │ gzip: 63.38 kB
+ℹ [CJS] 1 files, total: 256.88 kB
+✔ Build complete in 1276ms
+ℹ Hint: consider adding deps.onlyBundle option to avoid unintended bundling of dependencies, or set deps.onlyBundle: false to disable this hint.
+See more at https://tsdown.dev/options/dependencies#deps-onlybundle
+Detected dependencies in bundle:
+- zod
+ℹ [ESM] lib/index.js    235.07 kB │ gzip: 62.44 kB
+ℹ [ESM] lib/index.d.ts   57.48 kB │ gzip: 14.46 kB
+ℹ [ESM] 2 files, total: 292.55 kB
+✔ Build complete in 1328ms

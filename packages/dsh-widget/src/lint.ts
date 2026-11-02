@@ -99,6 +99,11 @@ export const LINT_RULES = {
     message: 'document.currentScript is used to locate the root',
     fix: 'give the root element a unique id and find it with document.getElementById(...)',
   },
+  VZ011: {
+    severity: 'error',
+    message: 'Chart is used without a library loader or a local constructor; Chart.js is not supplied by the frame',
+    fix: 'add <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script> before the script that uses Chart, or provide a local constructor',
+  },
   VZ101: {
     severity: 'warn',
     message: 'hard-coded colour, which ignores the host theme',
@@ -1192,10 +1197,26 @@ function nextChar(src: string, pos: number): string {
   return src[i] ?? ''
 }
 
+/** A conservative missing-loader check, not general JavaScript name resolution. */
+function checkChartDependency(doc: Doc, sink: FindingSink): void {
+  const hit = /\b(?:new\s+Chart\s*\(|dshViz\s*\.\s*chartDefaults\s*\(\s*Chart\b)/u.exec(doc.js)
+  if (!hit) return
+  // Any outside or dynamic source could provide the binding; leave it alone.
+  if (doc.tags.some(tag => tag.name === 'script' && tag.attrs.some(a => a.name === 'src'))) return
+  if (/\b(?:import|eval|Function|with)\b|\b(?:window|globalThis|self)\s*\[/u.test(doc.js)) return
+  if ([...doc.strings.values()].some(value => value.value === 'Chart')) return
+  if (/\b(?:class|function|var|let|const)\s+Chart\b|\bChart\s*(?:=(?!=)|:)/u.test(doc.js)) return
+  if (/\b(?:var|let|const)\s*\{[^}]*\bChart\b/u.test(doc.js)) return
+  if (/\bfunction(?:\s+[\w$]+)?\s*\([^)]*\bChart\b/u.test(doc.js)) return
+  if (/\([^)]*\bChart\b[^)]*\)\s*=>|\bChart\s*=>/u.test(doc.js)) return
+  sink.add('VZ011', hit.index, hit[0].length)
+}
+
 /** VZ007, VZ009 (JS side), VZ010, VZ104, and colour-bearing JS style writes. */
 function checkScripts(doc: Doc, sink: FindingSink): void {
   const { js, src } = doc
   checkGlobalApis(doc, sink)
+  checkChartDependency(doc, sink)
   for (const m of js.matchAll(/\.\s*style\s*\.\s*colorScheme\s*=(?!=)/gu)) sink.add('VZ009', m.index, m[0].length, 'style.colorScheme')
 
   for (const m of js.matchAll(/\bChart\s*\.\s*defaults\s*\.\s*font\s*\.\s*family\s*=(?!=)/gu)) {

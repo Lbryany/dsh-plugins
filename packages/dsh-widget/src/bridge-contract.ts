@@ -42,7 +42,7 @@ export const STATE_PATH = '/api/dsh-widget/state'
 export const CARD_PATH_MAX_CHARS = 4096
 
 /** 桥能调用的方法。`tweak.*` 为参数面板预留，本版不实现。 */
-export const BRIDGE_METHODS = ['state.set', 'followUp', 'openExternal'] as const
+export const BRIDGE_METHODS = ['state.set', 'followUp', 'openExternal', 'interaction.register'] as const
 export type BridgeMethod = typeof BRIDGE_METHODS[number]
 
 /** 桥调用失败的原因码。 */
@@ -101,6 +101,16 @@ export const followUpSchema = z.object({
   title: z.string().max(TITLE_MAX_CHARS).optional(),
 }).strict()
 export type FollowUpParams = z.infer<typeof followUpSchema>
+
+export const interactionActionSchema = z.object({
+  label: z.string().trim().min(1).max(100),
+  intent: z.string().trim().min(1).refine(text => utf8Bytes(text) <= PROMPT_MAX_BYTES),
+  fieldLabels: z.record(z.string().max(100), z.string().trim().min(1).max(100))
+    .refine(labels => Object.keys(labels).length <= 64).optional(),
+}).strict()
+export type InteractionAction = z.infer<typeof interactionActionSchema>
+export const interactionRegistrationSchema = interactionActionSchema.extend({ epoch: z.string().min(1).max(128) }).strict()
+export type InteractionRegistration = z.infer<typeof interactionRegistrationSchema>
 
 /**
  * 是否 http(s) 绝对地址。

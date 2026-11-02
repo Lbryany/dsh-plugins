@@ -409,3 +409,27 @@ describe('VZ104 Chart.js inherit font', () => {
       .toEqual([])
   })
 })
+
+describe('missing Chart.js dependency', () => {
+  it('rejects unbound Chart use before an interaction can initialize', () => {
+    const findings = lintFragment('<canvas id="c"></canvas><script>var theme = dshViz.chartDefaults(Chart); new Chart(c, {});</script>', MAX).findings;
+    expect(findings.filter(f => f.code === 'VZ011')).toHaveLength(1);
+    expect(findings.find(f => f.code === 'VZ011')?.severity).toBe('error');
+  });
+  it('accepts loaded, embedded, imported or locally supplied constructors', () => {
+    const fragments = [
+      '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script><script>new Chart(c, {});</script>',
+      '<script>class Chart {} new Chart(c, {});</script>',
+      '<script>function draw(Chart) { new Chart(c, {}); }</script>',
+      '<script>const draw = (Chart) => new Chart(c, {});</script>',
+      '<script type="module">import Chart from "https://esm.sh/chart.js@4.4.1"; new Chart(c, {});</script>',
+      '<script>window.Chart = CustomChart; new Chart(c, {});</script>',
+      '<script>Object.defineProperty(window, "Chart", {value: CustomChart}); new Chart(c, {});</script>',
+    ];
+    for (const fragment of fragments) expect(lintFragment(fragment, MAX).findings.some(f => f.code === 'VZ011'), fragment).toBe(false);
+  });
+  it('does not treat comments, quoted examples or data scripts as execution', () => {
+    const fragment = '<script>// new Chart(c, {})\nconst example = "dshViz.chartDefaults(Chart)";</script><script type="application/json">{"code":"new Chart(c,{})"}</script>';
+    expect(lintFragment(fragment, MAX).findings.some(f => f.code === 'VZ011')).toBe(false);
+  });
+});

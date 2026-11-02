@@ -9,6 +9,7 @@
   },
   "include": [
     "src/client",
+    "tests/visual-quality.spec.ts",
     "src/shell.ts",
     "tests/settings-section.spec.tsx",
     "tests/client.spec.ts",
@@ -22,7 +23,9 @@
     "tests/frame-bridge.spec.ts",
     "tests/bridge-host.spec.ts",
     "src/frame-bridge.ts",
-    "src/bridge-contract.ts"
+    "src/bridge-contract.ts",
+    "tests/interaction-form.spec.ts",
+    "tests/interaction-bar.spec.tsx"
   ],
   "exclude": []
 }

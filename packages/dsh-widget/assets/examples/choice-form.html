@@ -1,0 +1,30 @@
+<!-- Selection pattern. Values below are examples: replace with the user's actual facts. -->
+<section class="viz-choice" aria-labelledby="choice-title">
+  <h2 id="choice-title">安排一场工作坊</h2>
+  <p class="viz-description">先确定规模与主题，再生成适合团队的议程。</p>
+  <form id="workshop" class="viz-fields">
+    <label class="viz-field">参与人数（人）
+      <input name="participants" type="number" min="1" max="200" step="1" value="8" required>
+    </label>
+    <label class="viz-field">总时长（分钟）
+      <input name="duration" type="number" min="15" max="480" step="1" value="60" required>
+    </label>
+    <label class="viz-field viz-field--full">讨论主题
+      <input name="topic" type="text" maxlength="100" value="产品设计" required>
+    </label>
+  </form>
+</section>
+<script>
+dshViz.interaction({
+  form: document.getElementById('workshop'),
+  fields: {
+    participants: { type: 'number', min: 1, max: 200, step: 1 },
+    duration: { type: 'number', min: 15, max: 480, step: 1 },
+    topic: { type: 'text', maxLength: 100 }
+  },
+  action: {
+    label: '生成工作坊议程',
+    intent: '按本次 participants（人数）、duration（总分钟数）、topic（主题）生成工作坊议程。各环节合计必须等于 duration，用计算工具验算。未提供的业务背景和开始时间保持未知。'
+  }
+});
+</script>
