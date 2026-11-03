@@ -1,0 +1,3 @@
+Error: Timed out: native discovery
+    at until (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/scripts/hub-check.mjs:22:9)
+    at async file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/scripts/hub-check.mjs:74:3

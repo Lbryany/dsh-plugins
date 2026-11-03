@@ -1,0 +1,35 @@
+TAP version 13
+# Subtest: H16 a completed interleaved task cannot mint a fresh budget for still-open work
+not ok 1 - H16 a completed interleaved task cannot mint a fresh budget for still-open work
+  ---
+  duration_ms: 30.8405
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:177:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + '5c6d9246-286d-4ddb-8ed5-a9c08df4738a'
+    - '92b51bd0-7964-4e08-92ae-ef22ba93ca30'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '92b51bd0-7964-4e08-92ae-ef22ba93ca30'
+  actual: '5c6d9246-286d-4ddb-8ed5-a9c08df4738a'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:189:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 96.464625

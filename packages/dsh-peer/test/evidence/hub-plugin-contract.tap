@@ -1,0 +1,39 @@
+TAP version 13
+# [dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+# [dsh-peer] conversation-paused {"from":"session-aaaa-root","to":"session-bbbb-target","count":1}
+# [dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+# [dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+# [dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+# Subtest: G09/UI03 root identity, commands only, no recovery wakeup, output meta
+ok 1 - G09/UI03 root identity, commands only, no recovery wakeup, output meta
+  ---
+  duration_ms: 5.782833
+  type: 'test'
+  ...
+# Subtest: UI03 read-only owner route validates live receiver and never executes command
+ok 2 - UI03 read-only owner route validates live receiver and never executes command
+  ---
+  duration_ms: 6.381083
+  type: 'test'
+  ...
+# Subtest: B14 peer_list defaults to compact discovery; details retains full routing context
+ok 3 - B14 peer_list defaults to compact discovery; details retains full routing context
+  ---
+  duration_ms: 0.823417
+  type: 'test'
+  ...
+# Subtest: H10 hub binaries are packaged at 0.2.0 and centre acceptance is not delivery
+ok 4 - H10 hub binaries are packaged at 0.2.0 and centre acceptance is not delivery
+  ---
+  duration_ms: 1.54225
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 100.715292

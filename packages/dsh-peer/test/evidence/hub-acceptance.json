@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "independentReviewer": "hub_acceptance",
+  "status": "passed",
+  "blockers": [],
+  "checks": {
+    "independentHubTests": { "passed": 21, "failed": 0, "skipped": 0 },
+    "old012H07": { "expectedFailures": 1, "actualFailures": 1 },
+    "fullUnits": { "passed": 88, "failed": 0, "skipped": 0 },
+    "realDshHubScenarios": { "passed": 4, "failed": 0 },
+    "localScenarios": { "passed": 9, "failed": 0 },
+    "packedHostHandoff": true,
+    "localHistoryBrowser": true,
+    "hubBrowser": true,
+    "packedFiles": 29,
+    "noCredentialsOrDatabaseInPackage": true,
+    "noTestProcessesRemain": true,
+    "gitDiffCheck": true
+  },
+  "reviewedSha256": {
+    "package.json": "c065bacf778da1056733d5fdcc68c77a0662689331f1407782306c9d8d84f53e",
+    "lib/hub/service.js": "b4320c613ab24e1a9dbbeec5868774028dfee5e7a37328fd919261bb58c4e672",
+    "lib/hub/core.js": "30dfd7a86c53cc24a14b62944365c017cf63dc5b2abe231f83091b4ae7629d04",
+    "lib/hub/client.js": "2bb24b34334016b10ca8cc759a5e2ee83fddd4d96557dc3c87e501b148a7596c",
+    "lib/hub/server.js": "724b4610b5c42ba476351c24298cf01038bf2d8e18c26ab5cdd647f4ee567cb3"
+  },
+  "boundaries": [
+    "Local loopback deployment with SQLite",
+    "Two real DSH hosts with deterministic scripted LLM adapter; no external model run",
+    "Claude adapter contract only; no Claude CLI or real session validation",
+    "Root budget covers nested request chains, not newly created roots across an entire user task"
+  ]
+}

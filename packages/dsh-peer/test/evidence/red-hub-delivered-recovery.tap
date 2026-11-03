@@ -1,0 +1,50 @@
+TAP version 13
+# Subtest: H21 native history repairs a lost consumption event after delivery acknowledgement
+not ok 1 - H21 native history repairs a lost consumption event after delivery acknowledgement
+  ---
+  duration_ms: 2889.380875
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:73:1'
+  failureType: 'testCodeFailure'
+  error: 'condition timed out'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'fail'
+  stack: |-
+    until (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:9:116)
+    async TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:81:3)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: H20 a new authenticated generation can confirm a durable native receipt
+not ok 2 - H20 a new authenticated generation can confirm a durable native receipt
+  ---
+  duration_ms: 31.757042
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:214:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    false !== true
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:220:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2981.007584

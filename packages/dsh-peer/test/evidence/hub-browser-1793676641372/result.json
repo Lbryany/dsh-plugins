@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "checks": [
+    "authenticated-read",
+    "source-title",
+    "body-without-first-line",
+    "keyboard",
+    "escaped-body",
+    "360px",
+    "logout"
+  ],
+  "errors": []
+}

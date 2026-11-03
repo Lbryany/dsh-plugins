@@ -5,12 +5,13 @@ import { createHash } from 'node:crypto';
 export function toolDescription(root) {
  const source=readFileSync(join(root,'index.js'),'utf8');
  const tail=source.match(/const TAIL = '([^']*)';/)?.[1];
- const description=source.match(/name: 'peer_send',\s*description: `([^`]*)`/)?.[1];
+ const description=source.match(/name: 'peer_send',\s*description: `([^`]*)`/)?.[1]?.replace(/\$\{config\.hub \? '[^']*' : TAIL\}/g,'${TAIL}');
  if(!tail||!description||description.replace('${TAIL}','').includes('${'))throw Error('Unsupported tool description format');
  return description.replace('${TAIL}',tail);
 }
 export function fingerprint(root){
- const files=['package.json','index.js',...readdirSync(join(root,'lib')).filter(f=>f.endsWith('.js')).map(f=>'lib/'+f)].sort();
+ const modules=dir=>readdirSync(join(root,dir),{withFileTypes:true}).flatMap(e=>e.isDirectory()?modules(dir+'/'+e.name):e.name.endsWith('.js')?[dir+'/'+e.name]:[]);
+ const files=['package.json','index.js',...modules('lib')].sort();
  return {version:JSON.parse(readFileSync(join(root,'package.json'))).version,files:Object.fromEntries(files.map(f=>[f,createHash('sha256').update(readFileSync(join(root,f))).digest('hex')]))};
 }
 export function reserveSend(state,limit){if(state.attempts>=limit)return false;state.attempts++;return true;}

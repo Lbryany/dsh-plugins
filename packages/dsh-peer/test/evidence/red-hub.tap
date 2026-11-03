@@ -1,0 +1,118 @@
+✖ H01 authenticated identity, unique names and workspace isolation (2.582125ms)
+✖ H02 durable inbox, idempotent sends and explicit receipts survive centre restart (0.144583ms)
+✖ H03 central request/question/answer/result ownership and consumption (0.102334ms)
+✖ H04 offline queue, generation fencing and uncertain claim recovery (0.094083ms)
+✖ H05 durable pause, shared task budget and deadline cannot reset on restart (0.103917ms)
+✖ H06 authentication, revocation, bounded input and local-only listeners (0.232167ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 0
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.691542
+
+✖ failing tests:
+
+test at test/hub.test.mjs:35:1
+✖ H01 authenticated identity, unique names and workspace isolation (2.582125ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js' imported from /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:241:11)
+      at moduleResolve (node:internal/modules/esm/resolve:846:10)
+      at defaultResolve (node:internal/modules/esm/resolve:973:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+      at #resolve (node:internal/modules/esm/loader:690:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+      at node:internal/modules/esm/loader:639:32
+      at TracingChannel.tracePromise (node:diagnostics_channel:582:22) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js'
+  }
+
+test at test/hub.test.mjs:50:1
+✖ H02 durable inbox, idempotent sends and explicit receipts survive centre restart (0.144583ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js' imported from /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:241:11)
+      at moduleResolve (node:internal/modules/esm/resolve:846:10)
+      at defaultResolve (node:internal/modules/esm/resolve:973:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+      at #resolve (node:internal/modules/esm/loader:690:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+      at node:internal/modules/esm/loader:639:32
+      at TracingChannel.tracePromise (node:diagnostics_channel:582:22) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js'
+  }
+
+test at test/hub.test.mjs:73:1
+✖ H03 central request/question/answer/result ownership and consumption (0.102334ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js' imported from /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:241:11)
+      at moduleResolve (node:internal/modules/esm/resolve:846:10)
+      at defaultResolve (node:internal/modules/esm/resolve:973:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+      at #resolve (node:internal/modules/esm/loader:690:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+      at node:internal/modules/esm/loader:639:32
+      at TracingChannel.tracePromise (node:diagnostics_channel:582:22) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js'
+  }
+
+test at test/hub.test.mjs:94:1
+✖ H04 offline queue, generation fencing and uncertain claim recovery (0.094083ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js' imported from /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:241:11)
+      at moduleResolve (node:internal/modules/esm/resolve:846:10)
+      at defaultResolve (node:internal/modules/esm/resolve:973:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+      at #resolve (node:internal/modules/esm/loader:690:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+      at node:internal/modules/esm/loader:639:32
+      at TracingChannel.tracePromise (node:diagnostics_channel:582:22) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js'
+  }
+
+test at test/hub.test.mjs:112:1
+✖ H05 durable pause, shared task budget and deadline cannot reset on restart (0.103917ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js' imported from /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:241:11)
+      at moduleResolve (node:internal/modules/esm/resolve:846:10)
+      at defaultResolve (node:internal/modules/esm/resolve:973:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+      at #resolve (node:internal/modules/esm/loader:690:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+      at node:internal/modules/esm/loader:639:32
+      at TracingChannel.tracePromise (node:diagnostics_channel:582:22) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js'
+  }
+
+test at test/hub.test.mjs:135:1
+✖ H06 authentication, revocation, bounded input and local-only listeners (0.232167ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js' imported from /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs
+      at finalizeResolution (node:internal/modules/esm/resolve:241:11)
+      at moduleResolve (node:internal/modules/esm/resolve:846:10)
+      at defaultResolve (node:internal/modules/esm/resolve:973:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+      at #resolve (node:internal/modules/esm/loader:690:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+      at node:internal/modules/esm/loader:639:32
+      at TracingChannel.tracePromise (node:diagnostics_channel:582:22) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/server.js'
+  }

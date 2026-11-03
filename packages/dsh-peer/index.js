@@ -47,6 +47,7 @@ export function apply(ctx, config = {}) {
   const pid = process.pid;
   const dir = config.dir || resolvePeerDir();
   let titles = null; // sessionTitle 服务（可选）
+  let durableSessions = null;
   const titleOf = (agent) => { try { return (titles && titles.get(agent.session)?.title) || undefined; } catch { return undefined; } };
 
   const core = createPeerCore({
@@ -59,9 +60,15 @@ export function apply(ctx, config = {}) {
     agents: ctx.agents,
     protection: config.protection,
     requests: config.requests,
+    hub: config.hub,
+    persistMessage: agent => durableSessions?.flush(agent.session) ?? Promise.resolve(false),
     namesFile: config.namesFile,
     makeMessage: (text, source) => createUserMessage({ content: [{ type: 'text', text }], source }),
     log: (line) => console.error(line), // 写 stderr：headless --json 的 stdout 只放 NDJSON 事件
+  });
+  ctx.inject(['sessions'], c => {
+    durableSessions = c.sessions;
+    c.effect(() => () => { durableSessions = null; }, 'dsh-peer.durability');
   });
 
   // 会话日志里是否已有用户消息：左栏点开的旧会话、resume 回来的会话有；Web UI 预建的空草稿没有
@@ -113,15 +120,15 @@ export function apply(ctx, config = {}) {
     isConcurrencySafe: () => true,
     async execute(args, exec) {
       const from = callerOf(exec?.agent), options = { all: args.all === true };
-      if (args.details) return { ok: true, text: core.listText(from, options) };
-      const view = core.listView(from, options);
+      if (args.details) return { ok: true, text: await core.listText(from, options) };
+      const view = await core.listView(from, options);
       return { ok: true, text: view.entries.map(e => `${e.name}${e.self ? ' (self)' : ''}: ${e.status}`).join('\n') + (view.hidden ? `\n另有 ${view.hidden} 个，all:true 查看。` : '') };
     },
   }));
 
   ctx.tools.register(defineTool({
     name: 'peer_send',
-    description: `旧端兼容，不结束本轮。任务优先 peer_request/reply；只发新增任务、问题或一次结果。纯确认、感谢、告别不发送；保护错误后停止，不重试或换地址。${TAIL}`,
+    description: `旧端兼容，不结束本轮。任务优先 peer_request/reply；只发新增任务、问题或一次结果。纯确认、感谢、告别不发送；保护错误后停止，不重试或换地址。${config.hub ? '这是通过中心服务连接的 agent 通道；对方不是用户。' : TAIL}`,
     parameters: {
       to: { type: 'string', required: true, description: '名字或ID前缀(≥4位)' },
       text: { type: 'string', required: true },
@@ -141,7 +148,7 @@ export function apply(ctx, config = {}) {
     parameters: { name: { type: 'string', required: true } },
     output: TEXT_OUTPUT,
     isConcurrencySafe: () => true,
-    async execute(args, exec) { const r = core.rename(callerOf(exec && exec.agent), args.name); return { ok: r.ok, text: r.text }; },
+    async execute(args, exec) { const r = await core.rename(callerOf(exec && exec.agent), args.name); return { ok: r.ok, text: r.text }; },
   }));
 
   for (const tool of requestTools(core, callerOf)) ctx.tools.register(tool);
@@ -165,8 +172,8 @@ export function apply(ctx, config = {}) {
   ctx.inject(['commands'], (c) => {
     c.effect(() => c.commands.register({
       name: 'peers',
-      description: '列出本机正在运行的 dsh 会话（peer）',
-      handler: ({ agent }) => ({ kind: 'success', text: core.peersText(callerOf(agent)) }),
+      description: config.hub ? '列出中心登记的 peer' : '列出本机正在运行的 dsh 会话（peer）',
+      handler: ({ agent }) => mapMaybe(core.peersText(callerOf(agent)), text => ({ kind: 'success', text })),
     }), 'dsh-peer.cmd.peers');
     c.effect(() => c.commands.register({
       name: 'peer-resume', description: '恢复本会话接收指定 peer 的消息；不重发、不启动模型',
@@ -174,8 +181,7 @@ export function apply(ctx, config = {}) {
       handler: ({ agent, rawInput }) => {
         const address = String(rawInput || '').trim().replace(/^@/, '');
         if (!address) return { kind: 'error', text: '用法：/peer-resume <名字或会话 ID>' };
-        const r = core.resume(callerOf(agent), address);
-        return { kind: r.ok ? 'success' : 'error', text: r.text };
+        return mapMaybe(core.resume(callerOf(agent), address), r => ({ kind: r.ok ? 'success' : 'error', text: r.text }));
       },
     }), 'dsh-peer.cmd.peer-resume');
     c.effect(() => c.commands.register({
@@ -185,19 +191,20 @@ export function apply(ctx, config = {}) {
       handler: ({ agent, rawInput }) => {
         const want = String(rawInput || '').trim();
         if (!want) { const me = core.get(callerOf(agent)); return { kind: 'success', text: me ? `本会话的 peer 名字是 ${me.name}。` : '本会话没有登记为 peer。' }; }
-        const r = core.rename(callerOf(agent), want);
-        return r.ok ? { kind: 'success', text: r.text } : { kind: 'error', text: r.text };
+        return mapMaybe(core.rename(callerOf(agent), want), r => ({ kind: r.ok ? 'success' : 'error', text: r.text }));
       },
     }), 'dsh-peer.cmd.peer-name');
   });
 
-  const onExit = () => core.stop();
+  const onExit = () => { void core.stop(); };
   ctx.effect(() => {
     core.start().then(
-      () => console.error(`[dsh-peer] 已登记 pid ${pid}，socket ${core.transport.path}`),
+      () => console.error(`[dsh-peer] 已登记 pid ${pid}，${core.mode === 'hub' ? '中心' : 'socket'} ${core.transport.path}`),
       (error) => console.warn(`[dsh-peer] 启动失败：${error && error.message}`),
     );
     process.on('exit', onExit); // 兜底：异常退出时也删自己的三件
-    return () => { process.off('exit', onExit); core.stop(); };
+    return () => { process.off('exit', onExit); return core.stop(); };
   }, 'dsh-peer.registry');
 }
+
+function mapMaybe(value, fn) { return value && typeof value.then === 'function' ? value.then(fn) : fn(value); }

@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: H07 isolated dsh cores discover and exchange only through the centre
+ok 1 - H07 isolated dsh cores discover and exchange only through the centre
+  ---
+  duration_ms: 97.627584
+  type: 'test'
+  ...
+# Subtest: H08 stream reconnect delivers offline messages once and preserves durable receipts
+ok 2 - H08 stream reconnect delivers offline messages once and preserves durable receipts
+  ---
+  duration_ms: 835.707667
+  type: 'test'
+  ...
+# Subtest: H13 consuming old local peer metadata is harmless in hub mode
+ok 3 - H13 consuming old local peer metadata is harmless in hub mode
+  ---
+  duration_ms: 12.927875
+  type: 'test'
+  ...
+# Subtest: H14 a host starting before its centre automatically reconnects
+ok 4 - H14 a host starting before its centre automatically reconnects
+  ---
+  duration_ms: 392.018292
+  type: 'test'
+  ...
+# Subtest: H01 authenticated identity, unique names and workspace isolation
+ok 5 - H01 authenticated identity, unique names and workspace isolation
+  ---
+  duration_ms: 29.19875
+  type: 'test'
+  ...
+# Subtest: H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+ok 6 - H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+  ---
+  duration_ms: 22.819125
+  type: 'test'
+  ...
+# Subtest: H03 central request/question/answer/result ownership and consumption
+ok 7 - H03 central request/question/answer/result ownership and consumption
+  ---
+  duration_ms: 35.856792
+  type: 'test'
+  ...
+# Subtest: H04 offline queue, generation fencing and uncertain claim recovery
+ok 8 - H04 offline queue, generation fencing and uncertain claim recovery
+  ---
+  duration_ms: 15.766125
+  type: 'test'
+  ...
+# Subtest: H05 durable pause, shared task budget and deadline cannot reset on restart
+ok 9 - H05 durable pause, shared task budget and deadline cannot reset on restart
+  ---
+  duration_ms: 14.29775
+  type: 'test'
+  ...
+# Subtest: H06 authentication, revocation, bounded input and local-only listeners
+ok 10 - H06 authentication, revocation, bounded input and local-only listeners
+  ---
+  duration_ms: 5.86475
+  type: 'test'
+  ...
+# Subtest: H11 retrying a lost claim response replays the original admission
+ok 11 - H11 retrying a lost claim response replays the original admission
+  ---
+  duration_ms: 3.990166
+  type: 'test'
+  ...
+# Subtest: H12 unknown receipts cannot starve later queued messages
+ok 12 - H12 unknown receipts cannot starve later queued messages
+  ---
+  duration_ms: 14.916459
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1422.82925

@@ -14,7 +14,7 @@ export function requestTools(core, callerOf) {
   const definitions = [
     { name: 'peer_request', method: 'request',
       description: '单目标用 to/text，多目标一次用 requests（最多8个），互斥且目标必填。忠实用户范围；续轮只发新增决定/变化，不重抄对方已收到的上下文，必要信息补齐。成功默认结束本轮；wait:false 继续本地工作。',
-      parameters: { to: { type: 'string' }, text: { type: 'string' }, requests: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
+      parameters: { to: { type: 'string' }, text: { type: 'string' }, ...(core.mode === 'hub' ? { parentRequestId: { type: 'string', description: '续接入站任务时可指定其 ID；继承原任务预算。' } } : {}), requests: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
         to: { type: 'string', required: true }, text: { type: 'string', required: true },
       } } }, wait } },
     { name: 'peer_reply', method: 'reply',

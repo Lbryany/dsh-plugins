@@ -1,0 +1,197 @@
+TAP version 13
+# Subtest: H13 consuming old local peer metadata is harmless in hub mode
+not ok 1 - H13 consuming old local peer metadata is harmless in hub mode
+  ---
+  duration_ms: 22.445709
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:59:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception.
+    Actual message: "Cannot read properties of undefined (reading 'recipient')"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: "Cannot read properties of undefined (reading 'recipient')"
+  name: 'TypeError'
+  stack: |-
+    Object.consume (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/core.js:113:51)
+    file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:61:36
+    getActual (node:assert:580:5)
+    strict.doesNotThrow (node:assert:748:32)
+    TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:61:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  operator: 'doesNotThrow'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:61:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: H14 a host starting before its centre automatically reconnects
+not ok 2 - H14 a host starting before its centre automatically reconnects
+  ---
+  duration_ms: 313.482458
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:64:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + Error: hub-unreachable
+    +     at Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/client.js:41:66)
+    +     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    +     at async Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/core.js:136:9)
+    - true
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual:
+  error: 'hub-unreachable'
+  stack: |-
+    Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/client.js:41:66)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Object.start (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/core.js:136:9)
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-core.test.mjs:69:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: H11 retrying a lost claim response replays the original admission
+not ok 3 - H11 retrying a lost claim response replays the original admission
+  ---
+  duration_ms: 26.381958
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:148:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    a dropped HTTP reply must not turn a fresh delivery into unknown
+    + actual - expected
+    ... Skipped lines
+
+      {
+        messages: [
+          {
+            claimGeneration: 'g1',
+            claimToken: 'zxjAZtc8EDaRXDXX98isnIe_ib-cu2CO_8BW57nfXI4',
+    ...
+            id: '32d6f003-72b6-408d-a072-3664fbca5bc0',
+    +       recovery: true,
+    -       recovery: false,
+            state: 'claimed',
+            text: 'claim retry',
+            to: {
+              cwd: null,
+              deviceId: 'c578105a-b831-4568-b6be-2734b68e576a',
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    status: 200
+    ok: true
+    messages:
+      0:
+        id: '32d6f003-72b6-408d-a072-3664fbca5bc0'
+        workspace: 'default'
+        from:
+          session: '69fbf393-652b-4f4f-b10a-d509d130e051:session-aaaa'
+          name: 'alice'
+          nativeSession: 'session-aaaa'
+          deviceId: '69fbf393-652b-4f4f-b10a-d509d130e051'
+          runtime: 'dsh'
+          cwd: ~
+          pid: 0
+          profile: ~
+        to:
+          session: 'c578105a-b831-4568-b6be-2734b68e576a:session-bbbb'
+          name: 'reviewer'
+          nativeSession: 'session-bbbb'
+          deviceId: 'c578105a-b831-4568-b6be-2734b68e576a'
+          runtime: 'dsh'
+          cwd: ~
+          pid: 0
+          profile: ~
+        text: 'claim retry'
+        state: 'claimed'
+        createdAt: 100000
+        expires: 86500000
+        claimToken: 'zxjAZtc8EDaRXDXX98isnIe_ib-cu2CO_8BW57nfXI4'
+        claimGeneration: 'g1'
+        recovery: false
+  actual:
+    status: 200
+    ok: true
+    messages:
+      0:
+        id: '32d6f003-72b6-408d-a072-3664fbca5bc0'
+        workspace: 'default'
+        from:
+          session: '69fbf393-652b-4f4f-b10a-d509d130e051:session-aaaa'
+          name: 'alice'
+          nativeSession: 'session-aaaa'
+          deviceId: '69fbf393-652b-4f4f-b10a-d509d130e051'
+          runtime: 'dsh'
+          cwd: ~
+          pid: 0
+          profile: ~
+        to:
+          session: 'c578105a-b831-4568-b6be-2734b68e576a:session-bbbb'
+          name: 'reviewer'
+          nativeSession: 'session-bbbb'
+          deviceId: 'c578105a-b831-4568-b6be-2734b68e576a'
+          runtime: 'dsh'
+          cwd: ~
+          pid: 0
+          profile: ~
+        text: 'claim retry'
+        state: 'claimed'
+        createdAt: 100000
+        expires: 86500000
+        claimToken: 'zxjAZtc8EDaRXDXX98isnIe_ib-cu2CO_8BW57nfXI4'
+        claimGeneration: 'g1'
+        recovery: true
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:154:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: H12 unknown receipts cannot starve later queued messages
+not ok 4 - H12 unknown receipts cannot starve later queued messages
+  ---
+  duration_ms: 23.227083
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:157:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok((await x.b.call('inbox.claim', { from: 'session-bbbb' })).messages.some(m => m.text === 'fresh' && !m.recovery))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:163:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 0
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 422.389167

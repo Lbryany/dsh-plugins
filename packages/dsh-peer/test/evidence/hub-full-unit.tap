@@ -1,0 +1,120 @@
+
+> @lbryany/dsh-peer@0.2.0 check
+> npm run build && node --test test/*.test.mjs
+
+
+> @lbryany/dsh-peer@0.2.0 build
+> node scripts/build-client.mjs
+
+✔ UI01 exclusive source selection: append and steering, never text impersonation (0.625625ms)
+✔ UI04/UI05 first line only in title, Unicode ranges, raw fallback and fence context (9.398916ms)
+✔ UI02 structured status, no success guess from legacy text (0.495667ms)
+✔ UI03 receiving host command access and truthful failures (0.28ms)
+✔ UI03 disclosure is local; resume double click invokes once and failure never fakes success (28.985042ms)
+✔ UI05 host Markdown contract includes code and footnote labels (0.264833ms)
+✔ UI03 client declares the command service required by card actions (0.029708ms)
+✔ UI06 malformed structured metadata falls back to full text without crashing (0.08275ms)
+✔ P1 登记与发现 + 文件权限 (5.922041ms)
+✔ P2 跨进程投递 followup / steer (8.833375ms)
+✔ P3 同进程直投不走 socket (3.329292ms)
+✔ P4 token 不对 → bad-token (4.155583ms)
+✔ P5 残留清理：死 pid 与 procStart 不一致 (4.358291ms)
+✔ P6 命名：缺省 / 固定名 / 撞名 / 非法 / names.json / @ / self (7.152583ms)
+✔ P7 去重：同一 id 第二次 duplicate (2.56575ms)
+✔ P8 to 解析 / 状态 / 标题 / 注销 / not-live / stop (3.624625ms)
+✔ P9 subagent 过滤与合并写 (76.427833ms)
+✔ P10 草稿不登记 / 首条消息后登记 / 固定名 / 排序与截断 (19.606167ms)
+✔ E protocol grading rejects keyword-only reports and incomplete cooperation (0.668125ms)
+✔ E budget is enforced for each tool call in a multi-call response (0.063375ms)
+✖ E uses the package tool instructions without variant-specific system overrides (0.242583ms)
+✔ E extra-send metric counts delivery edges, not result wrappers or read-only calls (0.125459ms)
+✔ E Messages adapter pairs multiple tool results and includes cache tokens in budget (1.238417ms)
+✔ E preserves provider termination and refuses to call truncation natural (0.135417ms)
+✔ B08 uncertain acknowledgement retains slot and reply phase (3.835917ms)
+✔ B09 failed admission fully restores pending state (2.125958ms)
+✔ B09 empty waits, queued result, restart and unsupported capability (0.175458ms)
+✔ B09 capacity never evicts active work; expiry and mixed-version peers are explicit (13.59075ms)
+✔ B08 malformed acknowledgements retain uncertainty without throwing (0.151917ms)
+✔ B11 queued work can yield, consumed local work cannot (0.182083ms)
+✔ B11 mixed queued result and local work cannot tell caller to yield (0.151625ms)
+✔ G11 reentrant reservations and rollback remain bounded (2.585084ms)
+✔ G11 fingerprint capacity and reclamation at expiry (0.326708ms)
+✔ G12 monotonic rollback and reset (0.196084ms)
+✔ user-configured protection off and invalid config (0.383375ms)
+✔ B10 registered tools conclude only successful explicit handoffs (4.599292ms)
+[dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+[dsh-peer] conversation-paused {"from":"session-aaaa-root","to":"session-bbbb-target","count":1}
+[dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+[dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+[dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+✔ G09/UI03 root identity, commands only, no recovery wakeup, output meta (7.849375ms)
+✔ UI03 read-only owner route validates live receiver and never executes command (12.771625ms)
+✔ B14 peer_list defaults to compact discovery; details retains full routing context (2.564958ms)
+✔ H09 Claude adapter binds identity, pushes hints only and requires explicit acknowledgement (6.635041ms)
+✔ H07 isolated dsh cores discover and exchange only through the centre (149.17325ms)
+✔ H08 stream reconnect delivers offline messages once and preserves durable receipts (848.328125ms)
+✔ H13 consuming old local peer metadata is harmless in hub mode (12.154417ms)
+✔ H14 a host starting before its centre automatically reconnects (376.064833ms)
+✔ H10 hub binaries are packaged at 0.2.0 and centre acceptance is not delivery (3.363ms)
+✔ H01 authenticated identity, unique names and workspace isolation (70.553291ms)
+✔ H02 durable inbox, idempotent sends and explicit receipts survive centre restart (16.146208ms)
+✔ H03 central request/question/answer/result ownership and consumption (16.193625ms)
+✔ H04 offline queue, generation fencing and uncertain claim recovery (9.115417ms)
+✔ H05 durable pause, shared task budget and deadline cannot reset on restart (17.951916ms)
+✔ H06 authentication, revocation, bounded input and local-only listeners (5.790875ms)
+✔ H11 retrying a lost claim response replays the original admission (5.239417ms)
+✔ H12 unknown receipts cannot starve later queued messages (20.483625ms)
+✔ H15 names and workspaces reject coerced non-string values (10.854916ms)
+✔ H16 a completed interleaved task cannot mint a fresh budget for still-open work (36.624833ms)
+✔ H17 claim replay is fenced by connection generation (6.2565ms)
+✔ H18 repeated unknown-receipt reconciliation cannot exhaust send capacity (12.136667ms)
+✔ G01/G07 local: new IDs with same content deliver once (42.695583ms)
+✔ G03/G07 local: seventh different message rejected (4.140208ms)
+✔ G06/G07 local: alternating novel replies stop (4.994083ms)
+✔ G01/G07 socket: new IDs with same content deliver once (6.758625ms)
+✔ G03/G07 socket: seventh different message rejected (4.472708ms)
+✔ G06/G07 socket: alternating novel replies stop (6.629166ms)
+✔ G02 exact bytes, rename, target/mode isolation and 60 s boundary (2.328542ms)
+✔ G04 20 messages at 5 s intervals: rejected attempts consume no quota (2.083042ms)
+✔ G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional (2.443375ms)
+✔ G10 scoped IDs and synchronous failure rollback (1.467584ms)
+✔ G11 concurrent sends do not over-admit (4.820958ms)
+✔ G11 capacity refuses new pair without evicting pause (1.661ms)
+✔ B15 actual native section augments the persona and can be disabled/disposed (11.174042ms)
+✔ UI01/UI04 receive metadata identifies exact original Unicode body (25.377292ms)
+✔ UI02 tool result carries structured outcome; uncertainty is not failure (5.761042ms)
+✔ UI06 structured result preserves title text and has a terminal role instruction (4.003916ms)
+✔ B01/B02 batch, partial result and consumption (local) (37.844167ms)
+✔ B01/B02 batch, partial result and consumption (socket) (6.930167ms)
+✔ B03 clarification is scoped to one request and a matching question (3.591083ms)
+✔ B04 results are exactly once and bound to participants (2.939125ms)
+✔ B05 failed/partial admission cannot conclude; reservations roll back (3.576292ms)
+✔ B06 pending/expired requests and false waits do not fabricate completion (1.996708ms)
+✔ B07 request messages retain source and explicit state; legacy still delivers (1.731833ms)
+✔ B03 fourth clarification is rejected while final result remains deliverable (2.3035ms)
+✔ B09 stale Host incarnation cannot deliver structured input (2.155917ms)
+✔ B13 explicit single-target request uses the same tracked lifecycle (25.698834ms)
+✔ B13 conflicting forms reject before any delivery (2.033542ms)
+✔ B13 missing or empty forms never conclude or deliver (2.751792ms)
+ℹ tests 85
+ℹ suites 0
+ℹ pass 84
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1544.137458
+
+✖ failing tests:
+
+test at test/eval-contract.test.mjs:19:1
+✖ E uses the package tool instructions without variant-specific system overrides (0.242583ms)
+  Error: Unsupported tool description format
+      at toolDescription (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/eval/contract.mjs:9:81)
+      at TestContext.<anonymous> (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/eval-contract.test.mjs:20:15)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

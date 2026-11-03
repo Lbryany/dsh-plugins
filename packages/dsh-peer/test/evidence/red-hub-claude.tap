@@ -1,0 +1,31 @@
+TAP version 13
+# Subtest: H09 Claude adapter binds identity, pushes hints only and requires explicit acknowledgement
+not ok 1 - H09 Claude adapter binds identity, pushes hints only and requires explicit acknowledgement
+  ---
+  duration_ms: 0.379542
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-claude.test.mjs:3:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot find module '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/lib/hub/claude.js' imported from /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub-claude.test.mjs"
+  code: 'ERR_MODULE_NOT_FOUND'
+  stack: |-
+    finalizeResolution (node:internal/modules/esm/resolve:241:11)
+    moduleResolve (node:internal/modules/esm/resolve:846:10)
+    defaultResolve (node:internal/modules/esm/resolve:973:11)
+    #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+    #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+    ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+    #resolve (node:internal/modules/esm/loader:690:17)
+    ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+    node:internal/modules/esm/loader:639:32
+    TracingChannel.tracePromise (node:diagnostics_channel:582:22)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 65.911208

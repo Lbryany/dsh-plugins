@@ -1,0 +1,543 @@
+TAP version 13
+# Subtest: UI01 exclusive source selection: append and steering, never text impersonation
+ok 1 - UI01 exclusive source selection: append and steering, never text impersonation
+  ---
+  duration_ms: 0.526917
+  type: 'test'
+  ...
+# Subtest: UI04/UI05 first line only in title, Unicode ranges, raw fallback and fence context
+ok 2 - UI04/UI05 first line only in title, Unicode ranges, raw fallback and fence context
+  ---
+  duration_ms: 8.179542
+  type: 'test'
+  ...
+# Subtest: UI02 structured status, no success guess from legacy text
+ok 3 - UI02 structured status, no success guess from legacy text
+  ---
+  duration_ms: 0.365083
+  type: 'test'
+  ...
+# Subtest: UI03 receiving host command access and truthful failures
+ok 4 - UI03 receiving host command access and truthful failures
+  ---
+  duration_ms: 0.222791
+  type: 'test'
+  ...
+# Subtest: UI03 disclosure is local; resume double click invokes once and failure never fakes success
+ok 5 - UI03 disclosure is local; resume double click invokes once and failure never fakes success
+  ---
+  duration_ms: 29.308916
+  type: 'test'
+  ...
+# Subtest: UI05 host Markdown contract includes code and footnote labels
+ok 6 - UI05 host Markdown contract includes code and footnote labels
+  ---
+  duration_ms: 0.333625
+  type: 'test'
+  ...
+# Subtest: UI03 client declares the command service required by card actions
+ok 7 - UI03 client declares the command service required by card actions
+  ---
+  duration_ms: 0.032417
+  type: 'test'
+  ...
+# Subtest: UI06 malformed structured metadata falls back to full text without crashing
+ok 8 - UI06 malformed structured metadata falls back to full text without crashing
+  ---
+  duration_ms: 0.08675
+  type: 'test'
+  ...
+# Subtest: P1 登记与发现 + 文件权限
+ok 9 - P1 登记与发现 + 文件权限
+  ---
+  duration_ms: 5.170875
+  type: 'test'
+  ...
+# Subtest: P2 跨进程投递 followup / steer
+ok 10 - P2 跨进程投递 followup / steer
+  ---
+  duration_ms: 6.736708
+  type: 'test'
+  ...
+# Subtest: P3 同进程直投不走 socket
+ok 11 - P3 同进程直投不走 socket
+  ---
+  duration_ms: 2.001958
+  type: 'test'
+  ...
+# Subtest: P4 token 不对 → bad-token
+ok 12 - P4 token 不对 → bad-token
+  ---
+  duration_ms: 2.446958
+  type: 'test'
+  ...
+# Subtest: P5 残留清理：死 pid 与 procStart 不一致
+ok 13 - P5 残留清理：死 pid 与 procStart 不一致
+  ---
+  duration_ms: 2.839583
+  type: 'test'
+  ...
+# Subtest: P6 命名：缺省 / 固定名 / 撞名 / 非法 / names.json / @ / self
+ok 14 - P6 命名：缺省 / 固定名 / 撞名 / 非法 / names.json / @ / self
+  ---
+  duration_ms: 9.0455
+  type: 'test'
+  ...
+# Subtest: P7 去重：同一 id 第二次 duplicate
+ok 15 - P7 去重：同一 id 第二次 duplicate
+  ---
+  duration_ms: 3.236625
+  type: 'test'
+  ...
+# Subtest: P8 to 解析 / 状态 / 标题 / 注销 / not-live / stop
+ok 16 - P8 to 解析 / 状态 / 标题 / 注销 / not-live / stop
+  ---
+  duration_ms: 5.374041
+  type: 'test'
+  ...
+# Subtest: P9 subagent 过滤与合并写
+ok 17 - P9 subagent 过滤与合并写
+  ---
+  duration_ms: 80.966583
+  type: 'test'
+  ...
+# Subtest: P10 草稿不登记 / 首条消息后登记 / 固定名 / 排序与截断
+ok 18 - P10 草稿不登记 / 首条消息后登记 / 固定名 / 排序与截断
+  ---
+  duration_ms: 5.040208
+  type: 'test'
+  ...
+# Subtest: E protocol grading rejects keyword-only reports and incomplete cooperation
+ok 19 - E protocol grading rejects keyword-only reports and incomplete cooperation
+  ---
+  duration_ms: 0.95575
+  type: 'test'
+  ...
+# Subtest: E budget is enforced for each tool call in a multi-call response
+ok 20 - E budget is enforced for each tool call in a multi-call response
+  ---
+  duration_ms: 0.10775
+  type: 'test'
+  ...
+# Subtest: E uses the package tool instructions without variant-specific system overrides
+ok 21 - E uses the package tool instructions without variant-specific system overrides
+  ---
+  duration_ms: 0.449833
+  type: 'test'
+  ...
+# Subtest: E extra-send metric counts delivery edges, not result wrappers or read-only calls
+ok 22 - E extra-send metric counts delivery edges, not result wrappers or read-only calls
+  ---
+  duration_ms: 0.197083
+  type: 'test'
+  ...
+# Subtest: E Messages adapter pairs multiple tool results and includes cache tokens in budget
+ok 23 - E Messages adapter pairs multiple tool results and includes cache tokens in budget
+  ---
+  duration_ms: 0.63675
+  type: 'test'
+  ...
+# Subtest: E preserves provider termination and refuses to call truncation natural
+ok 24 - E preserves provider termination and refuses to call truncation natural
+  ---
+  duration_ms: 0.062292
+  type: 'test'
+  ...
+# Subtest: B08 uncertain acknowledgement retains slot and reply phase
+ok 25 - B08 uncertain acknowledgement retains slot and reply phase
+  ---
+  duration_ms: 3.542292
+  type: 'test'
+  ...
+# Subtest: B09 failed admission fully restores pending state
+ok 26 - B09 failed admission fully restores pending state
+  ---
+  duration_ms: 1.158833
+  type: 'test'
+  ...
+# Subtest: B09 empty waits, queued result, restart and unsupported capability
+ok 27 - B09 empty waits, queued result, restart and unsupported capability
+  ---
+  duration_ms: 0.384667
+  type: 'test'
+  ...
+# Subtest: B09 capacity never evicts active work; expiry and mixed-version peers are explicit
+ok 28 - B09 capacity never evicts active work; expiry and mixed-version peers are explicit
+  ---
+  duration_ms: 19.429417
+  type: 'test'
+  ...
+# Subtest: B08 malformed acknowledgements retain uncertainty without throwing
+ok 29 - B08 malformed acknowledgements retain uncertainty without throwing
+  ---
+  duration_ms: 0.261208
+  type: 'test'
+  ...
+# Subtest: B11 queued work can yield, consumed local work cannot
+ok 30 - B11 queued work can yield, consumed local work cannot
+  ---
+  duration_ms: 0.272333
+  type: 'test'
+  ...
+# Subtest: B11 mixed queued result and local work cannot tell caller to yield
+ok 31 - B11 mixed queued result and local work cannot tell caller to yield
+  ---
+  duration_ms: 0.24325
+  type: 'test'
+  ...
+# Subtest: G11 reentrant reservations and rollback remain bounded
+ok 32 - G11 reentrant reservations and rollback remain bounded
+  ---
+  duration_ms: 0.877667
+  type: 'test'
+  ...
+# Subtest: G11 fingerprint capacity and reclamation at expiry
+ok 33 - G11 fingerprint capacity and reclamation at expiry
+  ---
+  duration_ms: 0.113417
+  type: 'test'
+  ...
+# Subtest: G12 monotonic rollback and reset
+ok 34 - G12 monotonic rollback and reset
+  ---
+  duration_ms: 0.1085
+  type: 'test'
+  ...
+# Subtest: user-configured protection off and invalid config
+ok 35 - user-configured protection off and invalid config
+  ---
+  duration_ms: 0.311792
+  type: 'test'
+  ...
+# Subtest: B10 registered tools conclude only successful explicit handoffs
+ok 36 - B10 registered tools conclude only successful explicit handoffs
+  ---
+  duration_ms: 3.99925
+  type: 'test'
+  ...
+# [dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+# [dsh-peer] conversation-paused {"from":"session-aaaa-root","to":"session-bbbb-target","count":1}
+# [dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+# [dsh-peer] resumed {"from":"session-aaaa-root","to":"session-bbbb-target"}
+# [dsh-peer] accepted {"from":"session-aaaa-root","to":"session-bbbb-target","mode":"followup"}
+# Subtest: G09/UI03 root identity, commands only, no recovery wakeup, output meta
+ok 37 - G09/UI03 root identity, commands only, no recovery wakeup, output meta
+  ---
+  duration_ms: 10.382084
+  type: 'test'
+  ...
+# Subtest: UI03 read-only owner route validates live receiver and never executes command
+ok 38 - UI03 read-only owner route validates live receiver and never executes command
+  ---
+  duration_ms: 12.947125
+  type: 'test'
+  ...
+# Subtest: B14 peer_list defaults to compact discovery; details retains full routing context
+ok 39 - B14 peer_list defaults to compact discovery; details retains full routing context
+  ---
+  duration_ms: 1.692416
+  type: 'test'
+  ...
+# Subtest: H09 Claude adapter binds identity, pushes hints only and requires explicit acknowledgement
+ok 40 - H09 Claude adapter binds identity, pushes hints only and requires explicit acknowledgement
+  ---
+  duration_ms: 3.983916
+  type: 'test'
+  ...
+# Subtest: H07 isolated dsh cores discover and exchange only through the centre
+ok 41 - H07 isolated dsh cores discover and exchange only through the centre
+  ---
+  duration_ms: 125.971292
+  type: 'test'
+  ...
+# Subtest: H08 stream reconnect delivers offline messages once and preserves durable receipts
+ok 42 - H08 stream reconnect delivers offline messages once and preserves durable receipts
+  ---
+  duration_ms: 849.570417
+  type: 'test'
+  ...
+# Subtest: H13 consuming old local peer metadata is harmless in hub mode
+ok 43 - H13 consuming old local peer metadata is harmless in hub mode
+  ---
+  duration_ms: 12.420375
+  type: 'test'
+  ...
+# Subtest: H14 a host starting before its centre automatically reconnects
+ok 44 - H14 a host starting before its centre automatically reconnects
+  ---
+  duration_ms: 392.099292
+  type: 'test'
+  ...
+# Subtest: H21 native history repairs a lost consumption event after delivery acknowledgement
+ok 45 - H21 native history repairs a lost consumption event after delivery acknowledgement
+  ---
+  duration_ms: 81.651917
+  type: 'test'
+  ...
+# Subtest: H22 a late delivered ACK cannot erase locally observed consumption
+ok 46 - H22 a late delivered ACK cannot erase locally observed consumption
+  ---
+  duration_ms: 126.207917
+  type: 'test'
+  ...
+# Subtest: H10 hub binaries are packaged at 0.2.0 and centre acceptance is not delivery
+ok 47 - H10 hub binaries are packaged at 0.2.0 and centre acceptance is not delivery
+  ---
+  duration_ms: 2.058875
+  type: 'test'
+  ...
+# Subtest: H01 authenticated identity, unique names and workspace isolation
+ok 48 - H01 authenticated identity, unique names and workspace isolation
+  ---
+  duration_ms: 60.080542
+  type: 'test'
+  ...
+# Subtest: H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+ok 49 - H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+  ---
+  duration_ms: 15.299542
+  type: 'test'
+  ...
+# Subtest: H03 central request/question/answer/result ownership and consumption
+ok 50 - H03 central request/question/answer/result ownership and consumption
+  ---
+  duration_ms: 13.3945
+  type: 'test'
+  ...
+# Subtest: H04 offline queue, generation fencing and uncertain claim recovery
+ok 51 - H04 offline queue, generation fencing and uncertain claim recovery
+  ---
+  duration_ms: 8.909
+  type: 'test'
+  ...
+# Subtest: H05 durable pause, shared task budget and deadline cannot reset on restart
+ok 52 - H05 durable pause, shared task budget and deadline cannot reset on restart
+  ---
+  duration_ms: 15.571166
+  type: 'test'
+  ...
+# Subtest: H06 authentication, revocation, bounded input and local-only listeners
+ok 53 - H06 authentication, revocation, bounded input and local-only listeners
+  ---
+  duration_ms: 6.701042
+  type: 'test'
+  ...
+# Subtest: H11 retrying a lost claim response replays the original admission
+ok 54 - H11 retrying a lost claim response replays the original admission
+  ---
+  duration_ms: 4.977166
+  type: 'test'
+  ...
+# Subtest: H12 unknown receipts cannot starve later queued messages
+ok 55 - H12 unknown receipts cannot starve later queued messages
+  ---
+  duration_ms: 18.81825
+  type: 'test'
+  ...
+# Subtest: H15 names and workspaces reject coerced non-string values
+ok 56 - H15 names and workspaces reject coerced non-string values
+  ---
+  duration_ms: 17.449458
+  type: 'test'
+  ...
+# Subtest: H16 a completed interleaved task cannot mint a fresh budget for still-open work
+ok 57 - H16 a completed interleaved task cannot mint a fresh budget for still-open work
+  ---
+  duration_ms: 25.551625
+  type: 'test'
+  ...
+# Subtest: H17 claim replay is fenced by connection generation
+ok 58 - H17 claim replay is fenced by connection generation
+  ---
+  duration_ms: 5.681583
+  type: 'test'
+  ...
+# Subtest: H18 repeated unknown-receipt reconciliation cannot exhaust send capacity
+ok 59 - H18 repeated unknown-receipt reconciliation cannot exhaust send capacity
+  ---
+  duration_ms: 9.998167
+  type: 'test'
+  ...
+# Subtest: H20 a new authenticated generation can confirm a durable native receipt
+ok 60 - H20 a new authenticated generation can confirm a durable native receipt
+  ---
+  duration_ms: 5.747709
+  type: 'test'
+  ...
+# Subtest: G01/G07 local: new IDs with same content deliver once
+ok 61 - G01/G07 local: new IDs with same content deliver once
+  ---
+  duration_ms: 22.572
+  type: 'test'
+  ...
+# Subtest: G03/G07 local: seventh different message rejected
+ok 62 - G03/G07 local: seventh different message rejected
+  ---
+  duration_ms: 2.335459
+  type: 'test'
+  ...
+# Subtest: G06/G07 local: alternating novel replies stop
+ok 63 - G06/G07 local: alternating novel replies stop
+  ---
+  duration_ms: 4.052875
+  type: 'test'
+  ...
+# Subtest: G01/G07 socket: new IDs with same content deliver once
+ok 64 - G01/G07 socket: new IDs with same content deliver once
+  ---
+  duration_ms: 6.452125
+  type: 'test'
+  ...
+# Subtest: G03/G07 socket: seventh different message rejected
+ok 65 - G03/G07 socket: seventh different message rejected
+  ---
+  duration_ms: 4.334458
+  type: 'test'
+  ...
+# Subtest: G06/G07 socket: alternating novel replies stop
+ok 66 - G06/G07 socket: alternating novel replies stop
+  ---
+  duration_ms: 8.825833
+  type: 'test'
+  ...
+# Subtest: G02 exact bytes, rename, target/mode isolation and 60 s boundary
+ok 67 - G02 exact bytes, rename, target/mode isolation and 60 s boundary
+  ---
+  duration_ms: 2.712
+  type: 'test'
+  ...
+# Subtest: G04 20 messages at 5 s intervals: rejected attempts consume no quota
+ok 68 - G04 20 messages at 5 s intervals: rejected attempts consume no quota
+  ---
+  duration_ms: 2.460209
+  type: 'test'
+  ...
+# Subtest: G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional
+ok 69 - G05/G08/G09/G12 pause survives time/rename/steer/text commands; user resume directional
+  ---
+  duration_ms: 2.931291
+  type: 'test'
+  ...
+# Subtest: G10 scoped IDs and synchronous failure rollback
+ok 70 - G10 scoped IDs and synchronous failure rollback
+  ---
+  duration_ms: 1.562916
+  type: 'test'
+  ...
+# Subtest: G11 concurrent sends do not over-admit
+ok 71 - G11 concurrent sends do not over-admit
+  ---
+  duration_ms: 4.4315
+  type: 'test'
+  ...
+# Subtest: G11 capacity refuses new pair without evicting pause
+ok 72 - G11 capacity refuses new pair without evicting pause
+  ---
+  duration_ms: 1.627
+  type: 'test'
+  ...
+# Subtest: B15 actual native section augments the persona and can be disabled/disposed
+ok 73 - B15 actual native section augments the persona and can be disabled/disposed
+  ---
+  duration_ms: 5.720459
+  type: 'test'
+  ...
+# Subtest: UI01/UI04 receive metadata identifies exact original Unicode body
+ok 74 - UI01/UI04 receive metadata identifies exact original Unicode body
+  ---
+  duration_ms: 15.934958
+  type: 'test'
+  ...
+# Subtest: UI02 tool result carries structured outcome; uncertainty is not failure
+ok 75 - UI02 tool result carries structured outcome; uncertainty is not failure
+  ---
+  duration_ms: 4.831625
+  type: 'test'
+  ...
+# Subtest: UI06 structured result preserves title text and has a terminal role instruction
+ok 76 - UI06 structured result preserves title text and has a terminal role instruction
+  ---
+  duration_ms: 3.562667
+  type: 'test'
+  ...
+# Subtest: B01/B02 batch, partial result and consumption (local)
+ok 77 - B01/B02 batch, partial result and consumption (local)
+  ---
+  duration_ms: 11.356375
+  type: 'test'
+  ...
+# Subtest: B01/B02 batch, partial result and consumption (socket)
+ok 78 - B01/B02 batch, partial result and consumption (socket)
+  ---
+  duration_ms: 7.239542
+  type: 'test'
+  ...
+# Subtest: B03 clarification is scoped to one request and a matching question
+ok 79 - B03 clarification is scoped to one request and a matching question
+  ---
+  duration_ms: 3.137
+  type: 'test'
+  ...
+# Subtest: B04 results are exactly once and bound to participants
+ok 80 - B04 results are exactly once and bound to participants
+  ---
+  duration_ms: 2.172916
+  type: 'test'
+  ...
+# Subtest: B05 failed/partial admission cannot conclude; reservations roll back
+ok 81 - B05 failed/partial admission cannot conclude; reservations roll back
+  ---
+  duration_ms: 2.507958
+  type: 'test'
+  ...
+# Subtest: B06 pending/expired requests and false waits do not fabricate completion
+ok 82 - B06 pending/expired requests and false waits do not fabricate completion
+  ---
+  duration_ms: 1.665208
+  type: 'test'
+  ...
+# Subtest: B07 request messages retain source and explicit state; legacy still delivers
+ok 83 - B07 request messages retain source and explicit state; legacy still delivers
+  ---
+  duration_ms: 1.954833
+  type: 'test'
+  ...
+# Subtest: B03 fourth clarification is rejected while final result remains deliverable
+ok 84 - B03 fourth clarification is rejected while final result remains deliverable
+  ---
+  duration_ms: 2.133875
+  type: 'test'
+  ...
+# Subtest: B09 stale Host incarnation cannot deliver structured input
+ok 85 - B09 stale Host incarnation cannot deliver structured input
+  ---
+  duration_ms: 2.398875
+  type: 'test'
+  ...
+# Subtest: B13 explicit single-target request uses the same tracked lifecycle
+ok 86 - B13 explicit single-target request uses the same tracked lifecycle
+  ---
+  duration_ms: 9.416875
+  type: 'test'
+  ...
+# Subtest: B13 conflicting forms reject before any delivery
+ok 87 - B13 conflicting forms reject before any delivery
+  ---
+  duration_ms: 2.660958
+  type: 'test'
+  ...
+# Subtest: B13 missing or empty forms never conclude or deliver
+ok 88 - B13 missing or empty forms never conclude or deliver
+  ---
+  duration_ms: 1.907917
+  type: 'test'
+  ...
+1..88
+# tests 88
+# suites 0
+# pass 88
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1720.901375

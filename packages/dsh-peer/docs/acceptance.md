@@ -71,3 +71,35 @@ Final deterministic suite: 67/67; S01–S06 and SB01–SB03: 9/9. Final packed H
 Final independent model batch [batch-SiC278](../eval/results/batch-SiC278/report.md): changed 30/30, quiet 15/15, normal 15/15, zero rejected sends or budget stops; baseline 15/30. Earlier five B failures remain separate and are not pooled. This is fixed-regression acceptance, not an unseen-task or universal token-saving claim. The final client-only fallback is covered by component-validation.json and final browser evidence; all evaluated Host/tool/policy/harness/case hashes remain unchanged. Broader root budgets, persisted recovery and subscriptions remain outside minimum B.
 
 Final independent read-only acceptance: no blockers. Reviewer independently reran 67 tests, recalculated all 60 grades and token sums, checked all product/archive/harness hashes and final browser/Host evidence. Historical final-unit.tap belongs to A (42 tests); current B uses green-b-unit.tap.
+
+## Local hub (0.2.0)
+
+Frozen contract: [hub-spec.md](hub-spec.md). SQLite and local deployment are user-approved. End-to-end acceptance is dsh-to-dsh only; Claude has adapter contract coverage, no real CLI/session verification. No external model calls or model-quality claim.
+
+| Failure | Enforced regression and evidence |
+|---|---|
+| L-peer-016 | Centre identity, durable queue and task lifecycle absent: H01–H06, red-hub.tap; old implementation lacks the hub module |
+| L-peer-017 | Existing core ignored hub configuration and isolated registries could not communicate: H07/H08, red-hub-core.tap |
+| L-peer-018 | Lost claim response became unknown; unknown queue entries starved fresh work; initial outage did not reconnect; old local metadata threw: H11–H14, red-hub-recovery.tap |
+| L-peer-019 | Non-string names/workspaces were coerced by regex and poisoned discovery: H15, red-hub-names.tap |
+| L-peer-020 | Completing an interleaved incoming task allowed an unfinished task to obtain a new root budget: H16, red-hub-root.tap |
+| L-peer-021 | Claim cache replay crossed generations and reconciliation consumed send capacity: H17/H18, red-hub-claims.tap; bounded per-session generation-scoped cache |
+| L-peer-022 | Persisted delivery followed by native consumption could not be confirmed after a new host generation or lost callback: H20/H21, red-hub-delivered-recovery.tap |
+| L-peer-023 | Late delivered response could erase locally observed consume-pending: H22, red-hub-ack-race.tap in an isolated copy with core.ack's old assignment restored; final monotonic receipt/history reconciliation passes |
+| L-peer-024 | New binaries/version/accepted status and installed guides missing: H10, red-hub-package.tap and red-hub-pack-guides.tap; hub-pack.json verifies shipped files |
+| L-peer-025 | Hub-dependent tool text broke the existing default-mode evaluator's source parser during development: hub-full-unit.tap (84/85), then hub-eval-contract-green.tap and full final suite; original model cases/pass lines unchanged |
+
+| Feature | Verification |
+|---|---|
+| F-peer-H-01 authenticated registration | H01/H06/H15; identity binding, workspace isolation, revocation, origin and body bounds |
+| F-peer-H-02 durable recovery | H02/H04/H08/H11–H14/H17/H18/H20–H22; restart, idempotent claims, native proof, fenced generations |
+| F-peer-H-03 task state and budgets | H03/H05/H16; clarification/result, consume-before-next-task, nested root and directional limits |
+| F-peer-H-04 real dsh transport | H07, SH01–SH04 in hub-host-1793676433400/result.json; separate Host/home/registry, packed plugin, deterministic provider |
+| F-peer-H-05 Claude contract | H09, hub-claude-green.tap; bound identity, content-free notification, explicit ACK, unknown receipt refusal; no real Claude validation |
+| F-peer-H-06 package and UI | H10; hub-pack.json; hub-browser-1793676641372/result.json; original packed history UI in hub-local-regression/browser-history/result.json |
+
+Final implementation unit run: **88/88**, no failures/skips (`test/evidence/hub-final-unit.tap`). Original deterministic scenarios: **9/9**, and packed native handoff passed in `hub-local-regression/`. SH01–SH04: **4/4** after final runtime repairs; SH04 deliberately drops receiver ACKs and kills only the owned test Host, then checks native history prevents a second delivery. Every Host run has cleanup.json. Dashboard tests cover authenticated read, source title, nonduplicated body, keyboard, escaped content, 360px width and logout. Packaging-only guide inclusion was checked separately afterward.
+
+Initial Host failures are retained separately: hub-host-1793675132879 selected a runtime-context user envelope; hub-host-1793675352312 used the wrong resume option; hub-host-1793675453281 manually seeded an invalid persistent surface head. These are fixture failures, not product red proof. The passing fixture uses ordinary native user input and resumeSessionId. The initial hub-first-green.tap is a sandbox listen denial, not a product failure or passing run. Subsequent local-port tests ran with the authorized local-network permission.
+
+Independent final acceptance and local deployment metadata are recorded in hub-spec.md. Nested-root limits do not claim a whole-user-turn budget across newly created roots. Capacity rejects rather than evicts, unknown receipts remain unknown without proof, and public-network deployment is outside this release.

@@ -1,11 +1,17 @@
 # dsh-peer
 中文 | [English](README.md)
 
-同机 dsh 活跃会话之间的发现与异步消息投递，支持跨进程、跨 profile 和同进程会话。**0.1.2** 要求 **DSH 0.2.1-rc.5 及以上、低于 0.3**。子 agent 使用所属根会话身份。
+支持同机直连与中心通信两种模式。**0.2.0** 新增本地 SQLite 中心：设备注册、持久化收件箱、请求/结果、断线恢复和管理界面。要求 **DSH 0.2.1-rc.5 及以上、低于 0.3**。子 agent 使用所属根会话身份。
 
 ## 安装
 
-在 profile 依赖中加入 `@lbryany/dsh-peer@0.1.2`，在 `dsh.profile.bundles` 加入 `@lbryany/dsh-peer`，安装依赖后重启该 profile。本地开发可运行 `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`。安装与重启由用户明确操作。
+在 profile 依赖中加入 `@lbryany/dsh-peer@0.2.0`，在 `dsh.profile.bundles` 加入 `@lbryany/dsh-peer`，安装依赖后重启该 profile。未发布版本可用 `npm pack` 的本地包路径安装。本地开发可运行 `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`。安装与重启由用户明确操作。
+
+## 本地中心
+
+启动、配对与配置见[中心使用指南](docs/hub.zh.md)。设置 `config.hub.credentialFile` 后，本 profile 的发现与消息全部经过中心；未设置时继续使用下文的同机模式。本版仅监听本地回环地址，端到端验收范围是 dsh-dsh；Claude 适配器只有契约测试，尚未验证真实 Claude 会话。
+
+中心持久保存身份、消息、回执和方向保护。嵌套任务预算为每根任务最多 24 条消息、深度 4、期限 10 分钟；完成后新建根请求使用独立预算，仍受方向保护限制。这不是整个用户任务的全局 token 或轮数预算。中心暂停由管理员恢复，`/peer-resume` 不跨越此权限。
 
 ## 消息与控制
 
@@ -27,7 +33,7 @@
 
 模型仍收到完整来源说明与正文。提示规则要求仅发送新增任务、问题、实质进展或结果；纯确认、感谢、告别不回复，结果只发一次。接纳不等于任务完成。
 
-## 请求与结果
+## 同机模式的请求与结果
 
 任务协作优先使用 `peer_request` 和 `peer_reply`；`peer_send` 保留旧版兼容且不会结束当前轮。交接仅在全部投递成功时结束当前轮，部分失败或回执未知会返回逐项状态；已接纳项继续执行，不自动重发。宿主保留同一响应里的其他工具及后来到达的用户消息。
 
@@ -37,7 +43,7 @@
 
 宿主提供 SystemPrompt 服务时，插件注册普通协作规则，强调原用户范围、增量内容和真实结果，不替换 persona；`promptPolicy: false` 可关闭。完整 persona 可能屏蔽普通 section，因此确定性保护和工具提示始终保留。
 
-## 接收保护
+## 同机模式的接收保护
 
 保护位于共同的接收入口，覆盖同进程和 socket 投递，也覆盖旧发送端。
 
@@ -66,7 +72,7 @@
 
 参数必须为正整数；短窗口及数量不得超过长窗口及数量；longLimit 最多 64。`maxPairs` 可从 1024 调低，`maxFingerprints` 可从 64 调低。宿主可设 `protection: off` 关闭保护，模型工具不能修改。headless 没有命令界面，可通过受控重启或宿主配置恢复；重启会清空内存保护状态。
 
-## 结果与边界
+## 同机模式的结果与边界
 
 | 结果 | 含义 |
 |---|---|
@@ -83,7 +89,7 @@
 
 通道信任同一系统用户的合作会话，声明的发送身份不是对恶意进程的认证。不提供冷投递、跨机器传输、积压队列统计或已读回执。Windows named pipe 有实现，尚未实测。卡片的只读状态接口由 DSH Connection 限定为 owner 访问，并校验接收会话已登记且存活；共享会话的非 owner 不能查询。恢复使用宿主带会话授权的命令接口。
 
-## 存储与开发
+## 同机存储与开发
 
 注册表优先级：插件 `dir`、`DSH_PEER_DIR`、`XDG_RUNTIME_DIR/dsh-peer`、`~/.dsh-peer/run`。每进程持有 JSON、私有 key 和 socket，退出删除。改名默认存放于 `~/.dsh-peer/names.json`；测试或配置可用 `namesFile` 隔离。保护日志不写正文。协议单条请求最多 64 KiB，socket 超时为五秒。
 
@@ -95,6 +101,8 @@ npm run scenarios
 node scripts/request-scenarios.mjs
 node scripts/handoff-check.mjs
 npm run test:browser
+node scripts/hub-check.mjs
+node scripts/hub-browser-check.mjs
 npm pack --dry-run --json
 node eval/run.mjs --dry
 ```

@@ -5,6 +5,7 @@ import { PROTOCOL, createRegistry } from './registry.js';
 import { createTransport as defaultCreateTransport, MAX_REQUEST_BYTES } from './transport.js';
 import { createGuard } from './guard.js';
 import { createExchange, REQUEST_CAPABILITY } from './exchange.js';
+import { createHubCore } from './hub/core.js';
 
 export const NAME_RE = /^[a-z0-9][a-z0-9_-]{0,39}$/;
 const NAME_MAX = 40;
@@ -48,8 +49,9 @@ export function formatList(entries, { hidden = 0 } = {}) {
 export function createPeerCore({
   dir, pid = process.pid, procStart = null, profile = null, dshHome = null, argv1 = null, fixedName = null,
   agents, makeMessage, log = () => {}, now = Date.now, guardNow, protection = {}, guardOptions = {}, isAlive, procStartOf, namesFile,
-  requests = true, createTransport = defaultCreateTransport, token = randomBytes(32).toString('hex'), writeDelayMs = 50,
+  requests = true, createTransport = defaultCreateTransport, token = randomBytes(32).toString('hex'), writeDelayMs = 50, hub, persistMessage,
 }) {
+  if (hub) return createHubCore({ hub, dir, fixedName, agents, makeMessage, persistMessage, log });
   const registry = createRegistry({ dir, pid, ...(isAlive ? { isAlive } : {}), ...(procStartOf ? { procStartOf } : {}), ...(namesFile ? { namesFile } : {}) });
   const sessions = new Map(); // id → { id, name, nameSource, cwd, title, status, since, lastActiveAt }
   const pending = new Map(); // 还没有用户消息的会话（空草稿）：id → info，首条用户消息后才登记

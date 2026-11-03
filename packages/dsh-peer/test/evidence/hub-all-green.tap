@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: H09 Claude adapter binds identity, pushes hints only and requires explicit acknowledgement
+ok 1 - H09 Claude adapter binds identity, pushes hints only and requires explicit acknowledgement
+  ---
+  duration_ms: 2.855292
+  type: 'test'
+  ...
+# Subtest: H07 isolated dsh cores discover and exchange only through the centre
+ok 2 - H07 isolated dsh cores discover and exchange only through the centre
+  ---
+  duration_ms: 100.686875
+  type: 'test'
+  ...
+# Subtest: H08 stream reconnect delivers offline messages once and preserves durable receipts
+ok 3 - H08 stream reconnect delivers offline messages once and preserves durable receipts
+  ---
+  duration_ms: 835.946416
+  type: 'test'
+  ...
+# Subtest: H13 consuming old local peer metadata is harmless in hub mode
+ok 4 - H13 consuming old local peer metadata is harmless in hub mode
+  ---
+  duration_ms: 14.040875
+  type: 'test'
+  ...
+# Subtest: H14 a host starting before its centre automatically reconnects
+ok 5 - H14 a host starting before its centre automatically reconnects
+  ---
+  duration_ms: 391.956917
+  type: 'test'
+  ...
+# Subtest: H10 hub binaries are packaged at 0.2.0 and centre acceptance is not delivery
+ok 6 - H10 hub binaries are packaged at 0.2.0 and centre acceptance is not delivery
+  ---
+  duration_ms: 1.476375
+  type: 'test'
+  ...
+# Subtest: H01 authenticated identity, unique names and workspace isolation
+ok 7 - H01 authenticated identity, unique names and workspace isolation
+  ---
+  duration_ms: 32.726375
+  type: 'test'
+  ...
+# Subtest: H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+ok 8 - H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+  ---
+  duration_ms: 19.628792
+  type: 'test'
+  ...
+# Subtest: H03 central request/question/answer/result ownership and consumption
+ok 9 - H03 central request/question/answer/result ownership and consumption
+  ---
+  duration_ms: 38.138375
+  type: 'test'
+  ...
+# Subtest: H04 offline queue, generation fencing and uncertain claim recovery
+ok 10 - H04 offline queue, generation fencing and uncertain claim recovery
+  ---
+  duration_ms: 18.893667
+  type: 'test'
+  ...
+# Subtest: H05 durable pause, shared task budget and deadline cannot reset on restart
+ok 11 - H05 durable pause, shared task budget and deadline cannot reset on restart
+  ---
+  duration_ms: 15.00075
+  type: 'test'
+  ...
+# Subtest: H06 authentication, revocation, bounded input and local-only listeners
+ok 12 - H06 authentication, revocation, bounded input and local-only listeners
+  ---
+  duration_ms: 4.448583
+  type: 'test'
+  ...
+# Subtest: H11 retrying a lost claim response replays the original admission
+ok 13 - H11 retrying a lost claim response replays the original admission
+  ---
+  duration_ms: 4.095209
+  type: 'test'
+  ...
+# Subtest: H12 unknown receipts cannot starve later queued messages
+ok 14 - H12 unknown receipts cannot starve later queued messages
+  ---
+  duration_ms: 15.434333
+  type: 'test'
+  ...
+# Subtest: H15 names and workspaces reject coerced non-string values
+ok 15 - H15 names and workspaces reject coerced non-string values
+  ---
+  duration_ms: 6.326625
+  type: 'test'
+  ...
+# Subtest: H16 a completed interleaved task cannot mint a fresh budget for still-open work
+ok 16 - H16 a completed interleaved task cannot mint a fresh budget for still-open work
+  ---
+  duration_ms: 7.184125
+  type: 'test'
+  ...
+# Subtest: H17 claim replay is fenced by connection generation
+ok 17 - H17 claim replay is fenced by connection generation
+  ---
+  duration_ms: 4.852708
+  type: 'test'
+  ...
+# Subtest: H18 repeated unknown-receipt reconciliation cannot exhaust send capacity
+ok 18 - H18 repeated unknown-receipt reconciliation cannot exhaust send capacity
+  ---
+  duration_ms: 9.378542
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1441.91325

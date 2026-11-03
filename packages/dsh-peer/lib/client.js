@@ -124,8 +124,8 @@ summary.dsh-peer-head{cursor:pointer}summary.dsh-peer-head::-webkit-details-mark
   function PeerSendResult({ block, phase }) {
     const d = block.meta?.peer;
     const to = d?.target?.name || block.args?.string?.('to') || '';
-    const known = d?.version === 1 && ['queued', 'steered', 'duplicate', 'rejected', 'unknown'].includes(d.outcome);
-    const label = known ? ({ queued: '已接纳', steered: '已接纳插话', duplicate: '已接纳过', rejected: '未发送', unknown: '状态未知' })[d.outcome] : phase === 'result' ? '查看结果' : '发送中';
+    const known = d?.version === 1 && ['accepted', 'queued', 'steered', 'duplicate', 'rejected', 'unknown'].includes(d.outcome);
+    const label = known ? ({ accepted: '中心已受理', queued: '已接纳', steered: '已接纳插话', duplicate: '已接纳过', rejected: '未发送', unknown: '状态未知' })[d.outcome] : phase === 'result' ? '查看结果' : '发送中';
     return h('details', { className: 'dsh-peer-card', 'data-peer-send': true },
       h('summary', { className: 'dsh-peer-head' },
         h('span', { className: 'dsh-peer-heading' }, `本会话 → ${to ? '@' + to : 'peer'}`, known && d.text ? ` · ${d.text.split(/\r?\n/)[0]}` : ''),

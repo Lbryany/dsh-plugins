@@ -1,0 +1,4 @@
+Error: SessionPersistenceCorruptionError: session "session-bbbb-hub": stored log is corrupt: SessionFormatError: system/message requires a protected first surface head (raw log: /var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-hub-host-2vhrI1/reviewer/home/sessions/--var-folders-5c-fl7vt7ts6nbblnvbs7kwbz540000gn-T-peer-hub-host-2vhrI1-reviewer--/session-bbbb-hub/session.v4.jsonl.zstd)
+    at Proxy.decodeStoredLog (file:///opt/homebrew/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-session-persistence-jsonl/lib/index.js:2861:10)
+    at until (file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/scripts/hub-check.mjs:19:186)
+    at async file:///Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/scripts/hub-check.mjs:87:22

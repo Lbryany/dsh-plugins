@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: H01 authenticated identity, unique names and workspace isolation
+not ok 1 - H01 authenticated identity, unique names and workspace isolation
+  ---
+  duration_ms: 36.758917
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:35:1'
+  failureType: 'testCodeFailure'
+  error: 'listen EPERM: operation not permitted 127.0.0.1'
+  code: 'EPERM'
+  stack: |-
+    Server.setupListenHandle [as _listen2] (node:net:2368:21)
+    listenInCluster (node:net:2499:12)
+    node:net:2728:7
+    process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+  ...
+# Subtest: H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+not ok 2 - H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+  ---
+  duration_ms: 1.351084
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:50:1'
+  failureType: 'testCodeFailure'
+  error: 'listen EPERM: operation not permitted 127.0.0.1'
+  code: 'EPERM'
+  stack: |-
+    Server.setupListenHandle [as _listen2] (node:net:2368:21)
+    listenInCluster (node:net:2499:12)
+    node:net:2728:7
+    process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+  ...
+# Subtest: H03 central request/question/answer/result ownership and consumption
+not ok 3 - H03 central request/question/answer/result ownership and consumption
+  ---
+  duration_ms: 1.291959
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:73:1'
+  failureType: 'testCodeFailure'
+  error: 'listen EPERM: operation not permitted 127.0.0.1'
+  code: 'EPERM'
+  stack: |-
+    Server.setupListenHandle [as _listen2] (node:net:2368:21)
+    listenInCluster (node:net:2499:12)
+    node:net:2728:7
+    process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+  ...
+# Subtest: H04 offline queue, generation fencing and uncertain claim recovery
+not ok 4 - H04 offline queue, generation fencing and uncertain claim recovery
+  ---
+  duration_ms: 1.806
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:94:1'
+  failureType: 'testCodeFailure'
+  error: 'listen EPERM: operation not permitted 127.0.0.1'
+  code: 'EPERM'
+  stack: |-
+    Server.setupListenHandle [as _listen2] (node:net:2368:21)
+    listenInCluster (node:net:2499:12)
+    node:net:2728:7
+    process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+  ...
+# Subtest: H05 durable pause, shared task budget and deadline cannot reset on restart
+not ok 5 - H05 durable pause, shared task budget and deadline cannot reset on restart
+  ---
+  duration_ms: 1.455875
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:112:1'
+  failureType: 'testCodeFailure'
+  error: 'listen EPERM: operation not permitted 127.0.0.1'
+  code: 'EPERM'
+  stack: |-
+    Server.setupListenHandle [as _listen2] (node:net:2368:21)
+    listenInCluster (node:net:2499:12)
+    node:net:2728:7
+    process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+  ...
+# Subtest: H06 authentication, revocation, bounded input and local-only listeners
+not ok 6 - H06 authentication, revocation, bounded input and local-only listeners
+  ---
+  duration_ms: 0.932083
+  type: 'test'
+  location: '/Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/test/hub.test.mjs:135:1'
+  failureType: 'testCodeFailure'
+  error: 'listen EPERM: operation not permitted 127.0.0.1'
+  code: 'EPERM'
+  stack: |-
+    Server.setupListenHandle [as _listen2] (node:net:2368:21)
+    listenInCluster (node:net:2499:12)
+    node:net:2728:7
+    process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 0
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 110.512208

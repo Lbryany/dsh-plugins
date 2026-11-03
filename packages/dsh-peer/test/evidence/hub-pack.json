@@ -1,0 +1,161 @@
+[
+  {
+    "id": "@lbryany/dsh-peer@0.2.0",
+    "name": "@lbryany/dsh-peer",
+    "version": "0.2.0",
+    "size": 58610,
+    "unpackedSize": 173024,
+    "shasum": "d806ff549abe6cb4dc17e17b07702c6565a432a7",
+    "integrity": "sha512-d+iVqnO6HrOWbxnbiNCah8kN0J6R3CicSk7FObYaFqvDmQjiHg89P/BwoBAq+kN3oetbX3Jy5ffcal7uU6pFsQ==",
+    "filename": "lbryany-dsh-peer-0.2.0.tgz",
+    "files": [
+      {
+        "path": "LICENSE",
+        "size": 1066,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 10186,
+        "mode": 420
+      },
+      {
+        "path": "README.zh.md",
+        "size": 8954,
+        "mode": 420
+      },
+      {
+        "path": "bin/claude.js",
+        "size": 2202,
+        "mode": 493
+      },
+      {
+        "path": "bin/hub.js",
+        "size": 4488,
+        "mode": 493
+      },
+      {
+        "path": "cordis.patch.yml",
+        "size": 61,
+        "mode": 420
+      },
+      {
+        "path": "docs/hub.md",
+        "size": 4517,
+        "mode": 420
+      },
+      {
+        "path": "docs/hub.zh.md",
+        "size": 3980,
+        "mode": 420
+      },
+      {
+        "path": "index.js",
+        "size": 11373,
+        "mode": 420
+      },
+      {
+        "path": "lib/client.js",
+        "size": 15590,
+        "mode": 420
+      },
+      {
+        "path": "lib/core.js",
+        "size": 22406,
+        "mode": 420
+      },
+      {
+        "path": "lib/exchange.js",
+        "size": 10415,
+        "mode": 420
+      },
+      {
+        "path": "lib/guard.js",
+        "size": 3589,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/claude.js",
+        "size": 3969,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/client.js",
+        "size": 4346,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/core.js",
+        "size": 9881,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/server.js",
+        "size": 5868,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/service.js",
+        "size": 22034,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/store.js",
+        "size": 1780,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/web/app.js",
+        "size": 3950,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/web/index.html",
+        "size": 1660,
+        "mode": 420
+      },
+      {
+        "path": "lib/hub/web/style.css",
+        "size": 3154,
+        "mode": 420
+      },
+      {
+        "path": "lib/message.js",
+        "size": 2044,
+        "mode": 420
+      },
+      {
+        "path": "lib/policy.js",
+        "size": 777,
+        "mode": 420
+      },
+      {
+        "path": "lib/registry.js",
+        "size": 4786,
+        "mode": 420
+      },
+      {
+        "path": "lib/request-tools.js",
+        "size": 2691,
+        "mode": 420
+      },
+      {
+        "path": "lib/status-route.js",
+        "size": 856,
+        "mode": 420
+      },
+      {
+        "path": "lib/transport.js",
+        "size": 3798,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 2603,
+        "mode": 420
+      }
+    ],
+    "entryCount": 29,
+    "bundled": []
+  }
+]

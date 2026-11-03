@@ -1,0 +1,58 @@
+[
+  {
+    "id": "S01",
+    "covers": [
+      "F-peer-A-01"
+    ],
+    "accepted": 1,
+    "pausedEvents": 0,
+    "status": "passed"
+  },
+  {
+    "id": "S02",
+    "covers": [
+      "F-peer-A-02"
+    ],
+    "accepted": 6,
+    "pausedEvents": 0,
+    "status": "passed"
+  },
+  {
+    "id": "S03",
+    "covers": [
+      "F-peer-A-02",
+      "F-peer-A-03"
+    ],
+    "accepted": 13,
+    "pausedEvents": 1,
+    "status": "passed"
+  },
+  {
+    "id": "S04",
+    "covers": [
+      "F-peer-A-01",
+      "F-peer-A-04"
+    ],
+    "accepted": 7,
+    "pausedEvents": 0,
+    "status": "passed"
+  },
+  {
+    "id": "S05",
+    "covers": [
+      "F-peer-A-03"
+    ],
+    "accepted": 1,
+    "pausedEvents": 0,
+    "status": "passed"
+  },
+  {
+    "id": "S06",
+    "covers": [
+      "F-peer-A-04"
+    ],
+    "accepted": 2,
+    "pausedEvents": 0,
+    "status": "passed"
+  }
+]

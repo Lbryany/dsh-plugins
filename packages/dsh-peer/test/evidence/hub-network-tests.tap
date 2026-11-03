@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: H01 authenticated identity, unique names and workspace isolation
+ok 1 - H01 authenticated identity, unique names and workspace isolation
+  ---
+  duration_ms: 40.836
+  type: 'test'
+  ...
+# Subtest: H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+ok 2 - H02 durable inbox, idempotent sends and explicit receipts survive centre restart
+  ---
+  duration_ms: 10.752375
+  type: 'test'
+  ...
+# Subtest: H03 central request/question/answer/result ownership and consumption
+ok 3 - H03 central request/question/answer/result ownership and consumption
+  ---
+  duration_ms: 11.135375
+  type: 'test'
+  ...
+# Subtest: H04 offline queue, generation fencing and uncertain claim recovery
+ok 4 - H04 offline queue, generation fencing and uncertain claim recovery
+  ---
+  duration_ms: 7.2015
+  type: 'test'
+  ...
+# Subtest: H05 durable pause, shared task budget and deadline cannot reset on restart
+ok 5 - H05 durable pause, shared task budget and deadline cannot reset on restart
+  ---
+  duration_ms: 13.225292
+  type: 'test'
+  ...
+# Subtest: H06 authentication, revocation, bounded input and local-only listeners
+ok 6 - H06 authentication, revocation, bounded input and local-only listeners
+  ---
+  duration_ms: 4.317083
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 161.230584

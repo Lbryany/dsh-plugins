@@ -1,0 +1,12 @@
+{
+  "centre": {
+    "url": "http://127.0.0.1:3987",
+    "pid": 10114,
+    "version": "0.2.0"
+  },
+  "adminMode": 384,
+  "databaseMode": 384,
+  "matchingProcesses": [
+    "10114     1 /opt/homebrew/Cellar/node/26.13.0_1/bin/node /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/bin/hub.js serve --dir /Users/bryanlee/Projects/dsh-plugins/packages/dsh-peer/.local/hub --port 3987"
+  ]
+}

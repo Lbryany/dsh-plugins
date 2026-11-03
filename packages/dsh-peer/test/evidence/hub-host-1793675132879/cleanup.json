@@ -1,0 +1,17 @@
+{
+  "temporaryHomeRemoved": true,
+  "children": [
+    {
+      "name": "alice",
+      "pid": 8448,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "name": "reviewer",
+      "pid": 8459,
+      "exitCode": 0,
+      "signal": null
+    }
+  ]
+}

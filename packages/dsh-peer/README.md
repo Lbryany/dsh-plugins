@@ -1,11 +1,17 @@
 # dsh-peer
 [中文](README.zh.md) | English
 
-Discovery and asynchronous messaging between live dsh sessions on the same machine, across processes and profiles or within one process. Version **0.1.2** requires **DSH 0.2.1-rc.5 or newer, below 0.3**. Child agents use their registered root session's identity.
+Supports local direct messaging and a central hub. **0.2.0** adds a local SQLite hub with device registration, durable inboxes, request/result coordination, reconnect recovery and a dashboard. Requires **DSH 0.2.1-rc.5 or newer, below 0.3**. Child agents use their registered root session's identity.
 
 ## Install
 
-Add `@lbryany/dsh-peer@0.1.2` to the profile's dependencies and `@lbryany/dsh-peer` to `dsh.profile.bundles`, install dependencies and restart that profile. Local development can run `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`. Installation and restart are explicit user operations.
+Add `@lbryany/dsh-peer@0.2.0` to the profile's dependencies and `@lbryany/dsh-peer` to `dsh.profile.bundles`, install dependencies and restart that profile. Unpublished builds can be installed from a local `npm pack` artifact. Local development can run `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`. Installation and restart are explicit user operations.
+
+## Local hub
+
+See the [hub guide](docs/hub.md) for startup, pairing and configuration. Setting `config.hub.credentialFile` routes all discovery and messaging for that profile through the hub; otherwise the local mode below remains active. This release only listens on loopback. End-to-end acceptance covers dsh-to-dsh; the Claude adapter has contract tests only and has not been validated in a real Claude session.
+
+The hub persists identities, messages, receipts and directional protection. Nested task budgets allow 24 messages/root, depth 4 and a ten-minute deadline. A new root after completion has a separate budget and still encounters directional protection. This is not a global token/turn budget for an entire user task. Only a hub administrator can resume a central pause; `/peer-resume` cannot cross that permission boundary.
 
 ## Messages and controls
 
@@ -27,7 +33,7 @@ The received card reads **来自 @reviewer · original first line**. Click or us
 
 The model receives the full origin envelope and message. It is instructed to send only new tasks, questions, substantive progress or results; acknowledgements, thanks and farewells need no reply. Results should be sent once. Receipt is not task completion.
 
-## Requests and results
+## Local-mode requests and results
 
 Prefer `peer_request` and `peer_reply` for collaboration; legacy `peer_send` never concludes the current turn. Handoff concludes only when every delivery is accepted. Partial failure or unknown acknowledgement returns itemized state; accepted work continues and is never automatically resent. The Host retains other calls from the same response and newly arriving user messages.
 
@@ -37,7 +43,7 @@ Both endpoints must support `request-result-v1`; old endpoints return unsupporte
 
 When the Host exposes SystemPrompt, the plugin adds an ordinary collaboration policy for user scope, incremental content and truthful results without replacing the persona. `promptPolicy: false` disables it. A complete persona can suppress ordinary sections, so deterministic guards and tool hints remain.
 
-## Receive protection
+## Local-mode receive protection
 
 Protection is enforced at the common receiver entry, covering local and socket delivery, including old senders.
 
@@ -66,7 +72,7 @@ Host configuration example:
 
 Positive integer values only; short window/limit cannot exceed long window/limit; longLimit is at most 64. `maxPairs` can be reduced from 1024 and `maxFingerprints` from 64. Host-only `protection: off` disables these guards. Model tools cannot change protection. Headless has no command UI: use controlled restart or host configuration. Restart clears in-memory protection.
 
-## Outcomes and limits
+## Local-mode outcomes and limits
 
 | Result | Meaning |
 |---|---|
@@ -83,7 +89,7 @@ Address, token, missing-session and connectivity errors retain explanatory text.
 
 The transport assumes cooperative sessions owned by the same OS user; its claimed sender identity is not hostile-process authentication. It offers no cold delivery, remote-machine transport, backlog count or read receipts. Windows named pipes are implemented but not verified. The card's read-only status endpoint is owner-only under the DSH Connection policy and validates a live registered receiving session; shared non-owner viewers cannot query it. Recovery uses the host's session-authorized command API.
 
-## Storage and development
+## Local storage and development
 
 Registry precedence: plugin `dir`, `DSH_PEER_DIR`, `XDG_RUNTIME_DIR/dsh-peer`, then `~/.dsh-peer/run`. Each process owns a JSON record, a private key and a socket; stop removes them. Rename storage defaults to `~/.dsh-peer/names.json`; test/config `namesFile` isolates it. No message bodies are written to guard logs. Protocol requests are limited to 64 KiB; socket timeout is five seconds.
 
@@ -95,6 +101,8 @@ npm run scenarios
 node scripts/request-scenarios.mjs
 node scripts/handoff-check.mjs
 npm run test:browser
+node scripts/hub-check.mjs
+node scripts/hub-browser-check.mjs
 npm pack --dry-run --json
 node eval/run.mjs --dry
 ```
