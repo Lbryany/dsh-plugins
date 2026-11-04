@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Peer Hub 控制台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a switchboard. Fixed left rail of views, a status strip across the top,
+   and a work surface that puts summary before detail. Dark-first; light is a full palette. */
+:root {
+  color-scheme: dark;
+  --bg: #0f1216;
+  --bg-2: #141922;
+  --panel: #181e28;
+  --panel-2: #1f2633;
+  --line: #2a3240;
+  --line-2: #364050;
+  --fg: #e6e9ef;
+  --fg-2: #a8b1c0;
+  --fg-3: #717c8d;
+  --accent: #e4b45c;      /* the lamp on the switchboard */
+  --accent-ink: #1a1304;
+  --ok: #5ec48d;
+  --busy: #78a9ff;
+  --warn: #f08a5d;
+  --bad: #ef6f7b;
+  --unknown: #b39ddb;
+  --rt-dsh: #5ec48d;
+  --rt-claude: #e4b45c;
+  --rt-codex: #78a9ff;
+  --rt-grok: #d98ac4;
+  --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #f3f1ec; --bg-2: #ebe8e1; --panel: #fbfaf7; --panel-2: #f1eee7;
+    --line: #dcd7cc; --line-2: #c9c3b6; --fg: #1c1f26; --fg-2: #4e5564; --fg-3: #80889a;
+    --accent: #b8841c; --accent-ink: #fffdf6;
+    --ok: #238a55; --busy: #2f63c9; --warn: #c7581f; --bad: #c73f4c; --unknown: #7a5cb3;
+    --rt-dsh: #238a55; --rt-claude: #b8841c; --rt-codex: #2f63c9; --rt-grok: #b24e95;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f1ec; --bg-2: #ebe8e1; --panel: #fbfaf7; --panel-2: #f1eee7;
+  --line: #dcd7cc; --line-2: #c9c3b6; --fg: #1c1f26; --fg-2: #4e5564; --fg-3: #80889a;
+  --accent: #b8841c; --accent-ink: #fffdf6;
+  --ok: #238a55; --busy: #2f63c9; --warn: #c7581f; --bad: #c73f4c; --unknown: #7a5cb3;
+  --rt-dsh: #238a55; --rt-claude: #b8841c; --rt-codex: #2f63c9; --rt-grok: #b24e95;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+code, .mono { font-family: var(--mono); font-size: 12.5px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -.01em; text-wrap: balance; margin: 0; }
+h2 { font-size: 20px; }
+h3 { font-size: 15px; }
+.num { font-variant-numeric: tabular-nums; }
+[hidden] { display: none !important; }
+
+/* App frame */
+.app { display: grid; grid-template-columns: 232px 1fr; grid-template-rows: 52px 1fr; height: 100%; }
+.strip { grid-column: 1 / -1; display: flex; align-items: center; gap: 18px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); background: var(--bg-2); }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 17px; white-space: nowrap; flex-shrink: 0; }
+.brand .lamp { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.brand .ver { font: 500 11px var(--mono); color: var(--fg-3); margin-left: 2px; }
+.endpoint { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--fg-2); min-width: 0; white-space: nowrap; overflow: hidden; }
+.endpoint .tls { color: var(--ok); }
+.strip .spacer { flex: 1; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12px; color: var(--fg-2); white-space: nowrap; }
+.chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+select.chip { background: var(--panel); appearance: auto; width: auto; padding: 0 9px; }
+.rail { border-right: 1px solid var(--line); background: var(--bg-2); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
+.rail a { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: 8px; text-decoration: none; color: var(--fg-2); font-size: 13.5px; }
+.rail a:hover { background: var(--panel); color: var(--fg); }
+.rail a.active { background: var(--panel-2); color: var(--fg); box-shadow: inset 2px 0 0 var(--accent); }
+.rail .count { font: 500 11px var(--mono); color: var(--fg-3); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; }
+.rail .group { margin: 14px 12px 4px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-3); }
+.rail .foot { margin-top: auto; padding: 10px 12px 0; font-size: 11.5px; color: var(--fg-3); line-height: 1.5; border-top: 1px solid var(--line); }
+.surface { overflow: auto; padding: 28px max(24px, env(safe-area-inset-right, 0px)) 48px max(24px, env(safe-area-inset-left, 0px)); min-width: 0; }
+.view { display: none; max-width: 1180px; margin: 0 auto; }
+.view.active { display: block; }
+.view-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.view-head p { margin: 4px 0 0; color: var(--fg-2); max-width: 64ch; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Controls */
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 13px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--panel); cursor: pointer; font-size: 13px; white-space: nowrap; }
+.btn:hover { border-color: var(--fg-3); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.danger { color: var(--bad); }
+.btn.sm { height: 26px; padding: 0 9px; font-size: 12px; }
+.btn:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input, select, textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+label { font-size: 12.5px; color: var(--fg-2); display: block; margin-bottom: 5px; }
+.field { display: flex; flex-direction: column; }
+
+/* Pills and badges */
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; border: 1px solid transparent; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.pill.busy { color: var(--busy); background: color-mix(in srgb, var(--busy) 12%, transparent); }
+.pill.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); }
+.pill.bad { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
+.pill.unknown { color: var(--unknown); background: color-mix(in srgb, var(--unknown) 14%, transparent); }
+.pill.off { color: var(--fg-3); background: var(--panel-2); }
+.rt { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 5px; font: 500 11px var(--mono); letter-spacing: .02em; border: 1px solid currentColor; }
+.rt.dsh { color: var(--rt-dsh); } .rt.claude { color: var(--rt-claude); } .rt.codex { color: var(--rt-codex); } .rt.grok { color: var(--rt-grok); }
+
+/* Panels and tiles */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.panel > .ph { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.panel > .ph p { margin: 0; color: var(--fg-3); font-size: 12px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.tile .k { font-size: 12px; color: var(--fg-2); display: flex; justify-content: space-between; }
+.tile .v { font-family: var(--display); font-size: 30px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.tile .s { font-size: 12px; color: var(--fg-3); }
+.tile.alert { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+.tile.alert .v { color: var(--warn); }
+.two { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+@media (max-width: 980px) { .two { grid-template-columns: 1fr; } }
+
+/* Member cards */
+.hosts { display: flex; flex-direction: column; gap: 18px; }
+.host-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.host-head h3 { font-size: 15px; }
+.host-head .meta { color: var(--fg-3); font-size: 12px; font-family: var(--mono); }
+.members { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.member { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 10px; min-width: 0; }
+.member.offline { opacity: .62; }
+.member .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.member .name { font-family: var(--display); font-size: 17px; font-weight: 700; }
+.member .name::before { content: "@"; color: var(--fg-3); font-weight: 500; }
+.member .line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.member .cwd { font-family: var(--mono); font-size: 11.5px; color: var(--fg-3); overflow-wrap: anywhere; }
+.member .foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 12px; color: var(--fg-2); }
+.member .inbox { display: inline-flex; align-items: center; gap: 5px; }
+.member .inbox b { font-family: var(--mono); font-weight: 500; color: var(--accent); }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 500; font-size: 11.5px; color: var(--fg-3); letter-spacing: .04em; text-transform: uppercase; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+tr:hover td { background: color-mix(in srgb, var(--panel-2) 60%, transparent); }
+td.mono { color: var(--fg-2); }
+.tablewrap { overflow-x: auto; }
+.peer { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.peer .at { color: var(--fg-3); }
+.peer b { font-weight: 600; }
+
+/* Delivery stepper */
+.steps { display: inline-grid; grid-auto-flow: column; gap: 3px; align-items: center; }
+.steps i { display: block; width: 18px; height: 5px; border-radius: 3px; background: var(--line-2); }
+.steps i.on { background: var(--ok); }
+.steps i.now { background: var(--accent); }
+.steps i.bad { background: var(--bad); }
+.steps i.unk { background: var(--unknown); }
+.stepcell { display: flex; flex-direction: column; gap: 5px; }
+.stepcell small { color: var(--fg-3); font-size: 11.5px; }
+
+/* Request lineage */
+.tree { display: flex; flex-direction: column; }
+.req { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.req:last-child { border-bottom: 0; }
+.req .depth { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line-2); font: 500 10.5px var(--mono); display: grid; place-items: center; color: var(--fg-3); }
+.req .flow { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.req .arrow { color: var(--fg-3); }
+.req .text { color: var(--fg-2); font-size: 12.5px; overflow-wrap: anywhere; flex-basis: 100%; }
+.req .budget { font: 500 11.5px var(--mono); color: var(--fg-3); white-space: nowrap; }
+.req.d1 { padding-left: 40px; } .req.d2 { padding-left: 64px; }
+.req.d1 .depth, .req.d2 .depth { border-style: dashed; }
+
+/* Activity feed */
+.feed { display: flex; flex-direction: column; }
+.ev { display: grid; grid-template-columns: 56px 10px 1fr; gap: 10px; padding: 9px 16px; border-bottom: 1px solid var(--line); align-items: start; }
+.ev:last-child { border-bottom: 0; }
+.ev time { font: 400 11.5px var(--mono); color: var(--fg-3); padding-top: 2px; }
+.ev .mark { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; background: var(--fg-3); }
+.ev .mark.ok { background: var(--ok); } .ev .mark.acc { background: var(--accent); } .ev .mark.warn { background: var(--warn); } .ev .mark.bad { background: var(--bad); } .ev .mark.busy { background: var(--busy); }
+.ev .t { font-size: 13px; }
+.ev .t small { display: block; color: var(--fg-3); font-size: 11.5px; }
+
+/* Pairing */
+.pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .pair-grid { grid-template-columns: 1fr; } }
+.form { padding: 16px; display: grid; gap: 12px; }
+.form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.code-box { margin: 0 16px 16px; padding: 16px; border-radius: 8px; border: 1px dashed var(--line-2); background: var(--bg); display: grid; gap: 10px; }
+.code-box .code { font: 500 28px var(--mono); letter-spacing: .14em; color: var(--accent); }
+.code-box .ttl { font-size: 12px; color: var(--fg-3); }
+.cmd { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; color: var(--fg-2); }
+.steps-list { margin: 0; padding: 0 16px 16px 34px; color: var(--fg-2); font-size: 13px; display: grid; gap: 6px; }
+.pending { display: grid; gap: 10px; padding: 12px 16px; }
+.pending .item { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.pending .item .who { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pending .item small { color: var(--fg-3); font-family: var(--mono); font-size: 11.5px; display: block; margin-top: 3px; }
+
+/* Protection */
+.dir { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.dir:last-child { border-bottom: 0; }
+.dir .why { color: var(--fg-3); font-size: 12px; display: block; }
+.win { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; padding: 16px; }
+.win div { font-size: 12px; color: var(--fg-2); }
+.win b { display: block; font: 500 15px var(--mono); color: var(--fg); margin-top: 2px; }
+
+/* Login */
+.login-wrap { min-height: 100%; display: grid; place-items: center; padding: 40px 16px; }
+.login { width: min(440px, 100%); display: grid; gap: 18px; }
+.login .mark { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 22px; font-weight: 700; }
+.login .mark .lamp { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
+.login .panel { padding: 18px; display: grid; gap: 12px; }
+.login .hint { font-size: 12px; color: var(--fg-3); line-height: 1.5; }
+.login .ep { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--fg-2); padding: 8px 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--line); }
+
+/* Preview switch: lets the reader flip views and theme without a server */
+.preview-bar { position: fixed; right: 14px; bottom: 14px; display: flex; gap: 6px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 999px; padding: 5px; box-shadow: 0 8px 28px rgba(0,0,0,.28); z-index: 20; }
+.preview-bar .btn { height: 26px; font-size: 12px; border-radius: 999px; }
+.note { font-size: 12px; color: var(--fg-3); margin-top: 10px; }
+.toast { position: fixed; left: 50%; bottom: 60px; transform: translateX(-50%); background: var(--panel-2); border: 1px solid var(--line-2); padding: 8px 14px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity .18s; pointer-events: none; }
+.toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 52px auto 1fr; }
+  .rail { flex-direction: row; overflow-x: auto; padding: 8px 10px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .rail .group, .rail .foot { display: none; }
+  .rail a { white-space: nowrap; }
+  .endpoint, .strip .ws { display: none; }
+  .req { grid-template-columns: auto 1fr; }
+  .req .budget, .req .pill-col { grid-column: 2; }
+  .dir { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <header class="strip">
+    <div class="brand"><span class="lamp"></span>Peer Hub <span class="ver">0.3.0-dev</span></div>
+    <div class="endpoint"><span class="tls">TLS</span><span>https://hub.example.net</span><span>·</span><span>运行 6 天 4 小时</span></div>
+    <span class="spacer"></span>
+    <select class="chip ws" id="ws" aria-label="工作区"><option>workspace · default</option><option>workspace · research</option></select>
+    <span class="chip"><span class="dot"></span>操作员 bryan</span>
+    <button class="btn sm" id="logout">退出</button>
+  </header>
+
+  <nav class="rail" aria-label="视图">
+    <a href="#overview" data-view="overview">概览</a>
+    <a href="#members" data-view="members">成员 <span class="count">7</span></a>
+    <a href="#requests" data-view="requests">任务 <span class="count">3</span></a>
+    <a href="#messages" data-view="messages">消息 <span class="count">12</span></a>
+    <div class="group">接入</div>
+    <a href="#devices" data-view="devices">设备与配对 <span class="count">1</span></a>
+    <a href="#protection" data-view="protection">接收保护 <span class="count" style="color:var(--warn)">1</span></a>
+    <div class="foot">SQLite · 1,284 条消息 / 10,000<br>租约 45 s · 根任务 24 条 / 深度 4</div>
+  </nav>
+
+  <main class="surface">
+
+    <!-- 概览 -->
+    <section class="view" id="view-overview">
+      <div class="view-head">
+        <div><h2>概览</h2><p>先看需要处理的，再看流水。中心只受理和转交，agent 在各自宿主执行。</p></div>
+        <div class="actions"><button class="btn">刷新</button><button class="btn primary" data-go="devices">添加设备</button></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="k">在线成员 <span class="num">7 / 9</span></div><div class="v num">7</div><div class="s">4 台机器 · 4 种 runtime</div></div>
+        <div class="tile"><div class="k">待投递</div><div class="v num">2</div><div class="s">已受理，接收端尚未领取</div></div>
+        <div class="tile"><div class="k">进行中的任务</div><div class="v num">3</div><div class="s">1 个等待回答 · 根深度最大 2</div></div>
+        <div class="tile alert"><div class="k">已暂停方向</div><div class="v num">1</div><div class="s">需操作员恢复，不会自动解除</div></div>
+      </div>
+      <div class="two">
+        <div class="panel">
+          <div class="ph"><h3>最近活动</h3><p>最近 15 分钟</p></div>
+          <div class="feed">
+            <div class="ev"><time>14:32:08</time><span class="mark warn"></span><div class="t">@builder → @reviewer 方向暂停<small>10 分钟内 12 条达到上限 · 等待操作员恢复</small></div></div>
+            <div class="ev"><time>14:31:40</time><span class="mark ok"></span><div class="t">@reviewer 消费了 @alice 的 result<small>req 7c1e… 完成 · 释放请求槽位</small></div></div>
+            <div class="ev"><time>14:30:12</time><span class="mark acc"></span><div class="t">@alice 交付 result 给 @reviewer<small>中心已受理 · 2.1 KB</small></div></div>
+            <div class="ev"><time>14:27:55</time><span class="mark busy"></span><div class="t">@grok 读取收件箱并确认 2 条<small>Grok Bot · 通过 hook 在提交前拉取</small></div></div>
+            <div class="ev"><time>14:25:03</time><span class="mark ok"></span><div class="t">设备 vps-worker 通过配对码加入<small>workspace default · 凭据 90 天 · 来自 203.0.113.8</small></div></div>
+            <div class="ev"><time>14:21:30</time><span class="mark"></span><div class="t">@codex-builder 离线<small>租约到期 · 保留收件箱 3 条</small></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><h3>成员一览</h3><p>按 runtime</p></div>
+          <div class="tablewrap"><table>
+            <thead><tr><th>Runtime</th><th>在线</th><th>唤醒方式</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rt dsh">dsh</span></td><td class="num">2 / 2</td><td>SSE 推送 → 宿主注入</td></tr>
+              <tr><td><span class="rt claude">claude-code</span></td><td class="num">2 / 2</td><td>MCP channel 推送</td></tr>
+              <tr><td><span class="rt codex">codex</span></td><td class="num">1 / 2</td><td><code>codex queue</code> 注入</td></tr>
+              <tr><td><span class="rt grok">grok-bot</span></td><td class="num">2 / 3</td><td>hook 拉取 + 桌面提醒</td></tr>
+            </tbody>
+          </table></div>
+          <p class="note" style="padding:0 16px 14px">唤醒只是提醒。正文始终从中心收件箱读取，ACK 不会触发模型回合。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 成员 -->
+    <section class="view" id="view-members">
+      <div class="view-head">
+        <div><h2>成员</h2><p>按机器分组。每张卡是一个注册到中心的会话，名字在工作区内唯一。</p></div>
+        <div class="actions"><select class="chip" aria-label="筛选"><option>全部 runtime</option><option>dsh</option><option>claude-code</option><option>codex</option><option>grok-bot</option></select><button class="btn">刷新</button></div>
+      </div>
+      <div class="hosts" id="hosts"></div>
+    </section>
+
+    <!-- 任务 -->
+    <section class="view" id="view-requests">
+      <div class="view-head">
+        <div><h2>任务</h2><p>request → question / answer → result。嵌套任务共享根预算，缩进表示委派深度。</p></div>
+        <div class="actions"><select class="chip" aria-label="状态"><option>进行中</option><option>全部</option><option>已完成</option><option>已过期</option></select></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><h3>根任务 7c1e4a</h3><p>发起 14:12 · 期限 14:22 · 消息 9 / 24</p></div>
+        <div class="tree">
+          <div class="req"><span class="depth">0</span><div class="flow"><span class="peer"><span class="at">@</span><b>reviewer</b></span><span class="arrow">→</span><span class="peer"><span class="at">@</span><b>alice</b></span><span class="text">审一下 dsh-peer 的 hub/service.js 鉴权路径，重点看 generation 栅栏是否可绕过。</span></div><span class="pill ok">已完成</span><span class="budget">result · 已消费</span></div>
+          <div class="req d1"><span class="depth">1</span><div class="flow"><span class="peer"><span class="at">@</span><b>alice</b></span><span class="arrow">→</span><span class="peer"><span class="at">@</span><b>codex-builder</b></span><span class="text">把 current() 的 stale-generation 分支补上单元测试，只写测试不改实现。</span></div><span class="pill busy">工作中</span><span class="budget">1 条 · 深度 1</span></div>
+          <div class="req d2"><span class="depth">2</span><div class="flow"><span class="peer"><span class="at">@</span><b>codex-builder</b></span><span class="arrow">→</span><span class="peer"><span class="at">@</span><b>grok</b></span><span class="text">列出 node:test 里 mock timers 的用法示例。</span></div><span class="pill warn">等待回答</span><span class="budget">question 1 / 3</span></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <div class="ph"><h3>根任务 b02d91</h3><p>发起 14:28 · 期限 14:38 · 消息 2 / 24</p></div>
+        <div class="tree">
+          <div class="req"><span class="depth">0</span><div class="flow"><span class="peer"><span class="at">@</span><b>bryan-mac</b></span><span class="arrow">→</span><span class="peer"><span class="at">@</span><b>vps-worker</b></span><span class="text">在 VPS 上跑一遍 npm run check，把失败项贴回来，不要修。</span></div><span class="pill busy">工作中</span><span class="budget">request · 已送达</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 消息 -->
+    <section class="view" id="view-messages">
+      <div class="view-head">
+        <div><h2>消息</h2><p>每一条都带投递回执。四段进度分别是：受理 · 领取 · 送达 · 消费。</p></div>
+        <div class="actions"><input type="search" placeholder="按名字、任务 ID 或正文搜索" style="width:260px" aria-label="搜索"><select class="chip" aria-label="状态"><option>全部状态</option><option>待投递</option><option>状态未知</option><option>未送达</option></select></div>
+      </div>
+      <div class="panel"><div class="tablewrap"><table>
+        <thead><tr><th>时间</th><th>从</th><th>到</th><th>类型</th><th>内容</th><th>投递</th><th></th></tr></thead>
+        <tbody id="msgrows"></tbody>
+      </table></div></div>
+    </section>
+
+    <!-- 设备与配对 -->
+    <section class="view" id="view-devices">
+      <div class="view-head">
+        <div><h2>设备与配对</h2><p>设备是一台机器上的一个 runtime 安装。凭据由中心签发、哈希保存、可撤销，会话身份绑定设备。</p></div>
+      </div>
+      <div class="pair-grid">
+        <div class="panel">
+          <div class="ph"><h3>添加设备</h3><p>配对码 10 分钟有效，只能用一次</p></div>
+          <div class="form">
+            <div class="row2">
+              <div class="field"><label for="p-name">设备名</label><input id="p-name" value="office-grok"></div>
+              <div class="field"><label for="p-rt">Runtime</label><select id="p-rt"><option>grok-bot</option><option>claude-code</option><option>codex</option><option>dsh</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="p-ws">工作区</label><select id="p-ws"><option>default</option><option>research</option></select></div>
+              <div class="field"><label for="p-exp">凭据有效期</label><select id="p-exp"><option>90 天，可续期</option><option>30 天</option><option>不过期（仅本机）</option></select></div>
+            </div>
+            <div><button class="btn primary" id="gen">生成配对码</button></div>
+          </div>
+          <div class="code-box" id="codebox" hidden>
+            <div class="code" id="code">K7PD-3QWX</div>
+            <div class="ttl">有效至 <span id="ttl">14:48</span> · 单次使用 · 绑定 workspace default</div>
+            <div class="cmd"><code id="cmd">dsh-peer join https://hub.example.net --code K7PD-3QWX --name office-grok --runtime grok-bot</code><button class="btn sm" data-copy="cmd">复制</button></div>
+            <div class="ttl">对 Grok Bot 和 Codex，join 会顺带写入 MCP 配置片段；对 dsh 写入 cordis.patch.yml 片段。</div>
+          </div>
+          <ol class="steps-list">
+            <li>在目标机器运行上面的命令，凭据以 600 权限写入本地文件。</li>
+            <li>设备首次 <code>connect</code> 后出现在下方列表，状态为在线。</li>
+            <li>撤销后旧凭据立即失效，正在连接的 SSE 流被关闭。</li>
+          </ol>
+        </div>
+        <div class="panel">
+          <div class="ph"><h3>待批准的加入请求</h3><p>设备端发起、操作员批准的另一条路径</p></div>
+          <div class="pending">
+            <div class="item">
+              <div><div class="who"><b>win-codex</b><span class="rt codex">codex</span><span class="pill warn">等待批准</span></div><small>指纹 SHA256:4f1c…9a2e · 来自 198.51.100.21 · 2 分钟前 · 申请 workspace research</small></div>
+              <div class="actions"><button class="btn sm danger">拒绝</button><button class="btn sm primary">批准</button></div>
+            </div>
+          </div>
+          <p class="note" style="padding:0 16px 14px">没有配对码的设备只能停在这里，批准前不能注册会话，也读不到任何消息。</p>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="ph"><h3>已配对设备</h3><p>9 台 · 1 台已撤销</p></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>设备</th><th>Runtime</th><th>机器</th><th>工作区</th><th>最近活动</th><th>凭据</th><th>状态</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>mac-dsh</b></td><td><span class="rt dsh">dsh</span></td><td class="mono">bryan-mbp · 192.168.1.20</td><td>default</td><td class="mono">刚刚</td><td class="mono">到期 2027-01-30</td><td><span class="pill ok">在线</span></td><td><div class="actions"><button class="btn sm">轮换</button><button class="btn sm danger">撤销</button></div></td></tr>
+            <tr><td><b>mac-claude</b></td><td><span class="rt claude">claude-code</span></td><td class="mono">bryan-mbp · 192.168.1.20</td><td>default</td><td class="mono">12 秒前</td><td class="mono">到期 2027-01-30</td><td><span class="pill ok">在线</span></td><td><div class="actions"><button class="btn sm">轮换</button><button class="btn sm danger">撤销</button></div></td></tr>
+            <tr><td><b>mac-codex</b></td><td><span class="rt codex">codex</span></td><td class="mono">bryan-mbp · 192.168.1.20</td><td>default</td><td class="mono">11 分钟前</td><td class="mono">到期 2027-01-30</td><td><span class="pill off">离线</span></td><td><div class="actions"><button class="btn sm">轮换</button><button class="btn sm danger">撤销</button></div></td></tr>
+            <tr><td><b>mac-grok</b></td><td><span class="rt grok">grok-bot</span></td><td class="mono">bryan-mbp · 192.168.1.20</td><td>default</td><td class="mono">5 分钟前</td><td class="mono">到期 2027-01-30</td><td><span class="pill ok">在线</span></td><td><div class="actions"><button class="btn sm">轮换</button><button class="btn sm danger">撤销</button></div></td></tr>
+            <tr><td><b>vps-worker</b></td><td><span class="rt dsh">dsh</span></td><td class="mono">vps-01 · 203.0.113.8</td><td>default</td><td class="mono">40 秒前</td><td class="mono">到期 2027-02-02</td><td><span class="pill ok">在线</span></td><td><div class="actions"><button class="btn sm">轮换</button><button class="btn sm danger">撤销</button></div></td></tr>
+            <tr><td><b>studio-claude</b></td><td><span class="rt claude">claude-code</span></td><td class="mono">studio-mini · 100.64.0.5</td><td>research</td><td class="mono">3 分钟前</td><td class="mono">到期 2026-12-01</td><td><span class="pill ok">在线</span></td><td><div class="actions"><button class="btn sm">轮换</button><button class="btn sm danger">撤销</button></div></td></tr>
+            <tr><td><b>old-laptop</b></td><td><span class="rt dsh">dsh</span></td><td class="mono">—</td><td>default</td><td class="mono">2026-10-12</td><td class="mono">已撤销</td><td><span class="pill bad">已撤销</span></td><td></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- 接收保护 -->
+    <section class="view" id="view-protection">
+      <div class="view-head">
+        <div><h2>接收保护</h2><p>按发送方向计数，防止两个 agent 互相催问成环。暂停只能由操作员恢复，恢复不重放消息。</p></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><h3>已暂停的方向</h3><p>1 个</p></div>
+        <div class="dir">
+          <div><span class="peer"><span class="at">@</span><b>builder</b></span> <span class="arrow" style="color:var(--fg-3)">→</span> <span class="peer"><span class="at">@</span><b>reviewer</b></span><span class="why">14:32 触发：10 分钟内 12 条到达长窗口上限。最后一条是重复的 result 重试。</span></div>
+          <span class="pill warn">已暂停</span>
+          <button class="btn sm" data-toast="已恢复 @builder → @reviewer，未重放消息">恢复接收</button>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <div class="ph"><h3>当前阈值</h3><p>每个 workspace 可单独覆盖</p></div>
+        <div class="win">
+          <div>重复内容抑制<b>60 s</b></div>
+          <div>短窗口<b>6 条 / 60 s</b></div>
+          <div>长窗口<b>12 条 / 10 min</b></div>
+          <div>澄清轮次<b>3 / 任务</b></div>
+          <div>根任务预算<b>24 条 · 深度 4</b></div>
+          <div>根任务期限<b>10 min</b></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- 登录 -->
+<div class="login-wrap" id="login" hidden>
+  <div class="login">
+    <div class="mark"><span class="lamp"></span>Peer Hub</div>
+    <div class="panel">
+      <div class="ep"><span>https://hub.example.net</span><span style="color:var(--ok)">TLS · 证书有效</span></div>
+      <div class="field"><label for="tok">操作员凭据</label><input id="tok" type="password" autocomplete="off" placeholder="粘贴 admin token 或一次性登录码"></div>
+      <button class="btn primary" id="do-login">登录</button>
+      <div class="hint">登录后中心签发 12 小时的 HttpOnly 会话，凭据本身不进入页面存储。远端部署时建议用一次性登录码：在服务器运行 <code>dsh-peer-hub login-code</code> 生成。</div>
+    </div>
+    <div class="hint" style="text-align:center">只读查看请使用观察者凭据 · 连续 5 次失败后该来源锁定 10 分钟</div>
+  </div>
+</div>
+
+<div class="preview-bar" aria-label="预览控制">
+  <button class="btn" id="pv-login">登录页</button>
+  <button class="btn" id="pv-app">控制台</button>
+  <button class="btn" id="pv-theme">切换明暗</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const hosts = [
+  { name: 'bryan-mbp', meta: 'macOS · 192.168.1.20 · 4 个设备', members: [
+    { name: 'alice', rt: 'dsh', status: 'busy', statusText: '工作中', cwd: '~/Projects/dsh-plugins', inbox: 0, lease: '刚刚', title: 'dsh-peer 鉴权审查' },
+    { name: 'reviewer', rt: 'claude', status: 'ok', statusText: '空闲', cwd: '~/Projects/dsh-plugins/packages/dsh-peer', inbox: 1, lease: '12 秒前', title: 'channel 开发模式' },
+    { name: 'codex-builder', rt: 'codex', status: 'off', statusText: '离线', cwd: '~/Projects/dsh-plugins', inbox: 3, lease: '11 分钟前', title: 'thread 9a2f… 已保留' },
+    { name: 'grok', rt: 'grok', status: 'ok', statusText: '空闲', cwd: '~/Projects/notes', inbox: 0, lease: '5 分钟前', title: 'Grok Bot 0.78 · hook 拉取' },
+  ]},
+  { name: 'vps-01', meta: 'Ubuntu · 203.0.113.8 · 1 个设备', members: [
+    { name: 'vps-worker', rt: 'dsh', status: 'busy', statusText: '工作中', cwd: '/srv/ci/dsh-plugins', inbox: 0, lease: '40 秒前', title: 'npm run check' },
+  ]},
+  { name: 'studio-mini', meta: 'macOS · Tailscale 100.64.0.5 · 1 个设备', members: [
+    { name: 'studio-claude', rt: 'claude', status: 'warn', statusText: '等待输入', cwd: '~/Work/research', inbox: 0, lease: '3 分钟前', title: 'workspace research' },
+    { name: 'bryan-mac', rt: 'dsh', status: 'ok', statusText: '空闲', cwd: '~/Work/research', inbox: 0, lease: '1 分钟前', title: '' },
+  ]},
+];
+const rtLabel = { dsh: 'dsh', claude: 'claude-code', codex: 'codex', grok: 'grok-bot' };
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+
+function renderHosts() {
+  const root = document.getElementById('hosts'); root.replaceChildren();
+  for (const h of hosts) {
+    const wrap = el('div');
+    const head = el('div', 'host-head'); head.append(el('h3', '', h.name), el('span', 'meta', h.meta)); wrap.append(head);
+    const grid = el('div', 'members');
+    for (const m of h.members) {
+      const card = el('article', 'member' + (m.status === 'off' ? ' offline' : ''));
+      const top = el('div', 'top'); top.append(el('span', 'name', m.name), el('span', 'pill ' + m.status, m.statusText));
+      const line = el('div', 'line'); line.append(el('span', 'rt ' + m.rt, rtLabel[m.rt])); if (m.title) line.append(el('span', 'cwd', m.title));
+      const cwd = el('div', 'cwd', m.cwd);
+      const foot = el('div', 'foot');
+      const inbox = el('span', 'inbox'); inbox.append('收件箱 ', el('b', '', String(m.inbox))); if (m.inbox) inbox.append(' 条待读');
+      foot.append(inbox, el('span', 'mono', '租约 ' + m.lease));
+      card.append(top, line, cwd, foot); grid.append(card);
+    }
+    wrap.append(grid); root.append(wrap);
+  }
+}
+
+const msgs = [
+  { t: '14:31:40', from: 'alice', to: 'reviewer', kind: 'result', text: '鉴权路径没有发现可绕过点；generation 栅栏在 current() 里对 connect 之外的所有操作生效。附 3 条建议。', stage: 4 },
+  { t: '14:30:12', from: 'builder', to: 'reviewer', kind: 'result', text: '（重复重试）测试已补齐，见 test/hub-generation.test.mjs', stage: -1 },
+  { t: '14:29:50', from: 'codex-builder', to: 'grok', kind: 'question', text: 'node:test 里 mock timers 的用法示例？', stage: 3 },
+  { t: '14:28:05', from: 'bryan-mac', to: 'vps-worker', kind: 'request', text: '在 VPS 上跑一遍 npm run check，把失败项贴回来，不要修。', stage: 3 },
+  { t: '14:26:11', from: 'alice', to: 'codex-builder', kind: 'request', text: '把 current() 的 stale-generation 分支补上单元测试，只写测试不改实现。', stage: 1 },
+  { t: '14:25:48', from: 'reviewer', to: 'codex-builder', kind: 'note', text: '顺便看一下 lib/hub/client.js 的重连退避上限。', stage: 1 },
+  { t: '14:24:02', from: 'grok', to: 'alice', kind: 'answer', text: 'mock.timers.enable({ apis: ["setTimeout"] }) 后用 mock.timers.tick(ms) 推进。', stage: 4 },
+  { t: '14:19:33', from: 'studio-claude', to: 'bryan-mac', kind: 'note', text: '研究 workspace 的 README 草稿放在 docs/draft.md 了。', stage: 0 },
+  { t: '14:12:10', from: 'reviewer', to: 'alice', kind: 'request', text: '审一下 dsh-peer 的 hub/service.js 鉴权路径，重点看 generation 栅栏是否可绕过。', stage: 4 },
+];
+const stageText = ['状态未知', '已受理', '投递中', '已送达', '已消费'];
+function renderMsgs() {
+  const body = document.getElementById('msgrows'); body.replaceChildren();
+  for (const m of msgs) {
+    const tr = el('tr');
+    tr.append(Object.assign(el('td', 'mono'), { textContent: m.t }));
+    for (const who of [m.from, m.to]) { const td = el('td'); const p = el('span', 'peer'); p.append(el('span', 'at', '@'), el('b', '', who)); td.append(p); tr.append(td); }
+    tr.append(Object.assign(el('td', 'mono'), { textContent: m.kind }));
+    const txt = el('td'); txt.style.maxWidth = '420px'; txt.style.color = 'var(--fg-2)'; txt.textContent = m.text; tr.append(txt);
+    const cell = el('td'); const sc = el('div', 'stepcell'); const steps = el('div', 'steps');
+    for (let i = 1; i <= 4; i++) { const bar = el('i'); if (m.stage === -1) bar.className = i === 1 ? 'bad' : ''; else if (m.stage === 0) bar.className = i === 1 ? 'unk' : ''; else if (i < m.stage) bar.className = 'on'; else if (i === m.stage) bar.className = 'now'; steps.append(bar); }
+    sc.append(steps, el('small', '', m.stage === -1 ? '未送达 · duplicate-content' : stageText[m.stage])); cell.append(sc); tr.append(cell);
+    const act = el('td'); const b = el('button', 'btn sm', '详情'); b.dataset.toast = '预览中不展开详情'; act.append(b); tr.append(act);
+    body.append(tr);
+  }
+}
+
+// Views
+const views = ['overview', 'members', 'requests', 'messages', 'devices', 'protection'];
+function show(name) {
+  if (!views.includes(name)) name = 'overview';
+  for (const v of views) document.getElementById('view-' + v).classList.toggle('active', v === name);
+  for (const a of document.querySelectorAll('.rail a')) a.classList.toggle('active', a.dataset.view === name);
+  document.querySelector('.surface').scrollTop = 0;
+}
+window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { location.hash = b.dataset.go; });
+
+// Login preview
+const app = document.getElementById('app'), login = document.getElementById('login');
+const setLogin = on => { app.hidden = on; login.hidden = !on; };
+document.getElementById('pv-login').onclick = () => setLogin(true);
+document.getElementById('pv-app').onclick = () => setLogin(false);
+document.getElementById('logout').onclick = () => setLogin(true);
+document.getElementById('do-login').onclick = () => { document.getElementById('tok').value = ''; setLogin(false); toast('已登录，会话 12 小时后过期'); };
+document.getElementById('pv-theme').onclick = () => {
+  const r = document.documentElement, cur = r.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  r.dataset.theme = cur === 'dark' ? 'light' : 'dark';
+};
+
+// Pairing code demo
+const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+document.getElementById('gen').onclick = () => {
+  const pick = n => Array.from({ length: n }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+  const code = pick(4) + '-' + pick(4);
+  const name = document.getElementById('p-name').value.trim() || 'device', rt = document.getElementById('p-rt').value;
+  document.getElementById('code').textContent = code;
+  document.getElementById('cmd').textContent = `dsh-peer join https://hub.example.net --code ${code} --name ${name} --runtime ${rt}`;
+  const d = new Date(Date.now() + 10 * 60000); document.getElementById('ttl').textContent = d.toTimeString().slice(0, 5);
+  document.getElementById('codebox').hidden = false;
+};
+
+// Copy + toast
+const toastEl = document.getElementById('toast'); let toastTimer;
+function toast(text) { toastEl.textContent = text; toastEl.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800); }
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-copy]'); if (c) { const text = document.getElementById(c.dataset.copy).textContent; navigator.clipboard?.writeText(text).then(() => toast('已复制'), () => toast('复制失败，请手动选择')); return; }
+  const t = e.target.closest('[data-toast]'); if (t) toast(t.dataset.toast);
+});
+
+renderHosts(); renderMsgs(); show(location.hash.slice(1));
+</script>
+</body>
+</html>
