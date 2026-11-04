@@ -5,7 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 const { createPeerCore } = await import(process.env.PEER_HUB_BASELINE ? pathToFileURL(join(process.env.PEER_HUB_BASELINE, 'lib/core.js')) : new URL('../lib/core.js', import.meta.url));
-import { createHubServer } from '../lib/hub/server.js';
+// The centre lives in the peer-hub repository (PEER_HUB_DIR, default ../../../peer-hub).
+const peerHubDir = process.env.PEER_HUB_DIR || new URL('../../../../peer-hub/', import.meta.url).pathname;
+const { createHubServer } = await import(pathToFileURL(join(peerHubDir, 'server/server.js')));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function until(check) { for (let i = 0; i < 100; i++) { if (await check()) return; await sleep(25); } assert.fail('condition timed out'); }
 

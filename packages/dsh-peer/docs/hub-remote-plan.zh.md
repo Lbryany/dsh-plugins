@@ -1,6 +1,6 @@
 # Peer Hub 远端部署方案：注册鉴权、Grok Bot 接入、控制台
 
-状态：设计稿，2026-11-04。基线是未提交的 0.2.0 本地中心（`lib/hub/*`）。本文只描述方案，不改代码。配套界面预览：`docs/preview/hub-dashboard.html`，直接用浏览器打开。
+状态：已实施于独立仓库 peer-hub 0.3.0（2026-11-04）；以下为原设计稿，文件路径指拆分前的 `lib/hub/*`。配套界面预览：`docs/preview/hub-dashboard.html`，直接用浏览器打开。
 
 ## 1. 目标与拓扑
 

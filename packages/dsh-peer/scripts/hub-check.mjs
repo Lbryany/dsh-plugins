@@ -1,13 +1,19 @@
 // Two real packed DSH hosts, separate homes/registries; all traffic traverses
-// the local centre. A deterministic provider isolates transport from model quality.
+// the Peer Hub centre from the peer-hub repository (PEER_HUB_DIR, default
+// ../../../peer-hub). Devices join with one-time pairing codes through the
+// real `peer join` CLI; the packed plugin resolves @lbryany/peer-hub-client
+// from that repository. A deterministic provider isolates transport from model quality.
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, symlinkSync, rmSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
-import { spawn, execFileSync } from 'node:child_process';
+import { spawn, execFileSync, execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { pathToFileURL } from 'node:url';
 import { createServer, request as httpRequest } from 'node:http';
 import assert from 'node:assert/strict';
-import { createHubServer } from '../lib/hub/server.js';
 
+const peerHub = resolve(process.env.PEER_HUB_DIR || new URL('../../../../peer-hub/', import.meta.url).pathname);
+const { createHubServer } = await import(pathToFileURL(join(peerHub, 'server/server.js')));
 const pkg = resolve(new URL('..', import.meta.url).pathname), evidence = join(pkg, 'test/evidence/hub-host-' + Date.now()); mkdirSync(evidence);
 const tmp = mkdtempSync(join(tmpdir(), 'peer-hub-host-'));
 const bin = process.env.DSH_BIN || '/opt/homebrew/lib/node_modules/@deepseek-ai/dsh/lib/bin.js', runtime = join(resolve(dirname(bin), '..'), 'node_modules');
@@ -45,6 +51,9 @@ try {
   const pack = JSON.parse(execFileSync('npm', ['pack', '--json', '--pack-destination', tmp, '--cache', join(tmp, 'cache')], { cwd: pkg, encoding: 'utf8' }))[0];
   const install = join(tmp, 'install'); mkdirSync(install); execFileSync('tar', ['-xzf', join(tmp, pack.filename), '-C', install]);
   const unpack = join(install, 'package'); symlinkSync(runtime, join(unpack, 'node_modules'), 'dir');
+  // Optional peer dependency for centre mode: the client package from peer-hub.
+  mkdirSync(join(install, 'node_modules', '@lbryany'), { recursive: true });
+  symlinkSync(join(peerHub, 'packages/client'), join(install, 'node_modules', '@lbryany', 'peer-hub-client'), 'dir');
   hub = createHubServer({ dir: join(tmp, 'centre'), port: 0, limits: { leaseMs: 1500 } }); await hub.start();
   const hubPort = Number(new URL(hub.url).port);
   proxy = createServer(async (req, res) => {
@@ -59,8 +68,9 @@ try {
   for (const [name, sessionId] of [['alice', 'session-aaaa-hub'], ['reviewer', 'session-bbbb-hub']]) {
     const root = join(tmp, name), home = join(root, 'home'), profile = join(home, 'profiles', 'hub-test'); mkdirSync(join(profile, 'node_modules', '@lbryany'), { recursive: true });
     const h = { name, sessionId, root, home, report: join(root, 'report.json'), command: join(root, 'command.json'), marker: join(root, 'created'), port: await freePort(), logs: '' }; hosts.push(h);
-    const minted = await admin('device.create', { name });
-    writeFileSync(join(root, 'credential.json'), JSON.stringify({ ...minted.credential, url: name === 'reviewer' ? proxyUrl : hub.url }), { mode: 0o600 });
+    const pairing = await admin('pair.create', { name, runtime: 'dsh' }); assert.equal(pairing.ok, true, pairing.error);
+    // Async: the centre runs in this process and must keep serving while the CLI joins.
+    await promisify(execFile)(process.execPath, [join(peerHub, 'bin/peer.js'), 'join', name === 'reviewer' ? proxyUrl : hub.url, '--code', pairing.code, '--credential', join(root, 'credential.json')], { env: { ...process.env, PEER_HUB_HOME: join(root, 'peer-home') } });
     symlinkSync(unpack, join(profile, 'node_modules', '@lbryany', 'dsh-peer'), 'dir');
     writeFileSync(join(profile, 'package.json'), JSON.stringify({ name: 'peer-hub-test', private: true, type: 'module', dependencies: { '@lbryany/dsh-peer': pack.version }, dsh: { profile: { bundles: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@lbryany/dsh-peer'] } } }));
     const fixture = join(profile, 'node_modules', 'hub-fixture'); mkdirSync(fixture); symlinkSync(runtime, join(fixture, 'node_modules'), 'dir');
@@ -96,7 +106,7 @@ try {
   const final = await admin('inspect');
   for (const h of hosts) { const r = report(h); reports[h.name] = r; assert.equal(r.events.filter(e => e.type === 'tool/result' && e.data?.result?.ok === false).length, 0); }
   writeFileSync(join(evidence, 'result.json'), JSON.stringify({ ok: true, version: pack.version, scenarios, state: { sessions: final.sessions, requests: final.requests, messages: final.messages.map(({ claimToken: _claim, ...m }) => m) }, reports }, null, 2));
-  console.log(JSON.stringify({ ok: true, version: pack.version, scenarios, evidence }));
+  console.log(JSON.stringify({ ok: true, version: pack.version, hub: final.sessions.length ? 'peer-hub ' + (await (await fetch(hub.url + '/health')).json()).version : null, scenarios, evidence }));
 } catch (error) {
   writeFileSync(join(evidence, 'failure.txt'), error.stack); console.error(error.stack); process.exitCode = 1;
 } finally {

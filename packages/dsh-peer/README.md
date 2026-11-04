@@ -1,15 +1,15 @@
 # dsh-peer
 [中文](README.zh.md) | English
 
-Supports local direct messaging and a central hub. **0.2.0** adds a local SQLite hub with device registration, durable inboxes, request/result coordination, reconnect recovery and a dashboard. Requires **DSH 0.2.1-rc.5 or newer, below 0.3**. Child agents use their registered root session's identity.
+Supports local direct messaging and a central hub. **0.3.0** moves the centre into the separate peer-hub repository (remote deployment, pairing codes, console, HTTP MCP and Claude Code / Codex / Grok Bot integration); centre mode here connects through `@lbryany/peer-hub-client`. Requires **DSH 0.2.1-rc.5 or newer, below 0.3**. Child agents use their registered root session's identity.
 
 ## Install
 
 Add `@lbryany/dsh-peer@0.2.0` to the profile's dependencies and `@lbryany/dsh-peer` to `dsh.profile.bundles`, install dependencies and restart that profile. Unpublished builds can be installed from a local `npm pack` artifact. Local development can run `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`. Installation and restart are explicit user operations.
 
-## Local hub
+## Centre mode
 
-See the [hub guide](docs/hub.md) for startup, pairing and configuration. Setting `config.hub.credentialFile` routes all discovery and messaging for that profile through the hub; otherwise the local mode below remains active. This release only listens on loopback. End-to-end acceptance covers dsh-to-dsh; the Claude adapter has contract tests only and has not been validated in a real Claude session.
+See the [hub guide](docs/hub.md) for startup, pairing and configuration. Setting `config.hub.credentialFile` routes all discovery and messaging for that profile through the hub; otherwise the local mode below remains active. The centre can be deployed remotely (https); the Claude adapter and other runtimes are documented in peer-hub.
 
 The hub persists identities, messages, receipts and directional protection. Nested task budgets allow 24 messages/root, depth 4 and a ten-minute deadline. A new root after completion has a separate budget and still encounters directional protection. This is not a global token/turn budget for an entire user task. Only a hub administrator can resume a central pause; `/peer-resume` cannot cross that permission boundary.
 
@@ -102,7 +102,6 @@ node scripts/request-scenarios.mjs
 node scripts/handoff-check.mjs
 npm run test:browser
 node scripts/hub-check.mjs
-node scripts/hub-browser-check.mjs
 npm pack --dry-run --json
 node eval/run.mjs --dry
 ```

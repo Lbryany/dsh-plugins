@@ -1,15 +1,15 @@
 # dsh-peer
 中文 | [English](README.md)
 
-支持同机直连与中心通信两种模式。**0.2.0** 新增本地 SQLite 中心：设备注册、持久化收件箱、请求/结果、断线恢复和管理界面。要求 **DSH 0.2.1-rc.5 及以上、低于 0.3**。子 agent 使用所属根会话身份。
+支持同机直连与中心通信两种模式。**0.3.0** 起中心服务移到独立仓库 peer-hub（远端部署、配对码、控制台、HTTP MCP，以及 Claude Code / Codex / Grok Bot 接入），本包的中心模式通过 `@lbryany/peer-hub-client` 连接。要求 **DSH 0.2.1-rc.5 及以上、低于 0.3**。子 agent 使用所属根会话身份。
 
 ## 安装
 
 在 profile 依赖中加入 `@lbryany/dsh-peer@0.2.0`，在 `dsh.profile.bundles` 加入 `@lbryany/dsh-peer`，安装依赖后重启该 profile。未发布版本可用 `npm pack` 的本地包路径安装。本地开发可运行 `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`。安装与重启由用户明确操作。
 
-## 本地中心
+## 中心模式
 
-启动、配对与配置见[中心使用指南](docs/hub.zh.md)。设置 `config.hub.credentialFile` 后，本 profile 的发现与消息全部经过中心；未设置时继续使用下文的同机模式。本版仅监听本地回环地址，端到端验收范围是 dsh-dsh；Claude 适配器只有契约测试，尚未验证真实 Claude 会话。
+启动、配对与配置见[中心使用指南](docs/hub.zh.md)。设置 `config.hub.credentialFile` 后，本 profile 的发现与消息全部经过中心；未设置时继续使用下文的同机模式。中心可远端部署（https）；Claude 适配器与其他 runtime 的接入见 peer-hub。
 
 中心持久保存身份、消息、回执和方向保护。嵌套任务预算为每根任务最多 24 条消息、深度 4、期限 10 分钟；完成后新建根请求使用独立预算，仍受方向保护限制。这不是整个用户任务的全局 token 或轮数预算。中心暂停由管理员恢复，`/peer-resume` 不跨越此权限。
 
@@ -102,7 +102,6 @@ node scripts/request-scenarios.mjs
 node scripts/handoff-check.mjs
 npm run test:browser
 node scripts/hub-check.mjs
-node scripts/hub-browser-check.mjs
 npm pack --dry-run --json
 node eval/run.mjs --dry
 ```

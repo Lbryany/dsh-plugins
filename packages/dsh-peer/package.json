@@ -1,7 +1,7 @@
 {
   "name": "@lbryany/dsh-peer",
-  "version": "0.2.0",
-  "description": "Local peer discovery and durable hub messaging for dsh sessions",
+  "version": "0.3.0",
+  "description": "Local peer discovery and Peer Hub (central) messaging for dsh sessions",
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",
@@ -10,10 +10,6 @@
   ],
   "type": "module",
   "main": "index.js",
-  "bin": {
-    "dsh-peer-hub": "./bin/hub.js",
-    "dsh-peer-claude": "./bin/claude.js"
-  },
   "exports": {
     ".": "./index.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
@@ -22,7 +18,6 @@
   },
   "files": [
     "index.js",
-    "bin",
     "lib",
     "cordis.patch.yml",
     "README.md",
@@ -41,7 +36,8 @@
     "@deepseek-ai/dsh-commands": ">=0.2.1-rc.5 <0.3.0-0",
     "@deepseek-ai/dsh-llm": ">=0.2.1-rc.5 <0.3.0-0",
     "@deepseek-ai/dsh-session-title": ">=0.2.1-rc.5 <0.3.0-0",
-    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.5 <0.3.0-0"
+    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.5 <0.3.0-0",
+    "@lbryany/peer-hub-client": ">=0.3.0 <0.4.0"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {
@@ -61,6 +57,9 @@
     },
     "@deepseek-ai/dsh-tools": {
       "optional": true
+    },
+    "@lbryany/peer-hub-client": {
+      "optional": true
     }
   },
   "dsh": {
@@ -77,7 +76,6 @@
     "check": "npm run build && node --test test/*.test.mjs",
     "build": "node scripts/build-client.mjs",
     "scenarios": "node scripts/scenarios.mjs",
-    "hub": "node bin/hub.js",
     "test:hub": "node scripts/hub-check.mjs",
     "test:browser": "node scripts/browser-check.mjs"
   },
@@ -95,9 +93,7 @@
     "jsdom": "^25.0.1",
     "puppeteer-core": "^25.11.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "optionalDependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.2"
+    "react-dom": "^18.3.1",
+    "@lbryany/peer-hub-client": "file:../../../peer-hub/packages/client"
   }
 }

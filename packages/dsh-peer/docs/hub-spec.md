@@ -54,3 +54,7 @@ H11–H18/H20–H22 were added without relaxing original assertions after indepe
 Validation: 88/88 full unit tests, original 9/9 scenarios, packed native handoff and original history browser regression, 4/4 real dsh-dsh hub scenarios, hub dashboard browser checks and packed files. The native end-to-end provider is deterministic, not a live model. Required guides are included in the npm artifact. Final independent read-only acceptance passed: 21/21 hub tests independently rerun; H07 independently red on exported 0.1.2; final runtime hashes, all scenario/browser evidence, package contents and cleanup checked. No unresolved blocker. See test/evidence/hub-acceptance.json.
 
 User deployment is a separate background centre at http://127.0.0.1:3987 with data in the package's ignored .local/hub directory. Test homes are temporary and removed; no real user profile was modified. No commit, push or publication performed.
+
+## 0.3.0 split
+
+On 2026-11-04 the centre (`store/service/server/client/claude`, web console, `bin/hub.js`, `bin/claude.js`) moved with history to the separate peer-hub repository and gained remote authentication, an HTTP MCP endpoint and Codex/Grok Bot integration. This package keeps `lib/hub/core.js` (the dsh adapter) on top of `@lbryany/peer-hub-client`. H01–H06, H11–H12, H15–H18, H20 now run in peer-hub (`test/hub-core-protocol.test.mjs`); H07–H08, H13–H14, H21–H22 and SH01–SH04 still run here against the peer-hub centre.

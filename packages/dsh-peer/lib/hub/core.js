@@ -1,9 +1,19 @@
 import { randomUUID } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync, openSync, fsyncSync, closeSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { createHubClient } from './client.js';
 import { defaultName, NAME_RE, formatList, LIST_LIMIT } from '../core.js';
 import { relayText, exchangeText, REPLY_HINT } from '../message.js';
+
+// Centre mode depends on @lbryany/peer-hub-client (the peer-hub repository's
+// packages/client). It is loaded lazily so local same-machine mode never needs it.
+const require = createRequire(import.meta.url);
+function loadHubClient() {
+  try { return require('@lbryany/peer-hub-client'); }
+  catch (error) {
+    if (error?.code !== 'ERR_MODULE_NOT_FOUND' && error?.code !== 'MODULE_NOT_FOUND') throw error;
+    throw new Error('dsh-peer 中心模式需要 @lbryany/peer-hub-client：在 dsh profile 目录运行 npm install <peer-hub>/packages/client');
+  }
+}
 
 export function nativeReceipt(agent, messageId) {
   const has = m => m?.source?.hub?.messageId === messageId;
@@ -15,20 +25,12 @@ export function nativeReceipt(agent, messageId) {
 }
 
 export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persistMessage = async () => false, log = () => {} }) {
-  const client = createHubClient(hub), sessions = new Map(), pending = new Map();
+  const { createHubClient, createReceiptJournal } = loadHubClient();
+  const client = createHubClient({ ...hub, version: 'dsh-peer/0.3.0' }), sessions = new Map(), pending = new Map();
   const stateDir = hub.stateDir || join(dir, 'hub', client.deviceId);
-  mkdirSync(stateDir, { recursive: true, mode: 0o700 });
-  const journalFile = join(stateDir, 'receipts.json');
-  let journal = existsSync(journalFile) ? JSON.parse(readFileSync(journalFile, 'utf8')) : {};
+  const receipts = createReceiptJournal(stateDir), journal = receipts.entries, save = receipts.save;
   let started = false, timer, fixedUsed = false, syncPromise, drainPromise, consumeQueue = Promise.resolve();
   let syncAgain = false, drainAgain = false;
-  function save() {
-    const tmp = journalFile + '.tmp';
-    writeFileSync(tmp, JSON.stringify(journal), { mode: 0o600 });
-    const fd = openSync(tmp, 'r'); try { fsyncSync(fd); } finally { closeSync(fd); }
-    renameSync(tmp, journalFile);
-    const directory = openSync(stateDir, 'r'); try { fsyncSync(directory); } finally { closeSync(directory); }
-  }
   function changed() { if (started) void sync().catch(() => {}); }
   function register(info) {
     if (!info?.id || info.origin === 'subagent') return null;
