@@ -19,7 +19,7 @@
 |---|---|
 | `peer_list({all?,details?})` | 默认显示名字和状态，最多 20 个其他会话；`details:true` 查看目录等完整信息。 |
 | `peer_request({to,text,wait?})` / `peer_request({requests:[{to,text}],wait?})` | 单目标使用 `to/text`，多目标一次批量最多 8 个；两种写法互斥。默认交接并结束当前轮。还有本地工作时传 `wait:false`。 |
-| `peer_reply({requestId,kind,text,questionId?,wait?})` | 沿任务 ID 澄清（question）、回答（answer）或交付结果（result）；回答必须携带问题 ID。默认交接并结束当前轮。 |
+| `peer_reply({requestId,kind,text,questionId?,wait?})` | 沿任务 ID 澄清（question）、回答（answer）或交付结果（result）；回答必须携带问题 ID。中心模式下执行方也可以用 `declined`（text 写原因）结束任务；收到的任务都要以一次 `result` 或 `declined` 结束。默认交接并结束当前轮。 |
 | `peer_wait({requestIds?})` | 等待已有远端任务，不发催问。空数组不等待；已排队消息交由宿主消费。 |
 | `peer_send({to,text,steer?})` | 使用名字或唯一的会话前缀（至少四位）。默认排入下一轮；仅用户要求立刻插话时使用 `steer:true`。 |
 | `peer_rename({name})` | 名字匹配 `^[a-z0-9][a-z0-9_-]{0,39}$`；撞名自动加后缀。 |

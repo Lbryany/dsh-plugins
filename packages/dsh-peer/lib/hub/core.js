@@ -56,7 +56,16 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
     })().finally(() => { syncPromise = null; });
     return syncPromise;
   }
-  async function ack(sid, m, stage) {
+  // deliver() can observe native consumption and ACK it while consume() →
+  // flushReceipts() does the same for the same message; one consumed ACK each.
+  const consuming = new Map();
+  function ack(sid, m, stage) {
+    if (stage !== 'consumed') return sendAck(sid, m, stage);
+    if (journal[m.id]?.stage === 'consumed') return Promise.resolve({ ok: true, duplicate: true });
+    if (!consuming.has(m.id)) consuming.set(m.id, sendAck(sid, m, stage).finally(() => consuming.delete(m.id)));
+    return consuming.get(m.id);
+  }
+  async function sendAck(sid, m, stage) {
     const result = await client.rpc('inbox.ack', { from: sid, messageId: m.id, claimToken: m.claimToken, stage });
     if (result.ok) {
       const previous = journal[m.id]?.stage;
@@ -76,7 +85,7 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
     // Both the server claim and local intent are written before host injection.
     if (m.recovery || journal[m.id]) { await reconcile(sid, agent, m); return; }
     journal[m.id] = { from: sid, claimToken: m.claimToken, stage: 'intent' }; save();
-    const exchange = m.exchange && m.exchange.kind !== 'note' ? m.exchange : null;
+    const exchange = m.exchange && m.exchange.kind !== 'note' ? { ...m.exchange, hub: true } : null;
     const text = exchange ? exchangeText(m.from, m.text, exchange) : relayText(m.from, m.text);
     const start = exchange ? text.indexOf('\n') + 1 : text.length - m.text.length - (`\n\n${REPLY_HINT(m.from.name)}`).length;
     const source = { kind: 'dsh-peer', form: 'relay', peer: m.from, ...(exchange ? { exchange } : {}),

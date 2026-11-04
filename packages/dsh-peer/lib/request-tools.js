@@ -18,8 +18,10 @@ export function requestTools(core, callerOf) {
         to: { type: 'string', required: true }, text: { type: 'string', required: true },
       } } }, wait } },
     { name: 'peer_reply', method: 'reply',
-      description: '沿 requestId 回复：执行方 question/result，请求方 answer（带 questionId）。已完成不回复。正文只写新增结论与必要证据。默认结束本轮，wait:false 继续。',
-      parameters: { requestId: { type: 'string', required: true }, kind: { type: 'string', required: true, enum: ['question','answer','result'] },
+      description: core.mode === 'hub'
+        ? '沿 requestId 回复：执行方 question/result，或 declined（不能或不该做，text 写原因；与 result 一样是终态）；请求方 answer（带 questionId）。收到的任务必须以 result 或 declined 结束。已完成不回复。正文只写新增结论与必要证据。默认结束本轮，wait:false 继续。'
+        : '沿 requestId 回复：执行方 question/result，请求方 answer（带 questionId）。已完成不回复。正文只写新增结论与必要证据。默认结束本轮，wait:false 继续。',
+      parameters: { requestId: { type: 'string', required: true }, kind: { type: 'string', required: true, enum: core.mode === 'hub' ? ['question','answer','result','declined'] : ['question','answer','result'] },
         text: { type: 'string', required: true }, questionId: { type: 'string' }, wait } },
     { name: 'peer_wait', method: 'waitFor',
       description: '让出本轮等待已有任务/排队消息，不发送。省略 IDs 等全部；有本地待办则继续处理。',

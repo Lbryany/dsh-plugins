@@ -46,6 +46,9 @@
 ```sh
 npm run check
 node scripts/hub-check.mjs     # 两个真实 dsh Host 经 peer-hub 中心（PEER_HUB_DIR，默认 ../../../peer-hub）
+PEER_HUB_URL=https://hub.example.net PEER_HUB_ADMIN_DIR=/var/lib/peer-hub node scripts/hub-check.mjs   # 连接已有中心
 ```
+
+默认自起临时中心。设置 `PEER_HUB_URL` 和 `PEER_HUB_ADMIN_DIR`（中心数据目录，读其中的 `admin.json` 签发配对码）时改连已有中心：设备和消息全部放在新工作区 `hubcheck-<时间>`，结束时撤销这两个设备；SH03 需要重启中心，外部模式下跳过，并在输出的 `skipped` 里写明；SH04 杀掉宿主后要等中心的设备租约（`PEER_HUB_LEASE_MS`，默认 45000）过期再重启。
 
 hub-check 用 `peer join` 配对码加入，一端经代理，覆盖 SH01 发现、SH02 request→question→answer→result、SH03 中心重启与离线投递、SH04 回执丢失后的原生历史对账。模型为确定性脚本，不评价模型质量。

@@ -19,7 +19,7 @@ The hub persists identities, messages, receipts and directional protection. Nest
 |---|---|
 | `peer_list({all?,details?})` | Default names/status, at most 20 other sessions; `details:true` includes directories and full context. |
 | `peer_request({to,text,wait?})` / `peer_request({requests:[{to,text}],wait?})` | Use `to/text` for one destination or a batch of up to eight; the forms are mutually exclusive. Hand off and conclude the current turn by default. Use `wait:false` for remaining local work. |
-| `peer_reply({requestId,kind,text,questionId?,wait?})` | Clarify (question), answer or deliver a result under the task ID; answers require the question ID. Handoff concludes the current turn by default. |
+| `peer_reply({requestId,kind,text,questionId?,wait?})` | Clarify (question), answer or deliver a result under the task ID; answers require the question ID. In centre mode the responder may instead end the task with `declined` (reason as text); every received task ends with one `result` or `declined`. Handoff concludes the current turn by default. |
 | `peer_wait({requestIds?})` | Wait for existing remote work without polling peers. An empty list does not wait; queued messages are consumed by the Host. |
 | `peer_send({to,text,steer?})` | Address a name or unique session prefix (at least four characters). Default next-turn input; `steer:true` is immediate input only when the user requested it. |
 | `peer_rename({name})` | Set a name matching `^[a-z0-9][a-z0-9_-]{0,39}$`; collisions get a suffix. |

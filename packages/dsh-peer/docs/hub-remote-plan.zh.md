@@ -83,7 +83,7 @@
 
 ### 3.1 事实
 
-本机 `/Applications/Grok Bot.app` 0.78.1，Electron，bundle id `com.anysphere.sand`（Cursor 内核）。`app.asar` 里有完整的 MCP 实现（`mcpServers` 配置、stdio、SSE、Streamable HTTP、OAuth 回调 `grokbot://mcp/oauth/callback`）、Cursor 风格的 hooks（`sessionStart`、`beforeSubmitPrompt`、`afterAgentResponse`，支持向模型注入 `additional_context`）以及 deeplink 路由。没有命令行入口，也没有 Claude Code 那样的 channel 推送。
+本机 `/Applications/Grok Bot.app` 0.78.4，Electron，bundle id `com.anysphere.sand`（Cursor 内核）。`app.asar` 里有完整的 MCP 实现（`mcpServers` 配置、stdio、SSE、Streamable HTTP、OAuth 回调 `grokbot://mcp/oauth/callback`）、Cursor 风格的 hooks（`sessionStart`、`beforeSubmitPrompt`、`afterAgentResponse`，支持向模型注入 `additional_context`）以及 deeplink 路由。没有命令行入口，也没有 Claude Code 那样的 channel 推送。
 
 ### 3.2 工具层：让 Grok 能发消息
 

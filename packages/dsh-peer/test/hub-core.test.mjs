@@ -102,3 +102,35 @@ test('H22 a late delivered ACK cannot erase locally observed consumption', async
   await until(() => failed); release();
   await until(async () => (await x.admin('inspect')).messages[0]?.state === 'consumed');
 });
+
+test('H23 each delivered message is acknowledged as consumed exactly once', async t => {
+  const x = await setup(t), a = await x.make('alice', 'session-aaaa'), b = await x.make('reviewer', 'session-bbbb');
+  const acks = [];
+  for (const core of [a.core, b.core]) {
+    const original = core.client.rpc;
+    core.client.rpc = async (op, args) => { if (op === 'inbox.ack' && args.stage === 'consumed') acks.push(args.messageId); return original(op, args); };
+  }
+  const r = await a.core.request({ from: a.sid, to: 'reviewer', text: 'count my receipts' }); assert.equal(r.ok, true);
+  await until(() => x.got.length === 1);
+  await b.core.reply({ from: b.sid, requestId: x.got[0].m.source.exchange.requestId, kind: 'result', text: 'done' });
+  await until(() => x.got.length === 2);
+  await until(async () => (await x.admin('inspect')).messages.every(m => m.state === 'consumed'));
+  await sleep(400);
+  const ids = (await x.admin('inspect')).messages.map(m => m.id);
+  assert.deepEqual(ids.map(id => acks.filter(v => v === id).length), [1, 1], 'one consumed ACK per message (rpc-proxy.jsonl lines 47/48 showed two)');
+});
+
+test('H24 centre mode can decline a task; the requester sees a terminal decline', async t => {
+  const x = await setup(t), a = await x.make('alice', 'session-aaaa'), b = await x.make('reviewer', 'session-bbbb');
+  await a.core.request({ from: a.sid, to: 'reviewer', text: 'list the working directory' });
+  await until(() => x.got.length === 1);
+  const task = x.got[0].m;
+  assert.match(task.content[0].text, /不能或不该做时用 declined 写明原因/); assert.equal(task.source.exchange.hub, true);
+  const r = await b.core.reply({ from: b.sid, requestId: task.source.exchange.requestId, kind: 'declined', text: '超出授权范围' });
+  assert.equal(r.ok, true, r.error);
+  await until(() => x.got.length === 2);
+  const back = x.got[1].m;
+  assert.equal(back.source.exchange.kind, 'declined'); assert.match(back.content[0].text, /^\[peer 拒绝\] 来自 @reviewer\n超出授权范围/); assert.match(back.content[0].text, /禁止再对此 ID 调用 peer_reply/);
+  await until(async () => (await x.admin('inspect')).requests[0]?.state === 'declined');
+  assert.equal((await a.core.waitFor({ from: a.sid })).wait, false);
+});

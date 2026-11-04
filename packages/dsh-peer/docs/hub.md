@@ -37,4 +37,7 @@ Accepted → claimed → delivered → consumed, or unknown / failed. A lost rep
 ```sh
 npm run check
 node scripts/hub-check.mjs     # two real dsh hosts through the peer-hub centre (PEER_HUB_DIR, default ../../../peer-hub)
+PEER_HUB_URL=https://hub.example.net PEER_HUB_ADMIN_DIR=/var/lib/peer-hub node scripts/hub-check.mjs   # against an existing centre
 ```
+
+By default hub-check starts its own temporary centre. With `PEER_HUB_URL` plus `PEER_HUB_ADMIN_DIR` (the centre data directory holding `admin.json`, used to issue pairing codes) it uses an existing centre instead: all devices and traffic go into a fresh workspace `hubcheck-<time>`, the two devices are revoked at the end, SH03 (restarts the centre) is skipped and listed under `skipped` in the output, and SH04 waits for the centre's device lease (`PEER_HUB_LEASE_MS`, default 45000) before restarting the killed host.
