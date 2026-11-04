@@ -1,5 +1,5 @@
-// Two real packed DSH hosts, separate homes/registries; all traffic traverses
-// the Peer Hub centre from the peer-hub repository (PEER_HUB_DIR, default
+// Two real packed DSH hosts, separate homes/registries (so, in 0.4 mixed mode,
+// two different machines); all traffic between them traverses the Peer Hub centre from the peer-hub repository (PEER_HUB_DIR, default
 // ../../../peer-hub). Devices join with one-time pairing codes through the
 // real `peer join` CLI; the packed plugin resolves @lbryany/peer-hub-client
 // from that repository. A deterministic provider isolates transport from model quality.
@@ -98,7 +98,9 @@ try {
   await until(async () => (await admin('inspect')).sessions.filter(s => s.online).length === 2, 'registered');
   command(a, 'discover');
   await until(() => report(a)?.events.some(e => e.type === 'tool/result' && JSON.stringify(e).includes('reviewer')), 'native discovery');
-  assert.equal(existsSync(join(a.root, 'registry', `${a.process.pid}.json`)), false, 'no local registry transport');
+  // Mixed mode (0.4): each host has its own registry, so the other host is only
+  // reachable through the centre and is listed as a hub peer of device "reviewer".
+  assert.match(JSON.stringify(report(a).events.filter(e => e.type === 'tool/result')), /reviewer \[hub, reviewer\]/, 'separate registries: discovery through the centre');
   scenarios.push({ id: 'SH01', ok: true });
   command(a, 'task:first review');
   await until(async () => (await admin('inspect')).requests.filter(r => r.state === 'complete').length === 1, 'first request complete');

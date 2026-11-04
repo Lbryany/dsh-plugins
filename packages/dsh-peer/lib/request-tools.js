@@ -14,14 +14,12 @@ export function requestTools(core, callerOf) {
   const definitions = [
     { name: 'peer_request', method: 'request',
       description: '单目标用 to/text，多目标一次用 requests（最多8个），互斥且目标必填。忠实用户范围；续轮只发新增决定/变化，不重抄对方已收到的上下文，必要信息补齐。成功默认结束本轮；wait:false 继续本地工作。',
-      parameters: { to: { type: 'string' }, text: { type: 'string' }, ...(core.mode === 'hub' ? { parentRequestId: { type: 'string', description: '续接入站任务时可指定其 ID；继承原任务预算。' } } : {}), requests: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
+      parameters: { to: { type: 'string' }, text: { type: 'string' }, parentRequestId: { type: 'string', description: '续接入站任务时可指定其 ID；继承原任务预算。' }, requests: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
         to: { type: 'string', required: true }, text: { type: 'string', required: true },
       } } }, wait } },
     { name: 'peer_reply', method: 'reply',
-      description: core.mode === 'hub'
-        ? '沿 requestId 回复：执行方 question/result，或 declined（不能或不该做，text 写原因；与 result 一样是终态）；请求方 answer（带 questionId）。收到的任务必须以 result 或 declined 结束。已完成不回复。正文只写新增结论与必要证据。默认结束本轮，wait:false 继续。'
-        : '沿 requestId 回复：执行方 question/result，请求方 answer（带 questionId）。已完成不回复。正文只写新增结论与必要证据。默认结束本轮，wait:false 继续。',
-      parameters: { requestId: { type: 'string', required: true }, kind: { type: 'string', required: true, enum: core.mode === 'hub' ? ['question','answer','result','declined'] : ['question','answer','result'] },
+      description: '沿 requestId 回复：执行方 question/result，或 declined（不能或不该做，text 写原因；与 result 一样是终态）；请求方 answer（带 questionId）。收到的任务必须以 result 或 declined 结束。已完成不回复。正文只写新增结论与必要证据。默认结束本轮，wait:false 继续。',
+      parameters: { requestId: { type: 'string', required: true }, kind: { type: 'string', required: true, enum: ['question','answer','result','declined'] },
         text: { type: 'string', required: true }, questionId: { type: 'string' }, wait } },
     { name: 'peer_wait', method: 'waitFor',
       description: '让出本轮等待已有任务/排队消息，不发送。省略 IDs 等全部；有本地待办则继续处理。',

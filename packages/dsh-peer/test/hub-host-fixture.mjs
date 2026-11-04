@@ -1,7 +1,10 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { LlmAdapter, createUserMessage } from '@deepseek-ai/dsh-llm';
 export const inject = ['agents', 'llm', 'sessions'];
-export function apply(ctx, config) {
+export function apply(ctx, profileConfig) {
+  // Several hosts may share one profile (mixed-check: two dsh processes of the
+  // same DSH_HOME); each then reads its own settings from HUB_FIXTURE.
+  const config = process.env.HUB_FIXTURE ? JSON.parse(readFileSync(process.env.HUB_FIXTURE, 'utf8')) : profileConfig;
   let agent, timer, working = false, lastCommand;
   const report = existsSync(config.report) ? JSON.parse(readFileSync(config.report, 'utf8')) : { events: [], calls: [], boot: 0 };
   report.boot++; report.ready = false; delete report.error;
@@ -23,6 +26,7 @@ export function apply(ctx, config) {
         else if (exchange?.kind === 'question') calls = [['peer_reply', { requestId: exchange.requestId, questionId: exchange.questionId, kind: 'answer', text: '检查 main 分支。' }]];
         else if (exchange?.kind === 'answer') calls = [['peer_reply', { requestId: exchange.requestId, kind: 'result', text: '审查完成\nmain 分支检查通过。' }]];
         else if (text.startsWith('task:')) calls = [['peer_request', { to: 'reviewer', text: text.slice(5) }]];
+        else if (text.startsWith('ask:')) { const [to, ...rest] = text.slice(4).split('|'); calls = [['peer_request', { to, text: rest.join('|') }]]; }
         else if (text === 'discover') calls = [['peer_list', {}]];
         else if (text.startsWith('send:')) calls = [['peer_send', { to: 'reviewer', text: text.slice(5) }]];
       }

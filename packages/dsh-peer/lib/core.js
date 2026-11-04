@@ -5,7 +5,7 @@ import { PROTOCOL, createRegistry } from './registry.js';
 import { createTransport as defaultCreateTransport, MAX_REQUEST_BYTES } from './transport.js';
 import { createGuard } from './guard.js';
 import { createExchange, REQUEST_CAPABILITY } from './exchange.js';
-import { createHubCore } from './hub/core.js';
+import { createMixedCore } from './mixed.js';
 
 export const NAME_RE = /^[a-z0-9][a-z0-9_-]{0,39}$/;
 const NAME_MAX = 40;
@@ -49,9 +49,21 @@ export function formatList(entries, { hidden = 0 } = {}) {
 export function createPeerCore({
   dir, pid = process.pid, procStart = null, profile = null, dshHome = null, argv1 = null, fixedName = null,
   agents, makeMessage, log = () => {}, now = Date.now, guardNow, protection = {}, guardOptions = {}, isAlive, procStartOf, namesFile,
-  requests = true, createTransport = defaultCreateTransport, token = randomBytes(32).toString('hex'), writeDelayMs = 50, hub, persistMessage,
+  requests = true, createTransport = defaultCreateTransport, token = randomBytes(32).toString('hex'), writeDelayMs = 50, hub, persistMessage, ...rest
 }) {
-  if (hub) return createHubCore({ hub, dir, fixedName, agents, makeMessage, persistMessage, log });
+  const options = { dir, pid, procStart, profile, dshHome, argv1, fixedName, agents, makeMessage, log, now, guardNow, protection, guardOptions, isAlive, procStartOf, namesFile,
+    requests, createTransport, token, writeDelayMs, ...rest };
+  // Same-machine mode is always on; a configured centre adds the remote channel.
+  const local = createLocalCore(options);
+  return hub ? createMixedCore({ local, hub, dir, agents, makeMessage, persistMessage, log }) : local;
+}
+
+// Same-machine channel: registry + Unix socket, never the centre.
+export function createLocalCore({
+  dir, pid = process.pid, procStart = null, profile = null, dshHome = null, argv1 = null, fixedName = null,
+  agents, makeMessage, log = () => {}, now = Date.now, guardNow, protection = {}, guardOptions = {}, isAlive, procStartOf, namesFile,
+  requests = true, createTransport = defaultCreateTransport, token = randomBytes(32).toString('hex'), writeDelayMs = 50, exchangeLimits, sweepMs = 5000,
+}) {
   const registry = createRegistry({ dir, pid, ...(isAlive ? { isAlive } : {}), ...(procStartOf ? { procStartOf } : {}), ...(namesFile ? { namesFile } : {}) });
   const sessions = new Map(); // id → { id, name, nameSource, cwd, title, status, since, lastActiveAt }
   const pending = new Map(); // 还没有用户消息的会话（空草稿）：id → info，首条用户消息后才登记
@@ -64,7 +76,7 @@ export function createPeerCore({
   const guard = createGuard({ ...(typeof protection === 'object' && protection ? protection : {}), ...guardOptions,
     ...(guardNow ? { now: guardNow } : {}), enabled: protection !== 'off', onPause: data => audit('conversation-paused', data) });
   let fixedUsed = false;
-  let timer = null;
+  let timer = null, sweeper = null;
   let started = false;
   const stats = { writes: 0 };
 
@@ -201,7 +213,9 @@ export function createPeerCore({
 
   // ---------- 投递 ----------
   const ERROR_TEXT = {
-    'unknown-peer': '找不到这个 peer', 'ambiguous-peer': 'sessionId 前缀命中多个会话，请用名字', 'unsupported-address': '第一版不支持 name@host 地址（跨机器尚未实现）',
+    'unknown-peer': '找不到这个 peer', 'ambiguous-peer': 'sessionId 前缀命中多个会话，请用名字', 'unsupported-address': 'name@device 地址需要配置中心（config.hub）', 'hub-offline': '中心暂不可达，远端 peer 暂时无法发送',
+    'request-expired': '此任务已过期关闭', 'root-budget': '任务链消息预算已用完', 'root-depth': '任务链委派层数已达上限',
+    'invalid-parent': 'parentRequestId 不是本会话正在处理的入站任务', 'ambiguous-parent': '本会话同时在处理多个入站任务，请用 parentRequestId 指明续接哪一个',
     self: '不能发给自己', 'not-registered': '本会话没有登记为 peer', 'not-live': '对方会话已不在内存（第一版不做冷投递）',
     'unknown-session': '对方进程里没有这个会话', 'bad-token': '对方拒绝了 token', 'bad-request': '对方认为请求格式不对',
     unreachable: '连不上对方进程的 socket', timeout: '对方 5 秒内没有回应', 'bad-response': '对方回包无法解析', 'no-key': '读不到对方的 key 文件',
@@ -273,7 +287,7 @@ export function createPeerCore({
     try {
       const text = relayText(from, req.text);
       const start = text.length - req.text.length - (`\n\n${REPLY_HINT(from.name)}`).length;
-      const source = { kind: 'dsh-peer', form: 'relay', peer: { name: from.name, session: from.session, pid: from.pid, cwd: from.cwd ?? null, profile: from.profile ?? null },
+      const source = { kind: 'dsh-peer', form: 'relay', channel: 'local', peer: { name: from.name, session: from.session, pid: from.pid, cwd: from.cwd ?? null, profile: from.profile ?? null },
         display: { version: 1, id, to: sid, start, end: start + req.text.length, sentAt: now() } };
       const msg = makeMessage(text, source);
       if (req.steer) agent.steer(msg); else agent.followup(msg);
@@ -290,7 +304,22 @@ export function createPeerCore({
     return { ok: true, id, delivered: req.steer ? 'steered' : 'queued' };
   }
 
-  const exchange = createExchange({ enabled: requests !== false, ...(guardNow ? { now: guardNow } : {}),
+  // A requester whose task passed its deadline gets a notice in its own session
+  // (the centre does the same); it bypasses direction protection and budget.
+  function expiryNotice(r) {
+    let agent; try { agent = agents.get(r.self.session); } catch { agent = undefined; }
+    if (!agent) return;
+    const why = { pending: `@${r.other.name} 已接收但没有交付结果`, question: `@${r.other.name} 提出的问题没有在期限内得到回答`,
+      'queued-result': `@${r.other.name} 的回复已排队，但没有在期限内被读取` }[r.expiredFrom] || (r.uncertain ? '投递状态未知' : `最后状态 ${r.expiredFrom}`);
+    const body = `[dsh-peer 通知] 任务 ${r.id} 已过期（期限 ${Math.round(exchange.limits.taskMs / 60000)} 分钟）：${why}。已关闭该任务，不要再对此 requestId 调用 peer_reply；如仍需要，先判断原因，再决定是否发起新任务（不要原样重发）。`;
+    const info = { requestId: r.id, kind: 'expired', channel: 'local' };
+    const text = exchangeText(r.other, body, info), start = text.indexOf('\n') + 1;
+    const source = { kind: 'dsh-peer', form: 'relay', channel: 'local', system: true, peer: { name: r.other.name, session: r.other.session, pid: r.other.pid, cwd: r.other.cwd ?? null, profile: r.other.profile ?? null },
+      exchange: info, display: { version: 2, id: randomBytes(12).toString('hex'), to: r.self.session, start, end: start + body.length, sentAt: now() } };
+    try { agent.followup(makeMessage(text, source)); audit('expired', { requester: r.self.session, requestId: r.id }); } catch { /* the session is gone */ }
+  }
+
+  const exchange = createExchange({ enabled: requests !== false, ...(guardNow ? { now: guardNow } : {}), ...(exchangeLimits ? { limits: exchangeLimits } : {}), onExpire: expiryNotice,
     identity: id => { const s = sessions.get(id); return s ? { session: id, name: s.name, cwd: s.cwd, profile, pid, instanceId, capabilities } : null; },
     resolve: (address, from) => resolve(address, entries(from)),
     async transmit(target, req) {
@@ -306,8 +335,9 @@ export function createPeerCore({
       if (!agent) return { ok: false, error: 'not-live' };
       const admission = guard.reserve(req.from.session, req.to.session, req.text, false, JSON.stringify([req.requestId, req.kind, req.questionId]));
       if (!admission.ok) return admission;
-      const text = exchangeText(req.from, req.text, info), start = text.indexOf('\n') + 1;
-      const source = { kind: 'dsh-peer', form: 'relay', peer: { name: req.from.name, session: req.from.session, pid: req.from.pid, cwd: req.from.cwd ?? null, profile: req.from.profile ?? null }, exchange: info,
+      const tagged = { ...info, channel: 'local' };
+      const text = exchangeText(req.from, req.text, tagged), start = text.indexOf('\n') + 1;
+      const source = { kind: 'dsh-peer', form: 'relay', channel: 'local', peer: { name: req.from.name, session: req.from.session, pid: req.from.pid, cwd: req.from.cwd ?? null, profile: req.from.profile ?? null }, exchange: tagged,
         display: { version: 2, id: req.id, to: req.to.session, start, end: start + req.text.length, sentAt: now() } };
       try { agent.followup(makeMessage(text, source)); }
       catch { admission.rollback(); return { ok: false, error: 'delivery-failed' }; }
@@ -349,16 +379,20 @@ export function createPeerCore({
   }
 
   return {
-    pid, token, stats, transport, registry,
+    mode: 'local', pid, token, stats, transport, registry,
+    // For the mixed core: local resolution and which channel owns a request.
+    entries, resolveLocal: (to, from) => resolve(to, entries(from)), exchangeHas: exchange.has,
     async start() {
       registry.ensureDir();
       registry.writeKey(token);
       await transport.start();
       started = true;
       flush();
+      sweeper = setInterval(() => exchange.sweep(), sweepMs); sweeper.unref?.();
     },
     stop() {
       if (timer) { clearTimeout(timer); timer = null; }
+      if (sweeper) { clearInterval(sweeper); sweeper = null; }
       started = false;
       try { transport.stop(); } catch { /* 已关 */ }
       registry.removeSelf();

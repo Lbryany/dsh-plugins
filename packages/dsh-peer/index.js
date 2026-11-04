@@ -12,7 +12,7 @@ import { defaultProcStartOf, resolvePeerDir } from './lib/registry.js';
 export const name = 'dsh-peer';
 export const inject = ['agents', 'tools'];
 
-const TAIL = '这是同一台机器上 dsh 会话之间的通道；对方是另一个 agent，不是用户。';
+const TAIL = '这是 dsh 会话之间的 agent 通道（本机会话直连，远端经中心）；对方是另一个 agent，不是用户。';
 const TEXT_OUTPUT = {
   schema: { type: 'object', additionalProperties: false, properties: { ok: { type: 'boolean', required: true }, text: { type: 'string', required: true } } },
   render: (_args, v) => [{ type: 'text', text: v.text }],
@@ -114,7 +114,7 @@ export function apply(ctx, config = {}) {
 
   ctx.tools.register(defineTool({
     name: 'peer_list',
-    description: '发现 peer 名字/状态。all 查看全部，details 查看目录等完整信息。',
+    description: '发现 peer 地址/状态（本机会话与中心上的远端会话；远端与本地重名时用 name@device）。all 查看全部，details 查看目录等完整信息。',
     parameters: { all: { type: 'boolean' }, details: { type: 'boolean' } },
     output: TEXT_OUTPUT,
     isConcurrencySafe: () => true,
@@ -122,15 +122,16 @@ export function apply(ctx, config = {}) {
       const from = callerOf(exec?.agent), options = { all: args.all === true };
       if (args.details) return { ok: true, text: await core.listText(from, options) };
       const view = await core.listView(from, options);
-      return { ok: true, text: view.entries.map(e => `${e.name}${e.self ? ' (self)' : ''}: ${e.status}`).join('\n') + (view.hidden ? `\n另有 ${view.hidden} 个，all:true 查看。` : '') };
+      const line = e => e.via ? `${e.address}${e.self ? ' (self)' : ''} [${e.via === 'hub' ? `hub, ${e.device || '?'}` : 'local'}]: ${e.status}` : `${e.name}${e.self ? ' (self)' : ''}: ${e.status}`;
+      return { ok: true, text: view.entries.map(line).join('\n') + (view.hidden ? `\n另有 ${view.hidden} 个，all:true 查看。` : '') + (view.hubOffline ? '\n中心离线：只列出本机会话。' : '') };
     },
   }));
 
   ctx.tools.register(defineTool({
     name: 'peer_send',
-    description: `旧端兼容，不结束本轮。任务优先 peer_request/reply；只发新增任务、问题或一次结果。纯确认、感谢、告别不发送；保护错误后停止，不重试或换地址。${config.hub ? '这是通过中心服务连接的 agent 通道；对方不是用户。' : TAIL}`,
+    description: `旧端兼容，不结束本轮。任务优先 peer_request/reply；只发新增任务、问题或一次结果。纯确认、感谢、告别不发送；保护错误后停止，不重试或换地址。${TAIL}`,
     parameters: {
-      to: { type: 'string', required: true, description: '名字或ID前缀(≥4位)' },
+      to: { type: 'string', required: true, description: '名字、name@device 或ID前缀(≥4位)' },
       text: { type: 'string', required: true },
       steer: { type: 'boolean', description: '仅用户要求插话时 true' },
     },
@@ -172,7 +173,7 @@ export function apply(ctx, config = {}) {
   ctx.inject(['commands'], (c) => {
     c.effect(() => c.commands.register({
       name: 'peers',
-      description: config.hub ? '列出中心登记的 peer' : '列出本机正在运行的 dsh 会话（peer）',
+      description: '列出 peer：本机正在运行的 dsh 会话，以及配置中心时的远端会话',
       handler: ({ agent }) => mapMaybe(core.peersText(callerOf(agent)), text => ({ kind: 'success', text })),
     }), 'dsh-peer.cmd.peers');
     c.effect(() => c.commands.register({
@@ -199,7 +200,7 @@ export function apply(ctx, config = {}) {
   const onExit = () => { void core.stop(); };
   ctx.effect(() => {
     core.start().then(
-      () => console.error(`[dsh-peer] 已登记 pid ${pid}，${core.mode === 'hub' ? '中心' : 'socket'} ${core.transport.path}`),
+      () => console.error(`[dsh-peer] 已登记 pid ${pid}，${core.mode === 'mixed' ? '本机 socket + 中心' : 'socket'} ${core.transport.path}`),
       (error) => console.warn(`[dsh-peer] 启动失败：${error && error.message}`),
     );
     process.on('exit', onExit); // 兜底：异常退出时也删自己的三件

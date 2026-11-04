@@ -1,7 +1,7 @@
 {
   "name": "@lbryany/dsh-peer",
-  "version": "0.3.0",
-  "description": "Local peer discovery and Peer Hub (central) messaging for dsh sessions",
+  "version": "0.4.0",
+  "description": "Peer messaging for dsh sessions: same-machine sockets plus Peer Hub (central) for remote peers",
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",
@@ -37,7 +37,7 @@
     "@deepseek-ai/dsh-llm": ">=0.2.1-rc.5 <0.3.0-0",
     "@deepseek-ai/dsh-session-title": ">=0.2.1-rc.5 <0.3.0-0",
     "@deepseek-ai/dsh-tools": ">=0.2.1-rc.5 <0.3.0-0",
-    "@lbryany/peer-hub-client": ">=0.3.0 <0.4.0"
+    "@lbryany/peer-hub-client": ">=0.4.0 <0.5.0"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {
@@ -77,6 +77,7 @@
     "build": "node scripts/build-client.mjs",
     "scenarios": "node scripts/scenarios.mjs",
     "test:hub": "node scripts/hub-check.mjs",
+    "test:mixed": "node scripts/mixed-check.mjs",
     "test:browser": "node scripts/browser-check.mjs"
   },
   "license": "MIT",

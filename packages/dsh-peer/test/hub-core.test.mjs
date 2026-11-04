@@ -35,7 +35,7 @@ async function setup(t) {
 
 test('H07 isolated dsh cores discover and exchange only through the centre', async t => {
   const x = await setup(t), a = await x.make('alice', 'session-aaaa'), b = await x.make('reviewer', 'session-bbbb');
-  assert.equal(a.core.mode, 'hub');
+  assert.equal(a.core.mode, 'mixed');
   const list = await a.core.list(a.sid); assert.ok(list.some(s => s.name === 'reviewer'));
   const r = await a.core.request({ from: a.sid, to: 'reviewer', text: 'check this' }); assert.equal(r.ok, true);
   await until(() => x.got.length === 1);

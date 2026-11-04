@@ -1,11 +1,14 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { defaultName, NAME_RE, formatList, LIST_LIMIT } from '../core.js';
+import { defaultName } from '../core.js';
 import { relayText, exchangeText, REPLY_HINT } from '../message.js';
 
 // Centre mode depends on @lbryany/peer-hub-client (the peer-hub repository's
 // packages/client). It is loaded lazily so local same-machine mode never needs it.
+// This is the remote channel of the mixed core (lib/mixed.js); it never carries
+// messages between sessions that are both running on this machine.
 const require = createRequire(import.meta.url);
 function loadHubClient() {
   try { return require('@lbryany/peer-hub-client'); }
@@ -24,23 +27,32 @@ export function nativeReceipt(agent, messageId) {
   return null;
 }
 
-export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persistMessage = async () => false, log = () => {} }) {
+// addressOf(from) gives the address a reply should use for a hub sender
+// (`name`, or `name@device` when a local session has the same name).
+export function createHubCore({ hub, dir, agents, makeMessage, persistMessage = async () => false, log = () => {}, addressOf = from => from.name }) {
   const { createHubClient, createReceiptJournal } = loadHubClient();
-  const client = createHubClient({ ...hub, version: 'dsh-peer/0.3.0' }), sessions = new Map(), pending = new Map();
+  const client = createHubClient({ ...hub, version: 'dsh-peer/0.4.0' }), sessions = new Map();
   const stateDir = hub.stateDir || join(dir, 'hub', client.deviceId);
-  const receipts = createReceiptJournal(stateDir), journal = receipts.entries, save = receipts.save;
-  let started = false, timer, fixedUsed = false, syncPromise, drainPromise, consumeQueue = Promise.resolve();
-  let syncAgain = false, drainAgain = false;
+  // One receipt journal per session: a session belongs to one process at a
+  // time, while several processes of the device may share stateDir. The 0.3
+  // single `receipts.json` is still read (never written) for reconciliation.
+  const legacy = existsSync(join(stateDir, 'receipts.json')) ? createReceiptJournal(stateDir).entries : {}, journals = new Map();
+  function journalOf(sid) {
+    let j = journals.get(sid);
+    if (!j) { j = createReceiptJournal(stateDir, `receipts-${createHash('sha256').update(String(sid)).digest('hex').slice(0, 24)}.json`); journals.set(sid, j); }
+    return j;
+  }
+  const entryOf = (sid, id) => journalOf(sid).entries[id] ?? (legacy[id]?.from === sid ? legacy[id] : undefined);
+  const write = (sid, id, value) => { const j = journalOf(sid); j.entries[id] = value; j.save(); };
+  let started = false, timer, syncPromise, drainPromise, consumeQueue = Promise.resolve();
+  let syncAgain = false, drainAgain = false, reachable = null, lastConflicts = '';
+  const note = result => { if (result?.error === 'hub-unreachable') reachable = false; else if (result) reachable = true; return result; };
   function changed() { if (started) void sync().catch(() => {}); }
+  // Only sessions the local core registered (it owns naming); the centre may suffix the name.
   function register(info) {
-    if (!info?.id || info.origin === 'subagent') return null;
-    if (!sessions.has(info.id) && info.hasUserMessage === false) { pending.set(info.id, { ...info }); return null; }
-    pending.delete(info.id);
+    if (!info?.id) return null;
     const old = sessions.get(info.id);
-    let name = old?.name;
-    if (!name && fixedName && !fixedUsed && NAME_RE.test(fixedName)) { name = fixedName; fixedUsed = true; }
-    name ||= defaultName(info.cwd, info.id);
-    const entry = { ...old, ...info, name, runtime: hub.runtime || 'dsh', status: info.status || old?.status || 'idle' };
+    const entry = { ...old, ...info, name: info.name || old?.name || defaultName(info.cwd, info.id), runtime: hub.runtime || 'dsh', status: info.status || old?.status || 'idle' };
     sessions.set(info.id, entry); changed(); return { ...entry };
   }
   async function sync() {
@@ -49,9 +61,12 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
     syncPromise = (async () => {
       do {
         syncAgain = false;
-        const result = await client.rpc('sessions.sync', { sessions: [...sessions.values()].map(s => ({ id: s.id, name: s.name, cwd: s.cwd, title: s.title, status: s.status, runtime: s.runtime })) });
+        const result = note(await client.rpc('sessions.sync', { sessions: [...sessions.values()].map(s => ({ id: s.id, name: s.requested || s.name, cwd: s.cwd, title: s.title, status: s.status, runtime: s.runtime })) }));
         if (!result.ok) return result;
-        for (const s of result.sessions) { const local = sessions.get(s.nativeSession); if (local) { local.name = s.name; local.hubId = s.session; } }
+        for (const s of result.sessions) { const local = sessions.get(s.nativeSession); if (local) { local.requested ||= local.name; local.hubName = s.name; local.hubId = s.session; } }
+        // Another live process of this device still owns these sessions (centre protocol 3).
+        const conflicts = (result.conflicts || []).join(',');
+        if (conflicts !== lastConflicts) { lastConflicts = conflicts; if (conflicts) log(`[dsh-peer] 中心：会话 ${conflicts} 仍由本设备另一个进程持有，暂不登记`); }
       } while (syncAgain && started);
     })().finally(() => { syncPromise = null; });
     return syncPromise;
@@ -61,16 +76,16 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
   const consuming = new Map();
   function ack(sid, m, stage) {
     if (stage !== 'consumed') return sendAck(sid, m, stage);
-    if (journal[m.id]?.stage === 'consumed') return Promise.resolve({ ok: true, duplicate: true });
+    if (entryOf(sid, m.id)?.stage === 'consumed') return Promise.resolve({ ok: true, duplicate: true });
     if (!consuming.has(m.id)) consuming.set(m.id, sendAck(sid, m, stage).finally(() => consuming.delete(m.id)));
     return consuming.get(m.id);
   }
   async function sendAck(sid, m, stage) {
     const result = await client.rpc('inbox.ack', { from: sid, messageId: m.id, claimToken: m.claimToken, stage });
     if (result.ok) {
-      const previous = journal[m.id]?.stage;
+      const old = entryOf(sid, m.id), previous = old?.stage;
       const next = previous === 'consumed' || previous === 'consume-pending' && stage !== 'consumed' ? previous : stage;
-      journal[m.id] = { ...journal[m.id], from: sid, claimToken: m.claimToken, stage: next }; save();
+      write(sid, m.id, { ...old, from: sid, claimToken: m.claimToken, stage: next });
     }
     return result;
   }
@@ -83,12 +98,15 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
     const agent = agents.get(sid); if (!agent) return;
     // A claimed message might already have reached the native durable inbox.
     // Both the server claim and local intent are written before host injection.
-    if (m.recovery || journal[m.id]) { await reconcile(sid, agent, m); return; }
-    journal[m.id] = { from: sid, claimToken: m.claimToken, stage: 'intent' }; save();
-    const exchange = m.exchange && m.exchange.kind !== 'note' ? { ...m.exchange, hub: true } : null;
-    const text = exchange ? exchangeText(m.from, m.text, exchange) : relayText(m.from, m.text);
-    const start = exchange ? text.indexOf('\n') + 1 : text.length - m.text.length - (`\n\n${REPLY_HINT(m.from.name)}`).length;
-    const source = { kind: 'dsh-peer', form: 'relay', peer: m.from, ...(exchange ? { exchange } : {}),
+    if (m.recovery || entryOf(sid, m.id)) { await reconcile(sid, agent, m); return; }
+    write(sid, m.id, { from: sid, claimToken: m.claimToken, stage: 'intent' });
+    const exchange = m.exchange && m.exchange.kind !== 'note' ? { ...m.exchange, hub: true, channel: 'hub' } : null;
+    // The name in the text is the address a reply must use from this machine.
+    let address = m.from.name; try { address = await addressOf(m.from); } catch { /* bare name */ }
+    const from = { ...m.from, hubName: m.from.name, name: address };
+    const text = exchange ? exchangeText(from, m.text, exchange) : relayText(from, m.text);
+    const start = exchange ? text.indexOf('\n') + 1 : text.length - m.text.length - (`\n\n${REPLY_HINT(from.name)}`).length;
+    const source = { kind: 'dsh-peer', form: 'relay', channel: 'hub', peer: from, ...(exchange ? { exchange } : {}),
       hub: { messageId: m.id, recipient: sid }, display: { version: exchange ? 2 : 1, id: m.id, to: sid, start, end: start + m.text.length, sentAt: m.createdAt } };
     try {
       agent.followup(makeMessage(text, source));
@@ -104,7 +122,7 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
         drainAgain = false;
         await syncPromise;
         for (const [sid] of sessions) {
-          const r = await client.rpc('inbox.claim', { from: sid });
+          const r = note(await client.rpc('inbox.claim', { from: sid }));
           if (!r.ok) continue;
           for (const m of r.messages) await deliver(sid, m);
           // Continue full pages, but do not spin on unknown deliveries.
@@ -116,7 +134,8 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
     return drainPromise;
   }
   async function flushReceipts() {
-    for (const [messageId, receipt] of Object.entries(journal)) {
+    const pending = [...sessions.keys()].flatMap(sid => Object.entries({ ...Object.fromEntries(Object.entries(legacy).filter(([, r]) => r.from === sid)), ...journalOf(sid).entries }));
+    for (const [messageId, receipt] of pending) {
       if (!['consume-pending', 'delivered'].includes(receipt.stage) || !sessions.has(receipt.from)) continue;
       const agent = agents.get(receipt.from);
       if (agent && nativeReceipt(agent, messageId) === 'consumed' && await persistMessage(agent))
@@ -125,26 +144,25 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
   }
   function consume(sid, source) {
     const messageId = source?.hub?.messageId;
-    if (source?.kind !== 'dsh-peer' || source.hub?.recipient !== sid || !journal[messageId]) return;
-    journal[messageId].stage = 'consume-pending'; save();
+    const entry = entryOf(sid, messageId);
+    if (source?.kind !== 'dsh-peer' || source.hub?.recipient !== sid || !entry) return;
+    write(sid, messageId, { ...entry, stage: 'consume-pending' });
     consumeQueue = consumeQueue.then(flushReceipts).catch(error => log(`[dsh-peer] receipt pending: ${error.message}`));
   }
   async function call(op, args, mutation = false) {
     await sync(); await consumeQueue; await flushReceipts();
-    return client.rpc(op, { ...args, ...(mutation ? { operationId: randomUUID() } : {}) });
+    return note(await client.rpc(op, { ...args, ...(mutation ? { operationId: randomUUID() } : {}) }));
   }
-  async function list(selfId) {
-    await sync(); const r = await client.rpc('sessions.list'); if (!r.ok) throw new Error(r.text);
-    const self = sessions.get(selfId)?.hubId;
-    return r.sessions.map(s => ({ ...s, self: s.session === self, local: false, sameProcess: false, pid: 0, profile: s.device })).sort((a, b) => Number(b.self) - Number(a.self) || a.name.localeCompare(b.name));
+  // Raw centre rows (every device of the workspace, this one included).
+  async function list() {
+    await sync(); const r = note(await client.rpc('sessions.list')); if (!r.ok) throw Object.assign(new Error(r.text), { code: r.error });
+    return r.sessions;
   }
-  async function listView(selfId, { all = false, limit = LIST_LIMIT } = {}) {
-    const rows = await list(selfId), self = rows.filter(r => r.self), others = rows.filter(r => !r.self);
-    return { entries: [...self, ...(all ? others : others.slice(0, limit))], hidden: all ? 0 : Math.max(0, others.length - limit) };
-  }
-  async function listText(selfId, options) { const r = await listView(selfId, options); return formatList(r.entries, { hidden: r.hidden }); }
   const core = {
     mode: 'hub', transport: { path: client.url }, client,
+    get deviceId() { return client.deviceId; },
+    get reachable() { return reachable; },
+    hubIdOf: sid => sessions.get(sid)?.hubId,
     async start() {
       if (started) return; started = true;
       try {
@@ -154,21 +172,16 @@ export function createHubCore({ hub, dir, fixedName, agents, makeMessage, persis
     },
     async stop() { if (!started) return; started = false; clearInterval(timer); await drainPromise; await consumeQueue; await client.stop(); },
     register, consume, flush: sync, ready: sync,
-    noteUserMessage(sid) { return pending.has(sid) ? register({ ...pending.get(sid), hasUserMessage: true }) : sessions.get(sid); },
-    unregister(sid) { pending.delete(sid); sessions.delete(sid); changed(); },
-    setStatus(sid, status) { const s = sessions.get(sid) || pending.get(sid); if (s && s.status !== status) { s.status = status; changed(); } },
+    unregister(sid) { sessions.delete(sid); changed(); },
+    setStatus(sid, status) { const s = sessions.get(sid); if (s && s.status !== status) { s.status = status; changed(); } },
     setTitle(sid, title) { const s = sessions.get(sid); if (s && s.title !== title) { s.title = title; changed(); } },
     get: sid => sessions.has(sid) ? { ...sessions.get(sid) } : undefined,
-    has: sid => sessions.has(sid), isPending: sid => pending.has(sid),
-    list, listView, listText, peersText: listText,
-    async rename(from, name) { const r = await call('rename', { from, name }); if (r.ok && sessions.has(from)) sessions.get(from).name = r.name; return r; },
+    has: sid => sessions.has(sid),
+    list,
+    async rename(from, name) { const r = await call('rename', { from, name }); if (r.ok && sessions.has(from)) { const s = sessions.get(from); s.requested = name; s.hubName = r.name; } return r; },
     async protectionStatus(from) { const r = await call('protection', { from }); return r.ok ? r.directions : []; },
-    resume: () => ({ ok: false, text: '中心模式的暂停由中心管理员恢复；请在中心界面操作。' }),
     request: args => call('request', args, true), reply: args => call('reply', args, true), waitFor: args => call('wait', args),
-    async send(args) {
-      const r = await call('send', args, true);
-      return { ...r, ...(r.messageId ? { display: { version: 1, id: r.messageId, target: { name: args.to.replace(/^@/, ''), session: args.to }, text: args.text, outcome: 'accepted' } } : {}) };
-    },
+    send: args => call('send', args, true),
   };
   return core;
 }

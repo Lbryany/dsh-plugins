@@ -6,7 +6,7 @@ import { createTransport } from '../lib/transport.js';
 const modulePath = process.env.PEER_BASELINE ? join(process.env.PEER_BASELINE, 'lib/core.js') : new URL('../lib/core.js', import.meta.url).pathname;
 const { createPeerCore } = await import(pathToFileURL(modulePath));
 export const ids = { a: 'session-aaaa-1111', b: 'session-bbbb-2222', c: 'session-cccc-3333' };
-export async function setup(t, { socket = false, protection, guardOptions } = {}) {
+export async function setup(t, { socket = false, protection, guardOptions, exchangeLimits } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'peer-a-')); let clock = 0;
   const got = [], logs = [], hooks = new Map(), cores = [], requests = [];
   const live = new Set(Object.values(ids));
@@ -17,7 +17,7 @@ export async function setup(t, { socket = false, protection, guardOptions } = {}
   const make = pid => {
     const core = createPeerCore({ dir: join(root, 'run'), pid, agents,
       namesFile: join(root, 'names.json'), isAlive: () => true,
-      now: () => clock, guardNow: () => clock, protection, guardOptions,
+      now: () => clock, guardNow: () => clock, protection, guardOptions, exchangeLimits,
       log: line => logs.push(line), makeMessage: (text, source) => ({ content: [{ type: 'text', text }], source }),
       createTransport: opts => { requests.push(opts.onRequest); return createTransport(opts); },
     }); cores.push(core); return core;
