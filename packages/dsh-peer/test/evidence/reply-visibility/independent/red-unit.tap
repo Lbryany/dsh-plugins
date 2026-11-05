@@ -1,0 +1,109 @@
+✖ RV01 tool detail exposes the original reply, identifiers and receipt (16.301209ms)
+✖ RV05 native Host tool-result keeps arguments on block.call.argsRaw (3.819834ms)
+✖ RV02 a settled reply is visible outside native process folding without claiming native events (0.122333ms)
+✖ RV03 reply kinds and failure/missing metadata remain truthful; malformed and unrelated records do not project (0.107833ms)
+✖ RV04 replay stays stable; both reply and receipt renderer registrations are disposed (0.071083ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 0
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 264.565083
+
+✖ failing tests:
+
+test at test/reply-visibility.test.mjs:31:1
+✖ RV01 tool detail exposes the original reply, identifiers and receipt (16.301209ms)
+  AssertionError [ERR_ASSERTION]: the reply text is not the transport receipt
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:35:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/reply-visibility.test.mjs:42:1
+✖ RV05 native Host tool-result keeps arguments on block.call.argsRaw (3.819834ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(dom.window.document.body.textContent.includes(body))
+
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:49:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/reply-visibility.test.mjs:54:1
+✖ RV02 a settled reply is visible outside native process folding without claiming native events (0.122333ms)
+  AssertionError [ERR_ASSERTION]: peer_reply must have a dedicated visible chat projection
+      at project (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:20:10)
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:55:16)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/reply-visibility.test.mjs:72:1
+✖ RV03 reply kinds and failure/missing metadata remain truthful; malformed and unrelated records do not project (0.107833ms)
+  AssertionError [ERR_ASSERTION]: peer_reply must have a dedicated visible chat projection
+      at project (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:20:10)
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:74:18)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/reply-visibility.test.mjs:96:1
+✖ RV04 replay stays stable; both reply and receipt renderer registrations are disposed (0.071083ms)
+  AssertionError [ERR_ASSERTION]: peer_reply must have a dedicated visible chat projection
+      at project (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:20:10)
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-acceptance-bd86qu94/old/test/reply-visibility.test.mjs:97:20)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

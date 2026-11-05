@@ -1,0 +1,30 @@
+✖ RV05 native Host tool-result keeps arguments on block.call.argsRaw (17.890667ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 233.049792
+
+✖ failing tests:
+
+test at test/reply-visibility.test.mjs:42:1
+✖ RV05 native Host tool-result keeps arguments on block.call.argsRaw (17.890667ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(dom.window.document.body.textContent.includes(body))
+
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:49:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

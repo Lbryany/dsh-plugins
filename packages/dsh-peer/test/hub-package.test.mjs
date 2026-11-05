@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { createPeerClient } from '../src/client.js';
 test('H10 package keeps only the dsh plugin; the centre and its client come from peer-hub', () => {
   const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url)));
-  assert.equal(pkg.version, '0.4.0');
+  assert.equal(pkg.version, '0.4.1');
   assert.equal(pkg.bin, undefined, 'hub and Claude binaries moved to peer-hub');
   assert.equal(pkg.peerDependencies['@lbryany/peer-hub-client'], '>=0.4.0 <0.5.0');
   assert.equal(pkg.peerDependenciesMeta['@lbryany/peer-hub-client'].optional, true);

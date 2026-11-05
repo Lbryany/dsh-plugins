@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "blockers": [],
+  "nonblockers": [],
+  "baseline": "9a6d1c8",
+  "version": "0.4.1",
+  "srcSha256": "ec6d2ac59db77f9feef311c84b6171b98c9c4c950dd440694a83f1f1a3b9bd11",
+  "bundleSha256": "34494bc5ca4c42dacd09c4e867cedf05d77193b05e3ec153d7c1a4a701c9ae65",
+  "newTests": {
+    "pass": 13,
+    "fail": 0,
+    "skip": 0
+  },
+  "oldProductNewTests": {
+    "pass": 0,
+    "fail": 5
+  },
+  "browser": {
+    "checks": [
+      "SRV01",
+      "SRV02"
+    ],
+    "modelCalls": 2,
+    "replyCards": 1,
+    "errors": [],
+    "hostExited": true,
+    "browserClosed": true
+  },
+  "unchangedRuntimeFiles": [
+    "index.js",
+    "lib/core.js",
+    "lib/exchange.js",
+    "lib/guard.js",
+    "lib/hub/core.js",
+    "lib/message.js",
+    "lib/mixed.js",
+    "lib/policy.js",
+    "lib/registry.js",
+    "lib/request-tools.js",
+    "lib/status-route.js",
+    "lib/transport.js"
+  ]
+}

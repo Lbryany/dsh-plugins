@@ -5,7 +5,7 @@ A collaboration channel between dsh sessions. Since **0.4.0** it runs in mixed m
 
 ## Install
 
-Add `@lbryany/dsh-peer@0.4.0` to the profile's dependencies and `@lbryany/dsh-peer` to `dsh.profile.bundles`, install dependencies and restart that profile. Unpublished builds can be installed from a local `npm pack` artifact. Local development can run `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`. Installation and restart are explicit user operations.
+Add `@lbryany/dsh-peer@0.4.1` to the profile's dependencies and `@lbryany/dsh-peer` to `dsh.profile.bundles`, install dependencies and restart that profile. Unpublished builds can be installed from a local `npm pack` artifact. Local development can run `DSH_BIN=/path/to/dsh/lib/bin.js node scripts/link-dsh.mjs`. Installation and restart are explicit user operations.
 
 ## Mixed mode: local sessions direct, remote ones through the centre
 
@@ -44,6 +44,8 @@ Known limitation: the budget does not carry across channels. If this session is 
 Only root sessions with a user message are registered. Empty drafts and child sessions are not peers. Names default to `<directory>-<session-prefix>`; `DSH_PEER_NAME` or plugin `name` sets the first registered name. Renames persist by session ID. The `@` in the card is visual notation; tool addresses remain bare names.
 
 The received card reads **来自 @reviewer · original first line**. Click or use the keyboard to expand the remaining lines. The first line is not repeated in the body. Single-line messages have no empty body disclosure. Details contain copy actions, raw records and current receiving-side recovery. There is no persistent paused banner. Unknown or invalid older display metadata preserves the complete text. Disabling the browser plugin leaves the complete host message readable.
+
+Since 0.4.1, the full `peer_reply` body stays visible in chat when a completed turn folds its process. Reasoning and tool records remain accessible through the native process disclosure. Reply cards distinguish questions, answers, results and declines, with a separate disclosure for the receipt and request ID. Accepted means the tool accepted the reply, not that the recipient read it; unsuccessful or unconfirmed replies retain their text with an incomplete or unknown status. Existing records are reconstructed from original tool arguments without running the model again.
 
 The model receives the full origin envelope and message. It is instructed to send only new tasks, questions, substantive progress or results; acknowledgements, thanks and farewells need no reply. Results should be sent once. Receipt is not task completion.
 

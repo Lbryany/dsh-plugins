@@ -103,3 +103,19 @@ Final implementation unit run: **88/88**, no failures/skips (`test/evidence/hub-
 Initial Host failures are retained separately: hub-host-1793675132879 selected a runtime-context user envelope; hub-host-1793675352312 used the wrong resume option; hub-host-1793675453281 manually seeded an invalid persistent surface head. These are fixture failures, not product red proof. The passing fixture uses ordinary native user input and resumeSessionId. The initial hub-first-green.tap is a sandbox listen denial, not a product failure or passing run. Subsequent local-port tests ran with the authorized local-network permission.
 
 Independent final acceptance and local deployment metadata are recorded in hub-spec.md. Nested-root limits do not claim a whole-user-turn budget across newly created roots. Capacity rejects rather than evicts, unknown receipts remain unknown without proof, and public-network deployment is outside this release.
+
+## Reply visibility (0.4.1)
+
+Frozen scope and verification: [reply-visibility-spec.md](reply-visibility-spec.md). Browser-only repair; tool handoff, model input, transport and receipt semantics are unchanged.
+
+| Failure | Enforced regression and evidence |
+|---|---|
+| L-peer-026 | PeerExchangeResult rendered only the receipt and omitted peer_reply arguments. RV01 red against the old renderer; real Host args are nested under block.call.argsRaw, pinned by RV05 red then green. Evidence: reply-visibility/red-unit.tap and red-native-args.tap. |
+| L-peer-027 | A terminal peer_reply has no ordinary final assistant answer, so the Host folds the reply inside the completed process. RV02–RV04 and packed SRV01 red against the old client; a nonexclusive turn-level display node keeps the reply visible while native reasoning/tools remain expandable. Evidence: reply-visibility/browser-red/ and browser/. |
+
+| Feature | Verification |
+|---|---|
+| F-peer-RV-01 exact reply display | RV01/RV03/RV05: full Unicode/Markdown text, kind/request ID and separate receipt; malformed history fallback and truthful unsuccessful/unknown states |
+| F-peer-RV-02 native conversation integration | RV02/RV04, SRV01/SRV02: lifecycle identity, nonexclusive projection, no pre-result success, one visible card after reload, original reasoning/tools and ordinary answer preserved, narrow/dark layout |
+
+Validation under `test/evidence/reply-visibility/`: full unit suite 95/95, deterministic scenarios 9/9, native handoff, packed reply browser and existing 250-turn history browser passed. Independent read-only acceptance passed with no blockers; its separate old/new runs and browser result are under `independent/`. No model-quality evaluation is needed because model-facing behavior did not change. Fixture/environment failures remain separate from product red evidence; see the specification's implementation record.

@@ -1,6 +1,6 @@
 {
   "name": "@lbryany/dsh-peer",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Peer messaging for dsh sessions: same-machine sockets plus Peer Hub (central) for remote peers",
   "keywords": [
     "dsh-plugin",
@@ -78,7 +78,8 @@
     "scenarios": "node scripts/scenarios.mjs",
     "test:hub": "node scripts/hub-check.mjs",
     "test:mixed": "node scripts/mixed-check.mjs",
-    "test:browser": "node scripts/browser-check.mjs"
+    "test:browser": "node scripts/browser-check.mjs",
+    "test:reply-browser": "node scripts/reply-browser-check.mjs"
   },
   "license": "MIT",
   "repository": {

@@ -3,7 +3,20 @@ import { relayText, exchangeText } from '../lib/message.js';
 export function createPeerClient(React, primitives = {}) {
   const h = React.createElement;
   const KIND = 'dsh-peer:message';
+  const REPLY_KIND = 'dsh-peer:reply';
+  const replyKinds = { question: '问题', answer: '回答', result: '结果', declined: '拒绝' };
   const textOf = content => Array.isArray(content) ? content.filter(b => b.type === 'text').map(b => b.text).join('\n') : '';
+  const replyFields = args => args && typeof args.text === 'string' && args.text.length > 0
+    && typeof args.requestId === 'string' && args.requestId.length > 0 && Object.hasOwn(replyKinds, args.kind)
+    ? { text: args.text, requestId: args.requestId, replyKind: args.kind } : null;
+  function replyArguments(raw) {
+    try { return replyFields(JSON.parse(raw)); } catch { return null; }
+  }
+  function replyStatus(meta, isError) {
+    if (isError === true) return '未完成';
+    const d = meta?.peerExchange;
+    return d?.action === 'peer_reply' && typeof d.ok === 'boolean' ? (d.ok ? '已受理' : '未完成') : '状态未知';
+  }
   function matchesEnvelope(source, peer, original, raw) {
     try {
       return source.display.version === 1 ? relayText(peer, original) === raw
@@ -35,6 +48,35 @@ export function createPeerClient(React, primitives = {}) {
       key: context.key, kind: KIND, id: context.id, target: 'chat', anchorSeq: context.state.seq,
       location: context.start?.location ?? context.matches[0]?.location ?? { kind: 'unresolved' },
       visibility: 'visible', groupTree: 'input', data: context.state,
+    },
+  };
+  function replyMatch(event) {
+    const call = event.type === 'tool/call' && event.data?.name === 'peer_reply';
+    const result = event.type === 'tool/result' && event.surfaceOp === 'append';
+    if (!call && !result) return null;
+    const { turn, step } = event.data;
+    const callId = call ? event.data.callId : event.data.message?.toolCallId;
+    if (!Number.isInteger(turn) || !Number.isInteger(step) || typeof callId !== 'string' || !callId) return null;
+    return { id: JSON.stringify([turn, step, callId]), role: call ? 'start' : 'update' };
+  }
+  // Preserve the native assistant/tool projection. Only the reply's display is
+  // promoted outside process folding; no synthetic assistant event or model call.
+  const replyDefinition = {
+    kind: REPLY_KIND, target: 'chat', match: replyMatch,
+    start: (_context, match) => {
+      const fields = replyArguments(match.event.data.arguments);
+      return fields ? { ...fields, callKey: replyMatch(match.event).id } : null;
+    },
+    update: (context, match) => {
+      const state = context.state, event = match.event;
+      if (!state || event.type !== 'tool/result' || replyMatch(event)?.id !== state.callKey) return state;
+      return { ...state, seq: event.seq, receipt: textOf(event.data.message.content),
+        status: replyStatus(event.data.meta, event.data.message.isError) };
+    },
+    buildViewNode: context => context.state?.seq === undefined ? null : {
+      key: context.key, kind: REPLY_KIND, id: context.id, target: 'chat', anchorSeq: context.state.seq,
+      location: context.start?.location ?? context.matches[0]?.location ?? { kind: 'unresolved' },
+      visibility: 'visible', groupTree: 'turn', data: context.state,
     },
   };
   const CSS = `
@@ -112,11 +154,30 @@ summary.dsh-peer-head{cursor:pointer}summary.dsh-peer-head::-webkit-details-mark
   }
   function PeerExchangeResult({ block, phase }) {
     const d = block.meta?.peerExchange;
-    const title = { peer_request: '任务交接', peer_reply: '任务回复', peer_wait: '等待结果' }[d?.action] || '任务协作';
-    const label = !d ? (phase === 'result' ? '查看结果' : '处理中') : !d.ok ? '未完成' : d.wait ? '已交接' : '继续处理';
+    const action = block.call?.name || block.name || d?.action;
+    let reply = null;
+    if (action === 'peer_reply') {
+      const raw = block.call?.argsRaw ?? block.argsRaw;
+      if (typeof raw === 'string') reply = replyArguments(raw);
+      else try { reply = replyFields(Object.fromEntries(['text', 'kind', 'requestId'].map(key => [key, block.args?.string?.(key)]))); } catch { /* Preserve the receipt for malformed history. */ }
+    }
+    const title = { peer_request: '任务交接', peer_reply: '任务回复', peer_wait: '等待结果' }[action] || '任务协作';
+    const label = reply && phase === 'result' ? replyStatus(block.meta, block.isError)
+      : !d ? (phase === 'result' ? '查看结果' : '处理中') : !d.ok ? '未完成' : d.wait ? '已交接' : '继续处理';
     return h('details', { className: 'dsh-peer-card', 'data-peer-exchange': true },
       h('summary', { className: 'dsh-peer-head' }, h('span', { className: 'dsh-peer-heading' }, title), h('span', { className: 'dsh-peer-status' }, label)),
-      h('div', { className: 'dsh-peer-body' }, h('pre', { className: 'dsh-peer-raw' }, textOf(block.content))));
+      h('div', { className: 'dsh-peer-body' },
+        reply && h(React.Fragment, null, h(Body, { text: reply.text }), h('div', { className: 'dsh-peer-meta' }, `${replyKinds[reply.replyKind]} · ${reply.requestId}`), h('div', { className: 'dsh-peer-meta' }, '发送回执')),
+        h('pre', { className: 'dsh-peer-raw' }, textOf(block.content))));
+  }
+  function PeerReplyCard({ node }) {
+    const d = node.data;
+    return h('article', { className: 'dsh-peer-card', 'data-peer-reply': true },
+      h('div', { className: 'dsh-peer-head' }, h('span', { className: 'dsh-peer-heading' }, `任务回复 · ${replyKinds[d.replyKind]}`), h('span', { className: 'dsh-peer-status' }, d.status)),
+      h('div', { className: 'dsh-peer-body' },
+        h('div', { 'data-peer-reply-body': true }, h(Body, { text: d.text })),
+        h('details', { className: 'dsh-peer-meta' }, h('summary', null, '发送回执'),
+          h('div', null, `请求 ID：${d.requestId}`), h('pre', { className: 'dsh-peer-raw' }, d.receipt))));
   }
   function commandControls(ctx, sessionId, fetchImpl = (...args) => fetch(...args), base = () => document.baseURI) {
     const commands = ctx.get('remote')?.commands;
@@ -149,10 +210,12 @@ summary.dsh-peer-head{cursor:pointer}summary.dsh-peer-head::-webkit-details-mark
     ctx.slots.inject('conversation.chat.node', () => {
       const disposeSlot = ctx.slots.register({ name: 'conversation.chat.node', key: KIND, inject: sessionId => ({ controls: commandControls(ctx, sessionId) }) }, PeerMessageCard);
       const disposeEvents = ctx.uiConversation.events.register(definition);
-      return () => { disposeEvents(); disposeSlot(); };
+      const disposeReplySlot = ctx.slots.register({ name: 'conversation.chat.node', key: REPLY_KIND }, PeerReplyCard);
+      const disposeReplyEvents = ctx.uiConversation.events.register(replyDefinition);
+      return () => { disposeReplyEvents(); disposeReplySlot(); disposeEvents(); disposeSlot(); };
     });
     ctx.slots.inject('tool.call.toolview', () => ctx.slots.register({ name: 'tool.call.toolview', key: 'peer_send' }, PeerSendResult));
     for (const key of ['peer_request','peer_reply','peer_wait']) ctx.slots.inject('tool.call.toolview', () => ctx.slots.register({ name: 'tool.call.toolview', key }, PeerExchangeResult));
   }
-  return { inject: ['slots', 'uiConversation', 'remote.commands'], apply, definition, messageData, PeerMessageCard, PeerSendResult, PeerExchangeResult, commandControls, CSS };
+  return { inject: ['slots', 'uiConversation', 'remote.commands'], apply, definition, replyDefinition, messageData, PeerMessageCard, PeerSendResult, PeerExchangeResult, PeerReplyCard, commandControls, CSS };
 }

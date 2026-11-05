@@ -1,0 +1,9 @@
+AssertionError [ERR_ASSERTION]: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+    at file:///private/var/folders/5c/fl7vt7ts6nbblnvbs7kwbz540000gn/T/peer-reply-browser-CsMNUV/home/profiles/reply-test/node_modules/reply-fixture/index.js:58:16
+
+false !== true
+
+    at file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/scripts/reply-browser-check.mjs:45:10

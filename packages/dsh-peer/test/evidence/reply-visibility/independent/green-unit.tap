@@ -1,0 +1,21 @@
+✔ UI01 exclusive source selection: append and steering, never text impersonation (0.44075ms)
+✔ UI04/UI05 first line only in title, Unicode ranges, raw fallback and fence context (9.342042ms)
+✔ UI02 structured status, no success guess from legacy text (0.409833ms)
+✔ UI03 receiving host command access and truthful failures (0.241458ms)
+✔ UI03 disclosure is local; resume double click invokes once and failure never fakes success (30.045583ms)
+✔ UI05 host Markdown contract includes code and footnote labels (0.42425ms)
+✔ UI03 client declares the command service required by card actions (0.043584ms)
+✔ UI06 malformed structured metadata falls back to full text without crashing (0.1305ms)
+✔ RV01 tool detail exposes the original reply, identifiers and receipt (23.985667ms)
+✔ RV05 native Host tool-result keeps arguments on block.call.argsRaw (3.792ms)
+✔ RV02 a settled reply is visible outside native process folding without claiming native events (3.335708ms)
+✔ RV03 reply kinds and failure/missing metadata remain truthful; malformed and unrelated records do not project (8.758542ms)
+✔ RV04 replay stays stable; both reply and receipt renderer registrations are disposed (0.332208ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 282.792292

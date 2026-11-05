@@ -1,0 +1,28 @@
+dsh-peer 回复可见性：独立只读验收通过
+
+受验版本：@lbryany/dsh-peer 0.4.1，旧产品取自 dsh-plugins 9a6d1c8；目标 /private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer。
+范围：只读源代码、冻结规格和测试；独立目录 /private/tmp/dsh-peer-reply-acceptance-bd86qu94 存放运行副本和证据。
+
+阻塞：无。
+非阻塞：无待修项。仅以本机 dsh 0.2.1-rc.5 与真实隔离 Host/Chrome、确定性脚本 provider 验证；没有调用真实模型或 Claude CLI。
+
+证据及复现：
+1. 新产品：cd /private/tmp/dsh-peer-reply-acceptance-bd86qu94/new && node --test test/client.test.mjs test/reply-visibility.test.mjs
+   实际 13/13 通过，0 失败/跳过；期望新 RV01–RV05 与既有 UI 回归全通过。证据 green-unit.tap。
+2. 旧产品：cd /private/tmp/dsh-peer-reply-acceptance-bd86qu94/old && node --test test/reply-visibility.test.mjs
+   src/client.js 精确来自 git show 9a6d1c8:packages/dsh-peer/src/client.js，保留新回归。
+   实际 RV01–RV05 5/5 行为失败，非环境失败；期望工具详情遗漏正文、缺少独立回复投影。证据 red-unit.tap。
+3. 实际打包浏览器：cd /private/tmp/dsh-peer-reply-acceptance-bd86qu94/browser && node scripts/reply-browser-check.mjs
+   实际 SRV01/SRV02 通过；完成默认可见、刷新 1 卡、工具详情含正文、原生 reasoning/tool 保留、普通助手回复可见、360px 深色可用、console errors=[]。
+   两次模型调用对应普通输入与 peer 输入，未发生额外尾调。Host/Chrome 均退出。
+   证据 independent-browser.log、browser/test/evidence/reply-visibility/browser/{result.json,cleanup.json,completed.png,process-expanded.png,narrow-dark.png}。
+4. 生成 bundle 与 scripts/build-client.mjs 的确定性文本逐字相等；受验源代码与 bundle 哈希见 review-version.json，复核结束仍一致。
+5. 主会话最终完整证据已审阅：95/95 单测；S01–S06 与 SB01–SB03 9/9；native handoff；250-turn history checks。受验目录 test/evidence/reply-visibility/。
+
+关键审查：
+- call/result 按 turn、step、call ID 配对；结果前不发卡；跨 turn/step/call、替换事件、不相关工具和无配对结果不捏造回复。
+- 状态仅根据 peer_reply 明确布尔 ok 与 isError；失败/未知/缺元数据保留正文，均不显示已受理；已受理不声称对方已读。
+- replyDefinition 不申明 exclusive，与实际 dsh native toolDefinition 同时投影；groupTree:turn 位于整个处理过程折叠之外。
+- block.call.argsRaw 和旧 parsed args 均兼容；参数解析失败保留回执视图；Markdown/Unicode 内容由原生 MarkdownText 渲染。
+- 仅显示层变更，无 session 写入、传输/工具执行/提示/ACK/模型调用改动；原有 host 入口及运行库逐文件与基线一致。
+- 注册与卸载对称；历史恢复使用已有持久化参数，刷新不创建重复卡。

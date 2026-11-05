@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "version": "0.4.1",
+  "checks": [
+    "SRV01",
+    "SRV02"
+  ],
+  "modelCalls": 2,
+  "replyCards": 1,
+  "errors": []
+}

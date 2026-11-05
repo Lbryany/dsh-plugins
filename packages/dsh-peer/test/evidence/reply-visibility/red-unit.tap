@@ -1,0 +1,87 @@
+✖ RV01 tool detail exposes the original reply, identifiers and receipt (16.435834ms)
+✖ RV02 a settled reply is visible outside native process folding without claiming native events (0.1075ms)
+✖ RV03 reply kinds and failure/missing metadata remain truthful; malformed and unrelated records do not project (0.074084ms)
+✖ RV04 replay stays stable; both reply and receipt renderer registrations are disposed (0.05225ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 233.950625
+
+✖ failing tests:
+
+test at test/reply-visibility.test.mjs:31:1
+✖ RV01 tool detail exposes the original reply, identifiers and receipt (16.435834ms)
+  AssertionError [ERR_ASSERTION]: the reply text is not the transport receipt
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:35:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/reply-visibility.test.mjs:42:1
+✖ RV02 a settled reply is visible outside native process folding without claiming native events (0.1075ms)
+  AssertionError [ERR_ASSERTION]: peer_reply must have a dedicated visible chat projection
+      at project (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:20:10)
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:43:16)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/reply-visibility.test.mjs:60:1
+✖ RV03 reply kinds and failure/missing metadata remain truthful; malformed and unrelated records do not project (0.074084ms)
+  AssertionError [ERR_ASSERTION]: peer_reply must have a dedicated visible chat projection
+      at project (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:20:10)
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:62:18)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/reply-visibility.test.mjs:84:1
+✖ RV04 replay stays stable; both reply and receipt renderer registrations are disposed (0.05225ms)
+  AssertionError [ERR_ASSERTION]: peer_reply must have a dedicated visible chat projection
+      at project (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:20:10)
+      at TestContext.<anonymous> (file:///private/tmp/dsh-peer-reply-epma8w0n/packages/dsh-peer/test/reply-visibility.test.mjs:85:20)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
