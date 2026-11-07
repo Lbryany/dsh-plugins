@@ -46,7 +46,11 @@ export function apply(ctx) {
     else if (body.op === 'inspect') {
       const found = await ctx.sessionController.resolveAgent(body.session);
       if ('error' in found) throw found.error;
-      value = { status: found.agent.status, snapshot: await ctx.sessionController.inspect(body.session), calls };
+      // dsh 0.2.2 removed sessionController.inspect; state() is the passive read that replaced it.
+      const snapshot = typeof ctx.sessionController.inspect === 'function'
+        ? await ctx.sessionController.inspect(body.session)
+        : await ctx.sessionController.state({ sessionId: body.session }, new AbortController().signal);
+      value = { status: found.agent.status, snapshot, calls };
     } else if (body.op === 'block') { blocked = true; value = {}; }
     else if (body.op === 'release') { blocked = false; for (const resolve of release.values()) resolve(); release.clear(); value = {}; }
     else if (body.op === 'calls') value = calls;
