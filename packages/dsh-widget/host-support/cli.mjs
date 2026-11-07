@@ -5,16 +5,18 @@ import { resolve, join } from 'node:path';
 import { mkdir, writeFile, rm, realpath } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { spawn } from 'node:child_process';
-import { install, doctor, rollback, disable } from './install.mjs';
+import { install, doctor, rollback, disable, profileBlock } from './install.mjs';
 const { values, positionals } = parseArgs({ allowPositionals: true, options: {
   'host-root': { type: 'string' }, target: { type: 'string' }, 'dsh-home': { type: 'string' },
   port: { type: 'string', default: '0' }, patch: { type: 'string', multiple: true, default: [] },
 } });
 const command = positionals[0];
-if (!values.target || !['install', 'doctor', 'rollback', 'disable', 'web'].includes(command)) throw new Error('Usage: dsh-widget-host install --host-root PATH --target DIR | doctor/rollback/disable --target DIR | web --target DIR --dsh-home DIR [--port 0] [--patch FILE]');
+if (!values.target || !['install', 'doctor', 'rollback', 'disable', 'profile-block', 'web'].includes(command)) throw new Error('Usage: dsh-widget-host install --host-root PATH --target DIR | doctor/rollback/disable/profile-block --target DIR | web --target DIR --dsh-home DIR [--port 0] [--patch FILE]');
 if (command === 'install') {
   if (!values['host-root']) throw new Error('--host-root is required');
   console.log(JSON.stringify(await install({ hostRoot: values['host-root'], target: values.target }), null, 2));
+} else if (command === 'profile-block') {
+  process.stdout.write(await profileBlock(values.target));
 } else if (command !== 'web') {
   console.log(JSON.stringify(await ({ doctor, rollback, disable }[command])(values.target), null, 2));
 } else {
