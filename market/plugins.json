@@ -50,5 +50,22 @@
       "web"
     ],
     "author": "Lbryany"
+  },
+  {
+    "repo": "Lbryany/dsh-plugins",
+    "dir": "packages/dsh-compaction-instruction",
+    "title": {
+      "zh": "可配置的压缩指令",
+      "en": "Configurable compaction instruction"
+    },
+    "description": {
+      "zh": "dsh-compaction-basic 的替换件：在预设的压缩组里顶替它，追加或替换压缩时的总结指令，其余行为与缓存前缀不变。",
+      "en": "Drop-in replacement for dsh-compaction-basic: mount it in a preset's compaction group to append to or replace the summarization directive, leaving everything else and the cached prefix unchanged."
+    },
+    "category": "workflow",
+    "labels": [
+      "headless"
+    ],
+    "author": "Lbryany"
   }
 ]

@@ -18,6 +18,7 @@
 |---|---|---|
 | [packages/dsh-herdr](https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-herdr) | `@lbryany/dsh-herdr` | 会话生命周期状态同步到 Herdr（无界面） |
 | [packages/dsh-peer](https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-peer) | `@lbryany/dsh-peer` | 同机 dsh 会话之间的发现与消息投递（Web 与无界面） |
+| [packages/dsh-compaction-instruction](https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-compaction-instruction) | `@lbryany/dsh-compaction-instruction` | dsh-compaction-basic 的替换件，压缩指令可追加或替换（无界面） |
 
 收录的插件都在 [Lbryany/dsh-plugins](https://github.com/Lbryany/dsh-plugins) 的 `packages/` 下。迁移前的旧仓库 Lbryany/dsh-herdr 已归档，市场只保留迁移后重新打 tag 的版本（herdr 0.1.4）。
 
