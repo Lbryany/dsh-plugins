@@ -2,7 +2,9 @@
 // (linked by scripts/link-dsh.mjs), with a fake LlmAdapter (no network) and fake
 // tokenMeter / sessions / session / agent.
 import { Context } from '@deepseek-ai/cordis';
-import LlmRuntime, { LlmAdapter } from '@deepseek-ai/dsh-llm';
+import LlmRuntime, { LlmAdapter, createAssistantMessage, createMessage, createUserMessage } from '@deepseek-ai/dsh-llm';
+import { Session } from '@deepseek-ai/dsh-session';
+import TokenMeter from '@deepseek-ai/dsh-token-meter';
 
 export const ISO = Context.isolate;
 export const tick = (ms = 10) => new Promise((r) => setTimeout(r, ms));
@@ -28,11 +30,13 @@ class FakeAdapter extends LlmAdapter {
   }
   async *stream(options) {
     this.app.adapterCalls.push(options);
-    const text = this.app.summary;
+    const text = typeof this.app.summary === 'function' ? this.app.summary(this.app.adapterCalls.length - 1) : this.app.summary;
     yield { type: 'block-start', index: 0, blockType: 'text' };
     yield { type: 'text-delta', index: 0, text };
     yield { type: 'block-end', index: 0, block: { type: 'text', text } };
-    yield { type: 'finish', reason: { kind: 'stop' } };
+    if (this.app.usage) yield { type: 'usage', usage: this.app.usage };
+    // app.finish lets a test end the stream with an error or an abort instead of a stop
+    yield { type: 'finish', reason: this.app.finish ?? { kind: 'stop' } };
   }
 }
 
@@ -48,9 +52,11 @@ export function makeSession(id, { openTurn = false } = {}) {
     eventAt: (seq) => events[seq],
     requestHeader: () => ({ config: { provider: 'fake', model: 'm1' }, tools: [{ name: 'echo', description: 'e', inputSchema: { type: 'object' } }] }),
     toolHistory: () => [],
-    deriveEventMessage: (ev) => ev.data?.message ?? null,
+    // Real dsh-session shapes: a user/message event's data IS the message; other message
+    // events carry it as data.message.
+    deriveEventMessage: (ev) => (ev.type === 'user/message' ? ev.data : ev.data?.message) ?? null,
     append(type, data, opts) {
-      const ev = { seq: events.length, type, data: type === 'user/message' && data.role ? { message: data } : data };
+      const ev = { seq: events.length, type, data };
       events.push(ev);
       if (opts?.surfaceOp?.op === 'replace') {
         const a = surface.nodes.indexOf(opts.surfaceOp.startSeq);
@@ -61,7 +67,7 @@ export function makeSession(id, { openTurn = false } = {}) {
       return ev;
     },
   };
-  const push = (type, message) => s.append(type, { message });
+  const push = (type, message) => s.append(type, type === 'user/message' ? { ...message, source: { kind: 'user' } } : { message });
   push('system/message', msg('system', 'You are a coding assistant.'));
   if (openTurn) s.append('turn/start', { turn: 'turn-1' });
   push('user/message', msg('user', 'Please refactor module A. ' + 'details '.repeat(400)));
@@ -88,6 +94,37 @@ export const makeAgent = (session) => ({
   runMaintenance: (fn) => fn(new AbortController().signal),
 });
 
+/** dsh-token-meter's own fixed heuristic (UTF-16 length / 4 + 4 per block + 4 per message). */
+export const estimate = (message) => TokenMeter.prototype.estimateMessage(message);
+
+/** A meter pricing every surface node with dsh-token-meter's heuristic, for real Sessions. */
+export const realMeter = {
+  measure(session) {
+    const nodes = session.surface.nodes.map((seq) => {
+      const m = session.deriveEventMessage(session.eventAt(seq));
+      const t = m === null ? 0 : estimate(m);
+      return { seq, tokens: t, heuristicTokens: t };
+    });
+    return { nodes, totalTokens: nodes.reduce((a, n) => a + n.tokens, 0) };
+  },
+  estimateMessage: estimate,
+};
+
+/**
+ * A real, detached dsh-session Session (the installed dsh's), with helpers that append real
+ * message events. Each helper returns the appended event's seq.
+ */
+export function realLog(id = 'real') {
+  const session = Session.create(id);
+  const text = (t) => [{ type: 'text', text: t }];
+  return {
+    session,
+    system: (t) => session.append('system/message', { message: createMessage({ role: 'system', content: text(t), source: { kind: 'system-prompt' } }) }, { surfaceOp: 'append' }).seq,
+    user: (t, source = { kind: 'user' }) => session.append('user/message', createUserMessage({ content: typeof t === 'string' ? text(t) : t, source: typeof source === 'string' ? { kind: source } : source }), { surfaceOp: 'append' }).seq,
+    assistant: (t) => session.append('assistant/message', { message: createAssistantMessage({ content: text(t), source: { provider: 'fake', model: 'm1' } }) }, { surfaceOp: 'append' }).seq,
+  };
+}
+
 /** The first three surface messages of a session, as basic's `summarize(input)` takes them. */
 export function summarizeInput(session) {
   return {
@@ -101,13 +138,13 @@ export function summarizeInput(session) {
  * outer `llm/stream` listener at the root (stands in for llm-retry / session-title), and a
  * log exporter. Disposed after the test.
  */
-export function createApp(t, root = new Context()) {
+export function createApp(t, root = new Context(), { meter = tokenMeter } = {}) {
   const app = { root, adapterCalls: [], outerSeen: [], logs: [], summary: 'short fake summary', flushed: [] };
   root.logger.exporter({ export: (m) => app.logs.push(m) });
   root.plugin(LlmRuntime);
   root.plugin({ name: 'fake-adapter', inject: ['llm'], apply(ctx) { ctx.llm.registerAdapter(['fake'], new FakeAdapter(app)); } });
   root.plugin({ name: 'fakes', apply(ctx) {
-    ctx.provide('tokenMeter', tokenMeter);
+    ctx.provide('tokenMeter', meter);
     ctx.provide('sessions', { flush: async (s) => { app.flushed.push(s.id); } });
   } });
   root.plugin({ name: 'outer-llm-middleware', inject: ['llm'], apply(ctx) {

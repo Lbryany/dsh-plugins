@@ -6,8 +6,8 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { test } from 'node:test';
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic';
-import { DIRECTIVE_PREFIX } from '../index.js';
-import { BASIC, createApp, makeAgent, makeSession, mountGroup, summarizeInput } from './helpers.mjs';
+import { CHECKPOINT_FRAME, DIRECTIVE_PREFIX } from '../index.js';
+import { BASIC, createApp, makeAgent, makeSession, mountGroup, realLog, realMeter, summarizeInput } from './helpers.mjs';
 
 const require = createRequire(import.meta.url);
 
@@ -27,4 +27,21 @@ test('tripwire: installed dsh-compaction-basic still ends its compaction call wi
   assert.equal(last.content.length, 1);
   assert.equal(last.content[0].type, 'text');
   assert.ok(last.content[0].text.startsWith(DIRECTIVE_PREFIX), `directive now starts with: ${JSON.stringify(last.content[0].text.slice(0, 80))}`);
+});
+
+test('tripwire: the checkpoint framing copied into CHECKPOINT_FRAME is what the installed basic writes, and the overridden hooks still exist', async (t) => {
+  const app = createApp(t, undefined, { meter: realMeter });
+  const plain = mountGroup(app, 'B', (g) => g.plugin(BasicCompactionEngine, BASIC));
+  await plain.ready();
+  const log = realLog('frame');
+  log.system('sys');
+  log.user('Please refactor module A. ' + 'details '.repeat(200));
+  log.assistant('done ' + 'log '.repeat(200));
+  log.user('tail');
+  await plain.sibling.compaction.compactNow(makeAgent(log.session), new AbortController().signal);
+  const checkpoint = log.session.snapshotEvents().find((e) => e.type === 'user/message' && e.data.source.kind === 'compact-checkpoint').data;
+  assert.equal(checkpoint.content[0].text, CHECKPOINT_FRAME.open);
+  assert.equal(checkpoint.content.at(-1).text, CHECKPOINT_FRAME.close);
+  assert.deepEqual(checkpoint.content.slice(1, -1), [{ type: 'text', text: app.summary }], 'summary blocks sit between the two frame blocks');
+  for (const hook of ['summarize', 'compactPressure', 'compactIfNeeded']) assert.equal(typeof BasicCompactionEngine.prototype[hook], 'function', hook);
 });

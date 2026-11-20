@@ -148,7 +148,7 @@ test('end to end: compactNow writes the same checkpoint shape as basic and keeps
   const types = (s) => s.events.map((e) => e.type).join(',');
   assert.equal(types(agentW.session), types(agentB.session));
   assert.deepEqual(rW.shadowedSeqs, rB.shadowedSeqs);
-  const checkpoint = (s) => textOf(s.events.find((e) => e.type === 'user/message' && textOf(e.data.message).includes('<compacted-summary>')).data.message);
+  const checkpoint = (s) => textOf(s.events.find((e) => e.type === 'user/message' && textOf(e.data).includes('<compacted-summary>')).data);
   assert.equal(checkpoint(agentW.session), checkpoint(agentB.session));
   assert.ok(textOf(app.adapterCalls[0].messages.at(-1)).endsWith(INSTRUCTION));
   assert.ok(!textOf(app.adapterCalls[1].messages.at(-1)).includes(INSTRUCTION));

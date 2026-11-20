@@ -59,8 +59,8 @@
       "en": "Configurable compaction instruction"
     },
     "description": {
-      "zh": "dsh-compaction-basic 的替换件：在预设的压缩组里顶替它，追加或替换压缩时的总结指令，其余行为与缓存前缀不变。",
-      "en": "Drop-in replacement for dsh-compaction-basic: mount it in a preset's compaction group to append to or replace the summarization directive, leaving everything else and the cached prefix unchanged."
+      "zh": "dsh-compaction-basic 的替换件：在预设的压缩组里顶替它，追加或替换压缩时的总结指令；另提供扩展点，让别的插件在摘要后附上自己的段落（由代码写，不经模型），体积守卫保证不让压缩失败；其余行为与缓存前缀不变。",
+      "en": "Drop-in replacement for dsh-compaction-basic: mount it in a preset's compaction group to append to or replace the summarization directive. It also offers an extension point through which other plugins append their own sections after the summary (written by code, not by the model), with size guards that never make a compaction fail; everything else and the cached prefix stay unchanged."
     },
     "category": "workflow",
     "labels": [

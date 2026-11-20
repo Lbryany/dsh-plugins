@@ -1,7 +1,7 @@
 {
   "name": "@lbryany/dsh-compaction-instruction",
-  "version": "0.1.0",
-  "description": "Drop-in replacement for dsh-compaction-basic whose summarization directive a profile can append to or replace",
+  "version": "0.2.0",
+  "description": "Drop-in replacement for dsh-compaction-basic whose summarization directive a profile can append to or replace, with an extension point for appending sections after the summary",
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",
@@ -61,5 +61,9 @@
   "bugs": {
     "url": "https://github.com/Lbryany/dsh-plugins/issues"
   },
-  "homepage": "https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-compaction-instruction#readme"
+  "homepage": "https://github.com/Lbryany/dsh-plugins/tree/main/packages/dsh-compaction-instruction#readme",
+  "compactionSections": {
+    "event": "compaction-instruction/sections",
+    "version": 1
+  }
 }
