@@ -1,0 +1,5 @@
+# dsh bundle patch: intentionally inserts nothing.
+# Mounted at the root, this plugin would add a second compaction engine for every agent.
+# A profile mounts it by hand IN PLACE OF @deepseek-ai/dsh-compaction-basic inside one
+# preset's compaction group; see README.md.
+[]
