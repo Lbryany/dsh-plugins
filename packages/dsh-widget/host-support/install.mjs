@@ -2,21 +2,24 @@ import { cp, mkdir, readFile, writeFile, symlink, rename, rm, realpath, lstat } 
 import { resolve, join, dirname, basename, relative } from 'node:path';
 import { homedir } from 'node:os';
 import { createHash, randomUUID } from 'node:crypto';
-import { patches, HOST_VERSION, REVISION } from './patches.mjs';
+import { patchesFor, HOST_VERSIONS, REVISION, BLOCK_TITLE } from './patches.mjs';
 const hash = value => createHash('sha256').update(value).digest('hex');
 const readJson = async path => JSON.parse(await readFile(path, 'utf8'));
 const inside = (parent, path) => path === parent || (!relative(parent, path).startsWith('..') && !relative(parent, path).startsWith('/'));
 async function reviewedHost(path) {
   const root = await realpath(path);
   const pkg = await readJson(join(root, 'package.json'));
-  if (pkg.name !== '@deepseek-ai/dsh' || pkg.version !== HOST_VERSION) throw new Error('Unsupported dsh version; expected ' + HOST_VERSION);
+  if (pkg.name !== '@deepseek-ai/dsh' || !HOST_VERSIONS.includes(pkg.version)) throw new Error('Unsupported dsh version ' + pkg.version + '; reviewed: ' + HOST_VERSIONS.join(', '));
+  const version = pkg.version, patches = patchesFor(version);
   for (const item of patches) {
     const dir = join(root, 'node_modules/@deepseek-ai', item.name);
     const meta = await readJson(join(dir, 'package.json'));
-    if (meta.name !== '@deepseek-ai/' + item.name || meta.version !== HOST_VERSION) throw new Error('Unsupported package version: ' + item.name);
+    // The copy keeps upstream package.json, whose exact @deepseek-ai/dsh-* peers equal the host
+    // version; dsh-app-boot therefore accepts it only on this same host version.
+    if (meta.name !== '@deepseek-ai/' + item.name || meta.version !== version) throw new Error('Unsupported package version: ' + item.name);
     if (hash(await readFile(join(dir, 'lib/index.js'))) !== item.sha256) throw new Error('Unreviewed source fingerprint: ' + item.name);
   }
-  return root;
+  return { root, version, patches };
 }
 async function targetPath(input, hostRoot) {
   const absolute = resolve(input);
@@ -45,8 +48,10 @@ async function activation(target) {
 async function verifyRelease(target, release) {
   if (!/^v1-[a-f0-9]{20}$/.test(release)) throw new Error('Invalid release identity');
   const dir = join(target, 'releases', release), manifest = await readJson(join(dir, 'manifest.json'));
-  const hostRoot = await reviewedHost(manifest.hostRoot);
-  if (manifest.release !== release || manifest.hostVersion !== HOST_VERSION) throw new Error('Release integrity mismatch');
+  const host = await reviewedHost(manifest.hostRoot), hostRoot = host.root;
+  if (manifest.release !== release) throw new Error('Release integrity mismatch');
+  if (manifest.hostVersion !== host.version) throw new Error('Host version changed from ' + manifest.hostVersion + ' to ' + host.version + '; run install for the new host');
+  const patches = host.patches;
   for (const item of manifest.packages) {
     if (!patches.some(p => p.directory === item.directory)) throw new Error('Unknown release package');
     if (hash(await readFile(join(dir, item.directory, 'lib/index.js'))) !== item.patchedHash) throw new Error('Release integrity mismatch: ' + item.directory);
@@ -65,7 +70,8 @@ async function activate(target, next, previous, history) {
   return { release: next, target, patch: join(target, 'active.patch.yml') };
 }
 export async function install({ hostRoot: input, target: targetInput }) {
-  const hostRoot = await reviewedHost(input), target = await targetPath(targetInput, hostRoot);
+  const host = await reviewedHost(input), hostRoot = host.root, patches = host.patches, HOST_VERSION = host.version;
+  const target = await targetPath(targetInput, hostRoot);
   return locked(target, async () => {
     const release = 'v1-' + hash(JSON.stringify({ hostRoot, hostVersion: HOST_VERSION, revision: REVISION, fingerprints: patches.map(p => p.sha256) })).slice(0, 20);
     const finalDir = join(target, 'releases', release), previous = await activation(target);
@@ -101,6 +107,19 @@ export async function doctor(targetInput) {
   const verified = await verifyRelease(target, state.active);
   if (await readFile(join(target, 'active.patch.yml'), 'utf8') !== verified.patch) throw new Error('Activation integrity mismatch; reinstall or rollback before launch');
   return { release: state.active, target, hostRoot: verified.hostRoot, hostVersion: verified.hostVersion, patch: join(target, 'active.patch.yml') };
+}
+/**
+ * Profile patch block for the active release, wrapped in BEGIN/END markers that name the reviewed
+ * dsh version. Paste it into a profile's cordis.patch.yml in place of any older block; tools such as
+ * dsh-projects' profile-compat treat the BEGIN/END block as one unit.
+ */
+export async function profileBlock(targetInput) {
+  const state = await doctor(targetInput);
+  if (state.disabled) throw new Error('Host support is disabled; nothing to add to a profile');
+  const patch = await readFile(state.patch, 'utf8');
+  return `# BEGIN ${BLOCK_TITLE} (reviewed dsh ${state.hostVersion}, revision ${REVISION}, release ${state.release})\n`
+    + `# Regenerate after every dsh upgrade: dsh-widget-host install --host-root <dsh> --target ${state.target} && dsh-widget-host profile-block --target ${state.target}\n`
+    + patch + `# END ${BLOCK_TITLE}\n`;
 }
 export async function rollback(targetInput) {
   const target = await targetPath(targetInput);

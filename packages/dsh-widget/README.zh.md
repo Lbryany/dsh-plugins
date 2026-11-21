@@ -130,9 +130,9 @@ npm run check   # 类型检查 + vitest + tsdown 构建（lib/ 要随源码一�
 
 `dshViz.interaction({ form, fields, action, render })` 支持原生表单的恢复、本地联动、保存及宿主侧确认提交。用户在聊天内选择参数后，宿主捕获公开字段并显示预览；确认后同一会话按该份不可变快照继续。`privateContent` 不进入预览或模型请求。完整页面需要在聊天中展开；独立窗口仍为只读。
 
-**宿主依赖**：输入事务需要 `sessionController.registerWidgetInputCapture` 扩展。普通 dsh 0.2.1-rc.5 尚未提供该上游 API；发布包附带 [独立宿主支持安装器](host-support/README.md)，校验版本和文件指纹，在独立目录创建副本，提供 doctor、升级切换、回滚和禁用。启动器自动加载输入捕获与队列退出保留支持，不修改系统安装。仅验证了精确版本 0.2.1-rc.5，其他版本拒绝启动。未安装支持层的宿主不显示新提交按钮。
+**宿主依赖**：输入事务需要 `sessionController.registerWidgetInputCapture` 扩展。普通 dsh 0.2.1-rc.5 与 0.2.2-rc.1 均未提供该上游 API；发布包附带 [独立宿主支持安装器](host-support/README.md)，校验版本和文件指纹，在独立目录创建副本，提供 doctor、升级切换、回滚和禁用。启动器自动加载输入捕获与队列退出保留支持，不修改系统安装。已审阅的精确版本为 0.2.1-rc.5 与 0.2.2-rc.1，其他版本拒绝安装。每个支持层版本绑定构建时的宿主版本：升级 dsh 后须重新 install，并用 `dsh-widget-host profile-block` 输出的新块替换 profile 中的旧块，否则 dsh 会以 incompatible 跳过替换插件，网页端没有 sessions 服务。未安装支持层的宿主不显示新提交按钮。
 设计及冻结评测线见 [交互设计](docs/plans/2026-11-01-interaction-design.md)。评测结果与验证范围独立登记，不以单元测试代替真实模型评测。
 
 旧轮实验与未过线结果见 [V1 实施记录](docs/plans/2026-11-01-interaction-implementation.md)；发布补齐范围、固定评测与故障验收见 [V2 规格](docs/plans/2026-11-01-interaction-release-v2.md)。请以最新验收结果判断质量门禁，不将“能安装”当成模型表现已经过线。
 
-最新交互回流候选已达到固定样例门禁（10/12，显式4/4，负例4/4）；仍有两个失败及模型扩展回答质量边界，详见 [发布验收结果](docs/plans/2026-11-01-interaction-release-result.md)。仅支持已审阅的 dsh 0.2.1-rc.5 独立宿主支持层。
+最新交互回流候选已达到固定样例门禁（10/12，显式4/4，负例4/4）；仍有两个失败及模型扩展回答质量边界，详见 [发布验收结果](docs/plans/2026-11-01-interaction-release-result.md)。模型评测在 dsh 0.2.1-rc.5 上完成；0.2.2-rc.1 只做了安装、兼容与启动验证，未重跑模型评测。

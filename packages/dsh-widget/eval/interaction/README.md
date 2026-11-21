@@ -4,7 +4,7 @@ V1 规格与通过线在 [cases.json](cases.json)，V2 完整重跑规格在 [ca
 
 ## 隔离环境
 
-使用独立 DSH_HOME、工作区及随机回环端口，排除 3080/3091。主机示例为 macOS、dsh 0.2.1-rc.5；Playwright 与 Chrome 路径可用 `VQ_PLAYWRIGHT_MODULE`、`VQ_CHROME` 覆盖。测试控制插件 `host-fixture.mjs` 只用于临时宿主，不安装到真实配置。
+使用独立 DSH_HOME、工作区及随机回环端口，排除 3080/3091。主机示例为 macOS、dsh 0.2.1-rc.5（0.2.2-rc.1 已用 `check-host.mjs`、`check-restart-queue.mjs` 复验宿主支持层，模型评测未重跑）；Playwright 与 Chrome 路径可用 `VQ_PLAYWRIGHT_MODULE`、`VQ_CHROME` 覆盖。测试控制插件 `host-fixture.mjs` 只用于临时宿主，不安装到真实配置。
 
 1. 推荐使用 [host-support 安装器](../../host-support/README.md)，两组加载同一支持层。以下 `prepare-*` 命令仅保留用于复现 V1。用 `prepare-host.mjs <已安装 session-controller 包目录> <新的 tmp 目标目录>` 创建输入捕获副本。原包不修改。需要跨退出队列验证时，另用 `prepare-loop.mjs <已安装 agent-loop 包目录> <新的 tmp 目标目录>` 创建保留 pending inbox 的副本。
 2. 冻结基线/候选包并记录 hash。原基线见 `baseline-manifest.json`，是包含第一轮视觉改动的工作区归档，不能换成 Git HEAD。两组分别使用独立 DSH_HOME，同一测试工作区。
